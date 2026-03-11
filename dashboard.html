@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Dashboard - The 100k Parent</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="/" class="logo">
+                <div class="logo-icon">£</div>
+                <span>THE 100K PARENT</span>
+            </a>
+            <nav class="nav">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="/#calculator">Calculator</a>
+                <a href="advisor.html">Get Advice</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero" style="padding: 3rem 0;">
+        <div class="container">
+            <div style="max-width: 800px;">
+                <h1 style="color: white; margin-bottom: 1rem;">Welcome Back! 👋</h1>
+                <p style="color: rgba(255,255,255,0.85); font-size: 1.25rem;" id="welcomeText">Your complete guide to saving thousands on childcare costs.</p>
+            </div>
+        </div>
+    </section>
+
+    <section style="padding: 4rem 0; background: #F9FAFB;">
+        <div class="container">
+            
+            <!-- Progress Tracker -->
+            <div style="background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); margin-bottom: 3rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <div>
+                        <h3 style="margin-bottom: 0.25rem;">Your Progress</h3>
+                        <p style="color: #6B7280; font-size: 0.875rem; margin: 0;">Complete all 8 modules to maximize your savings</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 2.5rem; font-weight: 800; color: #10B981;">0%</div>
+                        <div style="font-size: 0.875rem; color: #6B7280;">0 of 8 modules</div>
+                    </div>
+                </div>
+                <div style="height: 12px; background: #F3F4F6; border-radius: 6px; overflow: hidden;">
+                    <div style="height: 100%; width: 0%; background: linear-gradient(90deg, #10B981 0%, #059669 100%); transition: width 0.6s ease;"></div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div style="margin-bottom: 3rem;">
+                <h2 style="margin-bottom: 1.5rem;">Quick Actions</h2>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                    <a href="/#calculator" class="btn btn-secondary" style="text-align: center; padding: 1.5rem; display: block;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🧮</div>
+                        <div style="font-weight: 700;">Recalculate Savings</div>
+                    </a>
+                    <a href="templates.html" class="btn btn-secondary" style="text-align: center; padding: 1.5rem; display: block;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">📄</div>
+                        <div style="font-weight: 700;">Download Templates</div>
+                    </a>
+                    <a href="advisor.html" class="btn btn-secondary" style="text-align: center; padding: 1.5rem; display: block;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">💼</div>
+                        <div style="font-weight: 700;">Speak to Advisor</div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Modules -->
+            <div>
+                <h2 style="margin-bottom: 1.5rem;">Your Personalized Modules</h2>
+                
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                    <!-- Module 0: £100k+ Unlock - Show if user is over £100k -->
+                    <a href="module-0.html" id="module-0-card" class="module-card" style="text-decoration: none; color: inherit; display: none; grid-column: 1 / -1; background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%); border: 3px solid #DC2626;">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <div class="module-number" style="background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%);">START HERE</div>
+                            <span style="background: #DC2626; color: white; padding: 0.375rem 0.875rem; border-radius: 6px; font-size: 0.75rem; font-weight: 800;">CRITICAL FOR £100k+ EARNERS</span>
+                        </div>
+                        <h3 style="font-size: 1.5rem;">Module 0: The £100k+ Unlock Strategy</h3>
+                        <p style="color: #991B1B; margin: 0.75rem 0; font-size: 1.0625rem;">You're currently locked out of £8,840+/year in benefits. This module shows you how to unlock them in 4 weeks.</p>
+                        <div style="display: flex; gap: 1rem; color: #7F1D1D; font-size: 0.875rem; margin-top: 1rem;">
+                            <span>⏱ 8 min</span>
+                            <span>💰 Unlock £8,840-£18,000/year</span>
+                            <span>⚡ Do This First</span>
+                        </div>
+                    </a>
+
+                    <a href="module-1.html" class="module-card" style="text-decoration: none; color: inherit; display: block;">
+                        <div class="module-number">Module 1</div>
+                        <h3>Tax-Free Childcare Setup</h3>
+                        <p style="color: #6B7280; margin: 0.75rem 0;">Complete guide to claiming 20% government top-up on childcare costs.</p>
+                        <div style="display: flex; gap: 1rem; color: #6B7280; font-size: 0.875rem; margin-top: 1rem;">
+                            <span>⏱ 15 min</span>
+                            <span>💰 Save up to £2,000/child</span>
+                        </div>
+                    </div>
+
+                    <a href="module-2.html" class="module-card" style="text-decoration: none; color: inherit; display: block;">
+                        <div class="module-number">Module 2</div>
+                        <h3>Salary Sacrifice Schemes</h3>
+                        <p style="color: #6B7280; margin: 0.75rem 0;">Reduce NI and tax through strategic pension contributions.</p>
+                        <div style="display: flex; gap: 1rem; color: #6B7280; font-size: 0.875rem; margin-top: 1rem;">
+                            <span>⏱ 12 min</span>
+                            <span>💰 Save £1,000-£3,000/year</span>
+                        </div>
+                    </div>
+
+                    <a href="module-3.html" class="module-card" style="text-decoration: none; color: inherit; display: block;">
+                        <div class="module-number">Module 3</div>
+                        <h3>Income Splitting Strategies</h3>
+                        <p style="color: #6B7280; margin: 0.75rem 0;">Optimize tax bands between you and your partner.</p>
+                        <div style="display: flex; gap: 1rem; color: #6B7280; font-size: 0.875rem; margin-top: 1rem;">
+                            <span>⏱ 18 min</span>
+                            <span>💰 Save £2,000-£5,000/year</span>
+                        </div>
+                    </div>
+
+                    <a href="module-4.html" class="module-card" style="text-decoration: none; color: inherit; display: block;">
+                        <div class="module-number">Module 4</div>
+                        <h3>Childcare as Business Expense</h3>
+                        <p style="color: #6B7280; margin: 0.75rem 0;">For self-employed parents and business owners.</p>
+                        <div style="display: flex; gap: 1rem; color: #6B7280; font-size: 0.875rem; margin-top: 1rem;">
+                            <span>⏱ 10 min</span>
+                            <span>💰 Save £500-£2,000/year</span>
+                        </div>
+                    </div>
+
+                    <a href="module-5.html" class="module-card" style="text-decoration: none; color: inherit; display: block;">
+                        <div class="module-number">Module 5</div>
+                        <h3>Tax Credits for High Earners</h3>
+                        <p style="color: #6B7280; margin: 0.75rem 0;">Navigate Child Benefit charge and Working Tax Credits.</p>
+                        <div style="display: flex; gap: 1rem; color: #6B7280; font-size: 0.875rem; margin-top: 1rem;">
+                            <span>⏱ 14 min</span>
+                            <span>💰 Save £1,000-£2,500/year</span>
+                        </div>
+                    </div>
+
+                    <a href="module-6.html" class="module-card" style="text-decoration: none; color: inherit; display: block;">
+                        <div class="module-number">Module 6</div>
+                        <h3>Junior ISAs & Education Trusts</h3>
+                        <p style="color: #6B7280; margin: 0.75rem 0;">Long-term wealth transfer and education planning.</p>
+                        <div style="display: flex; gap: 1rem; color: #6B7280; font-size: 0.875rem; margin-top: 1rem;">
+                            <span>⏱ 20 min</span>
+                            <span>💰 Save £5k-£20k long-term</span>
+                        </div>
+                    </div>
+
+                    <a href="module-7.html" class="module-card" style="text-decoration: none; color: inherit; display: block;">
+                        <div class="module-number">Module 7</div>
+                        <h3>Employer Benefit Negotiations</h3>
+                        <p style="color: #6B7280; margin: 0.75rem 0;">Scripts and strategies to secure childcare benefits.</p>
+                        <div style="display: flex; gap: 1rem; color: #6B7280; font-size: 0.875rem; margin-top: 1rem;">
+                            <span>⏱ 16 min</span>
+                            <span>💰 Unlock £2k-£5k/year</span>
+                        </div>
+                    </div>
+
+                    <a href="module-8.html" class="module-card" style="text-decoration: none; color: inherit; display: block;">
+                        <div class="module-number">Module 8</div>
+                        <h3>Long-term Tax Planning</h3>
+                        <p style="color: #6B7280; margin: 0.75rem 0;">18-year roadmap from birth to university.</p>
+                        <div style="display: flex; gap: 1rem; color: #6B7280; font-size: 0.875rem; margin-top: 1rem;">
+                            <span>⏱ 22 min</span>
+                            <span>💰 Optimize £50k-£150k lifetime</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA -->
+            <div style="margin-top: 3rem; background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); padding: 3rem; border-radius: 20px; text-align: center;">
+                <h2 style="color: white; margin-bottom: 1rem;">Need Professional Advice?</h2>
+                <p style="color: rgba(255,255,255,0.85); font-size: 1.125rem; margin-bottom: 2rem;">For complex cases involving trusts, business restructuring, or multiple income streams, speak to an FCA-regulated financial advisor.</p>
+                <a href="advisor.html" class="btn btn-primary btn-large">Book Free Consultation</a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 The 100k Parent. Educational content—not regulated financial advice.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Personalize welcome message and show Module 0 if over £100k
+        const params = new URLSearchParams(window.location.search);
+        const name = params.get('name');
+        const email = params.get('email');
+        
+        if (name) {
+            document.getElementById('welcomeText').textContent = `Welcome, ${name.split(' ')[0]}! Your complete guide to saving thousands on childcare costs.`;
+        }
+
+        // Check if user is over £100k from localStorage profile
+        try {
+            const profile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+            const income1 = profile.income1 || 0;
+            const income2 = profile.income2 || 0;
+            
+            if (income1 > 100000 || income2 > 100000) {
+                // Show Module 0 for £100k+ earners
+                const module0 = document.getElementById('module-0-card');
+                if (module0) {
+                    module0.style.display = 'block';
+                }
+                
+                // Update progress text
+                const progressText = document.querySelector('p[style*="Complete all"]');
+                if (progressText) {
+                    progressText.textContent = 'Start with Module 0 (£100k+ Unlock), then complete remaining modules';
+                }
+            }
+        } catch (e) {
+            console.log('No profile data found');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 4: Business Expense Deductions - The 100k Parent</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .module-content { max-width: 800px; margin: 0 auto; padding: 3rem 1.5rem; }
+        .module-content h2 { margin-top: 3rem; margin-bottom: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
+        .module-content h2:hover { color: #10B981; }
+        .module-content h2::before { content: '▼'; font-size: 0.8em; transition: transform 0.3s; }
+        .module-content h2.collapsed::before { transform: rotate(-90deg); }
+        .collapsible-content { max-height: 2000px; overflow: hidden; transition: max-height 0.3s ease; }
+        .collapsible-content.hidden { max-height: 0; }
+        .expense-tracker { background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); padding: 2rem; border-radius: 16px; margin: 2rem 0; color: white; }
+        .expense-item { background: rgba(255,255,255,0.15); padding: 1.5rem; border-radius: 12px; margin: 1rem 0; display: flex; justify-content: space-between; align-items: center; }
+        .expense-checkbox { width: 24px; height: 24px; cursor: pointer; }
+        .quick-wins { background: #FEF3C7; border-left: 4px solid #F59E0B; padding: 1.5rem; border-radius: 0 12px 12px 0; margin: 2rem 0; }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; margin: 2rem 0; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 12px; }
+        .calculator-box { background: white; border: 2px solid #E5E7EB; padding: 2rem; border-radius: 12px; margin: 2rem 0; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="/" class="logo">
+                <div class="logo-icon">£</div>
+                <span>THE 100K PARENT</span>
+            </a>
+            <nav class="nav">
+                <a href="dashboard.html">← Dashboard</a>
+                <a href="module-5.html">Next Module →</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero" style="padding: 3rem 0;">
+        <div class="container">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <span class="module-number">MODULE 4 OF 8</span>
+                <h1 style="color: white; margin: 1rem 0;">Childcare as Business Expense</h1>
+                <p style="color: rgba(255,255,255,0.85); font-size: 1.25rem; margin-bottom: 1.5rem;">Self-employed strategies to reduce your tax bill</p>
+                <div style="display: flex; gap: 2rem; color: rgba(255,255,255,0.9);">
+                    <span>⏱ 10 minutes</span>
+                    <span>💰 Save £500-£2,000/year</span>
+                    <span>✓ Self-Employed Only</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="module-content">
+        <!-- Quick Wins -->
+        <div class="quick-wins">
+            <h3 style="margin: 0 0 1rem 0;">⚡ Quick Wins (Start Today)</h3>
+            <ol style="margin: 0; padding-left: 1.5rem;">
+                <li><strong>Track business mileage (2 min) → Save 45p/mile</strong><br>Use app to log every business trip automatically</li>
+                <li><strong>Calculate home office deduction (10 min) → Save £200-£500/year</strong><br>Use calculator below</li>
+                <li><strong>Open business bank account (30 min)</strong><br>Makes expense tracking 10x easier</li>
+            </ol>
+        </div>
+
+        <!-- Interactive Expense Tracker -->
+        <div class="expense-tracker">
+            <h3 style="margin: 0 0 1.5rem 0;">💰 Your Annual Expense Tracker</h3>
+            <p style="opacity: 0.9; margin-bottom: 1.5rem;">Check expenses you can claim. We'll calculate your savings.</p>
+            
+            <div class="expense-item">
+                <label style="display: flex; align-items: center; gap: 1rem; flex: 1; cursor: pointer;">
+                    <input type="checkbox" class="expense-checkbox" data-amount="600">
+                    <div>
+                        <div style="font-weight: 700;">Home Office (£50/month)</div>
+                        <div style="font-size: 0.875rem; opacity: 0.8;">Proportion of rent, utilities, internet</div>
+                    </div>
+                </label>
+                <div style="font-weight: 800; font-size: 1.25rem;">£600</div>
+            </div>
+
+            <div class="expense-item">
+                <label style="display: flex; align-items: center; gap: 1rem; flex: 1; cursor: pointer;">
+                    <input type="checkbox" class="expense-checkbox" data-amount="2700">
+                    <div>
+                        <div style="font-weight: 700;">Business Mileage (6,000 miles @ 45p)</div>
+                        <div style="font-size: 0.875rem; opacity: 0.8;">Client visits, meetings, events</div>
+                    </div>
+                </label>
+                <div style="font-weight: 800; font-size: 1.25rem;">£2,700</div>
+            </div>
+
+            <div class="expense-item">
+                <label style="display: flex; align-items: center; gap: 1rem; flex: 1; cursor: pointer;">
+                    <input type="checkbox" class="expense-checkbox" data-amount="400">
+                    <div>
+                        <div style="font-weight: 700;">Professional Subscriptions</div>
+                        <div style="font-size: 0.875rem; opacity: 0.8;">Industry bodies, software licenses</div>
+                    </div>
+                </label>
+                <div style="font-weight: 800; font-size: 1.25rem;">£400</div>
+            </div>
+
+            <div class="expense-item">
+                <label style="display: flex; align-items: center; gap: 1rem; flex: 1; cursor: pointer;">
+                    <input type="checkbox" class="expense-checkbox" data-amount="300">
+                    <div>
+                        <div style="font-weight: 700;">Equipment & Supplies</div>
+                        <div style="font-size: 0.875rem; opacity: 0.8;">Laptop, phone, stationery</div>
+                    </div>
+                </label>
+                <div style="font-weight: 800; font-size: 1.25rem;">£300</div>
+            </div>
+
+            <div class="expense-item">
+                <label style="display: flex; align-items: center; gap: 1rem; flex: 1; cursor: pointer;">
+                    <input type="checkbox" class="expense-checkbox" data-amount="800">
+                    <div>
+                        <div style="font-weight: 700;">Training & Development</div>
+                        <div style="font-size: 0.875rem; opacity: 0.8;">Courses, conferences, books</div>
+                    </div>
+                </label>
+                <div style="font-weight: 800; font-size: 1.25rem;">£800</div>
+            </div>
+
+            <div class="expense-item">
+                <label style="display: flex; align-items: center; gap: 1rem; flex: 1; cursor: pointer;">
+                    <input type="checkbox" class="expense-checkbox" data-amount="500">
+                    <div>
+                        <div style="font-weight: 700;">Marketing & Advertising</div>
+                        <div style="font-size: 0.875rem; opacity: 0.8;">Website, social media, ads</div>
+                    </div>
+                </label>
+                <div style="font-weight: 800; font-size: 1.25rem;">£500</div>
+            </div>
+
+            <div style="background: rgba(16, 185, 129, 0.3); padding: 1.5rem; border-radius: 12px; margin-top: 1.5rem; text-align: center;">
+                <div style="font-size: 0.875rem; opacity: 0.9; margin-bottom: 0.5rem;">TOTAL DEDUCTIONS</div>
+                <div style="font-size: 2rem; font-weight: 900; margin-bottom: 0.5rem;" id="total-deductions">£0</div>
+                <div style="font-size: 0.875rem; opacity: 0.9; margin-bottom: 0.5rem;">TAX SAVED (40% bracket)</div>
+                <div style="font-size: 2.5rem; font-weight: 900;" id="tax-saved">£0</div>
+            </div>
+        </div>
+
+        <!-- Mileage Calculator -->
+        <div class="calculator-box">
+            <h3 style="margin: 0 0 1.5rem 0;">🚗 Mileage Calculator</h3>
+            
+            <div style="margin: 1.5rem 0;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Business Miles per Week:</label>
+                <input type="number" id="miles-week" value="50" style="width: 100%; padding: 0.75rem; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;">
+            </div>
+
+            <div style="background: #F9FAFB; padding: 1.5rem; border-radius: 12px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div>
+                        <div style="color: #6B7280; font-size: 0.875rem;">Annual Miles</div>
+                        <div style="font-size: 1.5rem; font-weight: 800; color: #10B981;" id="annual-miles">2,600</div>
+                    </div>
+                    <div>
+                        <div style="color: #6B7280; font-size: 0.875rem;">Annual Deduction</div>
+                        <div style="font-size: 1.5rem; font-weight: 800; color: #10B981;" id="mileage-deduction">£1,170</div>
+                    </div>
+                </div>
+                <div style="margin-top: 1rem; padding-top: 1rem; border-top: 2px solid #E5E7EB;">
+                    <div style="color: #6B7280; font-size: 0.875rem;">Tax Saved (40% bracket)</div>
+                    <div style="font-size: 2rem; font-weight: 900; color: #10B981;" id="mileage-tax-saved">£468</div>
+                </div>
+            </div>
+
+            <p style="margin-top: 1rem; color: #6B7280; font-size: 0.875rem;">📱 Recommended apps: MileIQ, Driversnote, Triplog</p>
+        </div>
+
+        <!-- Home Office Calculator -->
+        <div class="calculator-box">
+            <h3 style="margin: 0 0 1.5rem 0;">🏠 Home Office Deduction Calculator</h3>
+            
+            <div style="margin: 1.5rem 0;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Total Home Square Footage:</label>
+                <input type="number" id="total-sqft" value="1500" style="width: 100%; padding: 0.75rem; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;">
+            </div>
+
+            <div style="margin: 1.5rem 0;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Office Square Footage:</label>
+                <input type="number" id="office-sqft" value="150" style="width: 100%; padding: 0.75rem; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;">
+            </div>
+
+            <div style="margin: 1.5rem 0;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Monthly Rent/Mortgage:</label>
+                <input type="number" id="monthly-rent" value="1500" style="width: 100%; padding: 0.75rem; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;">
+            </div>
+
+            <div style="margin: 1.5rem 0;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Monthly Utilities (electric, gas, water, internet):</label>
+                <input type="number" id="monthly-utilities" value="200" style="width: 100%; padding: 0.75rem; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;">
+            </div>
+
+            <button onclick="calculateHomeOffice()" style="width: 100%; background: #10B981; color: white; padding: 1rem; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1rem;">Calculate Deduction</button>
+
+            <div id="home-office-result" style="background: #F9FAFB; padding: 1.5rem; border-radius: 12px; margin-top: 1.5rem; display: none;">
+                <div style="text-align: center;">
+                    <div style="color: #6B7280; font-size: 0.875rem; margin-bottom: 0.5rem;">Your Office is <span id="office-percentage">10%</span> of Home</div>
+                    <div style="font-size: 0.875rem; color: #6B7280; margin-bottom: 0.5rem;">Annual Deduction</div>
+                    <div style="font-size: 2.5rem; font-weight: 900; color: #10B981;" id="home-office-deduction">£2,040</div>
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 2px solid #E5E7EB;">
+                        <div style="color: #6B7280; font-size: 0.875rem;">Tax Saved (40% bracket)</div>
+                        <div style="font-size: 2rem; font-weight: 900; color: #10B981;" id="home-office-tax-saved">£816</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Embed -->
+        <div class="video-container">
+            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <p style="text-align: center; color: #6B7280; font-size: 0.875rem;">📺 Video: Claiming Business Expenses (5 min)</p>
+
+        <!-- Collapsible Sections -->
+        <h2 onclick="toggleSection(this)">What You Can Claim</h2>
+        <div class="collapsible-content">
+            <p>As a self-employed parent, you can deduct "wholly and exclusively" business expenses from your taxable profit.</p>
+            
+            <h3>✅ Always Claimable:</h3>
+            <ul>
+                <li><strong>Home office</strong> - Proportion of rent, utilities, council tax</li>
+                <li><strong>Business mileage</strong> - 45p/mile (first 10k miles), 25p after</li>
+                <li><strong>Equipment</strong> - Laptop, phone, furniture, software</li>
+                <li><strong>Professional fees</strong> - Accountant, solicitor, industry memberships</li>
+                <li><strong>Marketing</strong> - Website, advertising, business cards</li>
+                <li><strong>Training</strong> - Courses, books, conferences</li>
+            </ul>
+
+            <h3>⚠️ Partially Claimable:</h3>
+            <ul>
+                <li><strong>Mobile phone</strong> - Business use % only</li>
+                <li><strong>Internet</strong> - Business use % (usually 50%)</li>
+                <li><strong>Car expenses</strong> - Choose mileage OR actual costs (not both)</li>
+            </ul>
+
+            <h3>❌ NOT Claimable:</h3>
+            <ul>
+                <li><strong>Childcare</strong> - Not tax-deductible (use Tax-Free Childcare instead)</li>
+                <li><strong>Commuting</strong> - Travel from home to regular workplace</li>
+                <li><strong>Personal expenses</strong> - Anything with dual purpose must be split</li>
+                <li><strong>Entertainment</strong> - Client meals/drinks (changed in 2016)</li>
+            </ul>
+        </div>
+
+        <h2 onclick="toggleSection(this)">Record Keeping</h2>
+        <div class="collapsible-content">
+            <p><strong>HMRC requires 6 years of records.</strong> Keep:</p>
+            
+            <ol>
+                <li><strong>Every receipt</strong> - Paper or digital (take photos)</li>
+                <li><strong>Bank statements</strong> - Business account mandatory for £100k+ earners</li>
+                <li><strong>Invoices</strong> - All sales and purchases</li>
+                <li><strong>Mileage log</strong> - Date, destination, miles, purpose</li>
+            </ol>
+
+            <div style="background: #FEF3C7; padding: 1.5rem; border-radius: 12px; margin: 1.5rem 0;">
+                <h4>💡 Recommended Apps:</h4>
+                <ul>
+                    <li><strong>Receipts:</strong> Expensify, Receipt Bank, Dext</li>
+                    <li><strong>Mileage:</strong> MileIQ, Driversnote</li>
+                    <li><strong>Accounting:</strong> Xero, QuickBooks, FreeAgent</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2 onclick="toggleSection(this)">Common Mistakes</h2>
+        <div class="collapsible-content">
+            <ol>
+                <li><strong>❌ No separate bank account</strong><br>HMRC expects business/personal separation</li>
+                
+                <li><strong>❌ Claiming 100% of phone/internet</strong><br>Be realistic - 50% business use is typical</li>
+                
+                <li><strong>❌ No mileage log</strong><br>Without records, HMRC will disallow the claim</li>
+                
+                <li><strong>❌ Guessing proportions</strong><br>Home office % must be accurate (measure rooms)</li>
+                
+                <li><strong>❌ Mixing personal & business</strong><br>Avoid claiming gym membership as "stress relief"</li>
+            </ol>
+        </div>
+
+        <!-- Action Checklist -->
+        <div style="background: #DBEAFE; padding: 2rem; border-radius: 12px; margin: 3rem 0;">
+            <h3 style="margin: 0 0 1rem 0;">✅ Your Action Checklist</h3>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Open business bank account (if earning £100k+)
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Install mileage tracking app
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Measure home office square footage
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Set up receipt scanning system
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Calculate total claimable expenses
+            </label>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-top: 3rem;">
+            <a href="module-3.html" class="btn btn-secondary">← Previous Module</a>
+            <a href="module-5.html" class="btn btn-primary">Next Module →</a>
+        </div>
+    </div>
+
+    <script>
+    // Collapsible sections
+    function toggleSection(header) {
+        header.classList.toggle('collapsed');
+        const content = header.nextElementSibling;
+        content.classList.toggle('hidden');
+    }
+
+    // Expense Tracker
+    const checkboxes = document.querySelectorAll('.expense-checkbox');
+    const totalDeductions = document.getElementById('total-deductions');
+    const taxSaved = document.getElementById('tax-saved');
+
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', calculateExpenses);
+    });
+
+    function calculateExpenses() {
+        let total = 0;
+        checkboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                total += parseInt(checkbox.dataset.amount);
+            }
+        });
+        
+        const tax = total * 0.40; // 40% tax bracket
+        totalDeductions.textContent = '£' + total.toLocaleString();
+        taxSaved.textContent = '£' + Math.round(tax).toLocaleString();
+    }
+
+    // Mileage Calculator
+    const milesWeek = document.getElementById('miles-week');
+    const annualMiles = document.getElementById('annual-miles');
+    const mileageDeduction = document.getElementById('mileage-deduction');
+    const mileageTaxSaved = document.getElementById('mileage-tax-saved');
+
+    milesWeek.addEventListener('input', calculateMileage);
+
+    function calculateMileage() {
+        const weekly = parseInt(milesWeek.value) || 0;
+        const annual = weekly * 52;
+        
+        // 45p for first 10,000 miles, 25p after
+        let deduction = 0;
+        if (annual <= 10000) {
+            deduction = annual * 0.45;
+        } else {
+            deduction = (10000 * 0.45) + ((annual - 10000) * 0.25);
+        }
+        
+        const tax = deduction * 0.40;
+        
+        annualMiles.textContent = annual.toLocaleString();
+        mileageDeduction.textContent = '£' + Math.round(deduction).toLocaleString();
+        mileageTaxSaved.textContent = '£' + Math.round(tax).toLocaleString();
+    }
+
+    calculateMileage();
+
+    // Home Office Calculator
+    function calculateHomeOffice() {
+        const totalSqft = parseInt(document.getElementById('total-sqft').value);
+        const officeSqft = parseInt(document.getElementById('office-sqft').value);
+        const monthlyRent = parseInt(document.getElementById('monthly-rent').value);
+        const monthlyUtilities = parseInt(document.getElementById('monthly-utilities').value);
+
+        const percentage = (officeSqft / totalSqft) * 100;
+        const annualCosts = (monthlyRent + monthlyUtilities) * 12;
+        const deduction = annualCosts * (percentage / 100);
+        const tax = deduction * 0.40;
+
+        document.getElementById('office-percentage').textContent = percentage.toFixed(1) + '%';
+        document.getElementById('home-office-deduction').textContent = '£' + Math.round(deduction).toLocaleString();
+        document.getElementById('home-office-tax-saved').textContent = '£' + Math.round(tax).toLocaleString();
+        document.getElementById('home-office-result').style.display = 'block';
+    }
+    </script>
+</body>
+</html>

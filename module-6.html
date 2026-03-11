@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 6: Junior ISAs & Long-term Savings - The 100k Parent</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        .module-content { max-width: 800px; margin: 0 auto; padding: 3rem 1.5rem; }
+        .module-content h2 { margin-top: 3rem; margin-bottom: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
+        .module-content h2:hover { color: #10B981; }
+        .module-content h2::before { content: '▼'; font-size: 0.8em; transition: transform 0.3s; }
+        .module-content h2.collapsed::before { transform: rotate(-90deg); }
+        .collapsible-content { max-height: 2000px; overflow: hidden; transition: max-height 0.3s ease; }
+        .collapsible-content.hidden { max-height: 0; }
+        .compound-widget { background: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%); padding: 2rem; border-radius: 16px; margin: 2rem 0; color: white; }
+        .slider-container { margin: 1.5rem 0; }
+        .slider { width: 100%; height: 8px; border-radius: 4px; background: rgba(255,255,255,0.3); outline: none; }
+        .slider::-webkit-slider-thumb { width: 24px; height: 24px; border-radius: 50%; background: #10B981; cursor: pointer; }
+        .quick-wins { background: #FEF3C7; border-left: 4px solid #F59E0B; padding: 1.5rem; border-radius: 0 12px 12px 0; margin: 2rem 0; }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; margin: 2rem 0; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 12px; }
+        .chart-container { background: white; padding: 2rem; border-radius: 12px; margin: 2rem 0; }
+        .comparison-table { background: white; border-radius: 12px; overflow: hidden; margin: 2rem 0; }
+        .comparison-table table { width: 100%; }
+        .comparison-table th { background: #F9FAFB; padding: 1rem; text-align: left; font-weight: 700; }
+        .comparison-table td { padding: 1rem; border-bottom: 1px solid #E5E7EB; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="/" class="logo">
+                <div class="logo-icon">£</div>
+                <span>THE 100K PARENT</span>
+            </a>
+            <nav class="nav">
+                <a href="dashboard.html">← Dashboard</a>
+                <a href="module-7.html">Next Module →</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero" style="padding: 3rem 0;">
+        <div class="container">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <span class="module-number">MODULE 6 OF 8</span>
+                <h1 style="color: white; margin: 1rem 0;">Junior ISAs & Long-term Savings</h1>
+                <p style="color: rgba(255,255,255,0.85); font-size: 1.25rem; margin-bottom: 1.5rem;">Turn £100/month into £50,000+ by age 18</p>
+                <div style="display: flex; gap: 2rem; color: rgba(255,255,255,0.9);">
+                    <span>⏱ 16 minutes</span>
+                    <span>💰 Compound to £50k+</span>
+                    <span>✓ Tax-Free Growth</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="module-content">
+        <!-- Quick Wins -->
+        <div class="quick-wins">
+            <h3 style="margin: 0 0 1rem 0;">⚡ Quick Wins (Start Today)</h3>
+            <ol style="margin: 0; padding-left: 1.5rem;">
+                <li><strong>Open Junior ISA (15 min) → Build £50k+ by age 18</strong><br>Hargreaves Lansdown, Fidelity, or Vanguard</li>
+                <li><strong>Set up £100/month standing order (5 min)</strong><br>Automatic investing = never miss a payment</li>
+                <li><strong>Choose low-cost global tracker (10 min)</strong><br>Vanguard FTSE Global All Cap (0.23% fee)</li>
+            </ol>
+        </div>
+
+        <!-- Interactive Compound Interest Calculator -->
+        <div class="compound-widget">
+            <h3 style="margin: 0 0 1.5rem 0;">📈 18-Year Compound Interest Projector</h3>
+            <p style="opacity: 0.9; margin-bottom: 2rem;">See how much your child will have at 18</p>
+            
+            <div class="slider-container">
+                <label style="display: block; margin-bottom: 0.5rem;">Monthly Contribution: <span id="monthly-display">£100</span></label>
+                <input type="range" class="slider" id="monthly-slider" min="10" max="500" step="10" value="100">
+            </div>
+
+            <div class="slider-container">
+                <label style="display: block; margin-bottom: 0.5rem;">Expected Annual Return: <span id="return-display">7%</span></label>
+                <input type="range" class="slider" id="return-slider" min="4" max="10" step="0.5" value="7">
+                <div style="font-size: 0.875rem; opacity: 0.8; margin-top: 0.5rem;">Historical average: 7% (stocks), 5% (balanced), 3% (bonds)</div>
+            </div>
+
+            <div class="slider-container">
+                <label style="display: block; margin-bottom: 0.5rem;">Starting Lump Sum: <span id="lump-display">£1,000</span></label>
+                <input type="range" class="slider" id="lump-slider" min="0" max="10000" step="500" value="1000">
+            </div>
+
+            <div style="background: rgba(255,255,255,0.15); padding: 2rem; border-radius: 12px; margin-top: 1.5rem;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; text-align: center;">
+                    <div>
+                        <div style="opacity: 0.8; font-size: 0.875rem; margin-bottom: 0.5rem;">You Contribute</div>
+                        <div style="font-size: 1.8rem; font-weight: 800;" id="total-contributed">£22,600</div>
+                    </div>
+                    <div>
+                        <div style="opacity: 0.8; font-size: 0.875rem; margin-bottom: 0.5rem;">Growth</div>
+                        <div style="font-size: 1.8rem; font-weight: 800; color: #10B981;" id="total-growth">£18,847</div>
+                    </div>
+                    <div>
+                        <div style="opacity: 0.8; font-size: 0.875rem; margin-bottom: 0.5rem;">Total at 18</div>
+                        <div style="font-size: 2.5rem; font-weight: 900;" id="final-amount">£41,447</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; font-size: 0.9rem; margin-top: 1.5rem;">
+                💡 <strong>Pro Tip:</strong> Start early! £100/month from birth = £41k. Same amount starting age 10 = only £15k.
+            </div>
+        </div>
+
+        <!-- Interactive Chart -->
+        <div class="chart-container">
+            <h3 style="margin: 0 0 1.5rem 0; color: #0F172A;">Growth Visualization (18 Years)</h3>
+            <canvas id="compoundChart" style="max-height: 400px;"></canvas>
+        </div>
+
+        <!-- ISA vs Savings Comparison -->
+        <div class="comparison-table">
+            <h3 style="padding: 1.5rem; margin: 0; background: #F9FAFB; color: #0F172A;">Junior ISA vs Regular Savings</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Junior ISA</th>
+                        <th>Regular Savings</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Annual Limit</strong></td>
+                        <td>£9,000/year</td>
+                        <td>Unlimited</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tax on Growth</strong></td>
+                        <td>✅ Tax-free</td>
+                        <td>❌ 20% capital gains tax</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tax on Interest</strong></td>
+                        <td>✅ Tax-free</td>
+                        <td>❌ Income tax on interest</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Access</strong></td>
+                        <td>Child at 18</td>
+                        <td>Anytime</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Best For</strong></td>
+                        <td>Long-term (5+ years)</td>
+                        <td>Short-term access needed</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Example: £100/month for 18 years at 7%</strong></td>
+                        <td><strong>£41,447</strong> (tax-free)</td>
+                        <td><strong>£34,573</strong> (after tax)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Video Embed -->
+        <div class="video-container">
+            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <p style="text-align: center; color: #6B7280; font-size: 0.875rem;">📺 Video: Junior ISAs Explained (4 min)</p>
+
+        <!-- Collapsible Sections -->
+        <h2 onclick="toggleSection(this)">How Junior ISAs Work</h2>
+        <div class="collapsible-content">
+            <p>A Junior ISA is a tax-free savings account for under-18s. Any growth is completely tax-free, forever.</p>
+            
+            <h3>The Rules:</h3>
+            <ul>
+                <li><strong>Who can open:</strong> Parent or guardian</li>
+                <li><strong>Annual limit:</strong> £9,000 (2025/26)</li>
+                <li><strong>Access:</strong> Child gets control at 16, withdraws at 18</li>
+                <li><strong>Tax:</strong> 0% on growth, 0% on dividends, 0% on gains</li>
+                <li><strong>Contribution:</strong> Anyone can pay in (parents, grandparents, friends)</li>
+            </ul>
+
+            <div style="background: #F9FAFB; padding: 1.5rem; border-radius: 12px; margin: 1.5rem 0;">
+                <h4>Types of Junior ISA:</h4>
+                <p><strong>Cash Junior ISA:</strong> Like a savings account. Current rates: 4-5%. Safe but lower returns.</p>
+                <p><strong>Stocks & Shares Junior ISA:</strong> Invest in funds. Historical average: 7%. Higher risk, higher returns over 18 years.</p>
+                <p><strong>Recommendation for 18-year timescale:</strong> Stocks & Shares (time smooths out volatility)</p>
+            </div>
+        </div>
+
+        <h2 onclick="toggleSection(this)">Step-by-Step Setup</h2>
+        <div class="collapsible-content">
+            <ol>
+                <li><strong>Choose provider (15 min)</strong>
+                    <ul>
+                        <li><strong>Hargreaves Lansdown:</strong> Easy platform, great support, 0.45% fee</li>
+                        <li><strong>Fidelity:</strong> Low fees (0.35%), good fund range</li>
+                        <li><strong>Vanguard:</strong> Lowest fees (0.15%), limited choice</li>
+                    </ul>
+                </li>
+                
+                <li><strong>Open account online (10 min)</strong>
+                    <ul>
+                        <li>Child's details (name, DOB, NI number)</li>
+                        <li>Your details (ID verification)</li>
+                        <li>Bank details for standing order</li>
+                    </ul>
+                </li>
+                
+                <li><strong>Choose investment (5 min)</strong>
+                    <ul>
+                        <li><strong>Conservative:</strong> Vanguard LifeStrategy 60% (60% stocks, 40% bonds)</li>
+                        <li><strong>Balanced:</strong> Vanguard LifeStrategy 80% (80% stocks, 20% bonds)</li>
+                        <li><strong>Aggressive:</strong> Vanguard FTSE Global All Cap (100% stocks)</li>
+                    </ul>
+                </li>
+                
+                <li><strong>Set up standing order (5 min)</strong><br>
+                Automate monthly contributions from your bank</li>
+            </ol>
+
+            <div style="background: #DBEAFE; padding: 1.5rem; border-radius: 12px; margin: 1.5rem 0;">
+                <h4>💡 Recommended Fund:</h4>
+                <p><strong>Vanguard FTSE Global All Cap Index Fund</strong></p>
+                <ul>
+                    <li>0.23% annual fee (very low)</li>
+                    <li>Invests in 7,000+ companies worldwide</li>
+                    <li>Automatically rebalances</li>
+                    <li>Perfect "set and forget" option</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2 onclick="toggleSection(this)">Alternative: Bare Trusts</h2>
+        <div class="collapsible-content">
+            <p>A bare trust lets you invest MORE than £9,000/year, but with tax implications.</p>
+            
+            <h3>How It Works:</h3>
+            <ul>
+                <li>You open investment account in child's name</li>
+                <li>No annual limit (invest £20k, £50k, £100k+)</li>
+                <li>Child owns assets but you control until 18</li>
+                <li>Use child's £3,000 CGT allowance + £1,000 dividend allowance</li>
+            </ul>
+
+            <h3>Tax Treatment:</h3>
+            <ul>
+                <li><strong>First £1,000 dividends:</strong> Tax-free</li>
+                <li><strong>£3,000 capital gains:</strong> Tax-free per year</li>
+                <li><strong>Above that:</strong> Child pays tax (at child's rate, usually 0%)</li>
+            </ul>
+
+            <div style="background: #FEE2E2; padding: 1.5rem; border-radius: 12px; margin: 1.5rem 0;">
+                <h4>⚠️ Warning: Parental Settlement Rules</h4>
+                <p>If YOU gift money and it generates income over £100/year, that income is taxed as YOURS, not child's.</p>
+                <p><strong>Solution:</strong> Grandparents or other relatives gift instead (rules don't apply to them)</p>
+            </div>
+        </div>
+
+        <h2 onclick="toggleSection(this)">Common Mistakes</h2>
+        <div class="collapsible-content">
+            <ol>
+                <li><strong>❌ Choosing cash over stocks for 18-year timeframe</strong><br>
+                Stocks historically outperform cash over 15+ years</li>
+                
+                <li><strong>❌ High-fee platforms</strong><br>
+                1% fee vs 0.25% = £3,000 less at age 18</li>
+                
+                <li><strong>❌ Not starting early</strong><br>
+                Starting at birth vs age 10 = £26k difference</li>
+                
+                <li><strong>❌ Stopping contributions in market crashes</strong><br>
+                Crashes = buying opportunity. Keep contributing.</li>
+                
+                <li><strong>❌ Picking individual stocks</strong><br>
+                Use diversified funds. Don't gamble on Apple or Tesla.</li>
+            </ol>
+        </div>
+
+        <!-- Action Checklist -->
+        <div style="background: #DBEAFE; padding: 2rem; border-radius: 12px; margin: 3rem 0;">
+            <h3 style="margin: 0 0 1rem 0;">✅ Your Action Checklist</h3>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Use calculator to project 18-year value
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Choose platform (Vanguard/Fidelity/HL)
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Open Junior ISA account
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Select Vanguard Global All Cap fund
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Set up monthly standing order
+            </label>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-top: 3rem;">
+            <a href="module-5.html" class="btn btn-secondary">← Previous Module</a>
+            <a href="module-7.html" class="btn btn-primary">Next Module →</a>
+        </div>
+    </div>
+
+    <script>
+    // Collapsible sections
+    function toggleSection(header) {
+        header.classList.toggle('collapsed');
+        const content = header.nextElementSibling;
+        content.classList.toggle('hidden');
+    }
+
+    // Compound Interest Calculator
+    const monthlySlider = document.getElementById('monthly-slider');
+    const returnSlider = document.getElementById('return-slider');
+    const lumpSlider = document.getElementById('lump-slider');
+    const monthlyDisplay = document.getElementById('monthly-display');
+    const returnDisplay = document.getElementById('return-display');
+    const lumpDisplay = document.getElementById('lump-display');
+    const totalContributed = document.getElementById('total-contributed');
+    const totalGrowth = document.getElementById('total-growth');
+    const finalAmount = document.getElementById('final-amount');
+
+    let compoundChart;
+
+    function calculateCompound() {
+        const monthly = parseInt(monthlySlider.value);
+        const annualReturn = parseFloat(returnSlider.value) / 100;
+        const lumpSum = parseInt(lumpSlider.value);
+        const years = 18;
+        const months = years * 12;
+
+        monthlyDisplay.textContent = '£' + monthly.toLocaleString();
+        returnDisplay.textContent = (annualReturn * 100).toFixed(1) + '%';
+        lumpDisplay.textContent = '£' + lumpSum.toLocaleString();
+
+        // Calculate future value with compound interest
+        const monthlyRate = annualReturn / 12;
+        
+        // Future value of lump sum
+        const fvLump = lumpSum * Math.pow(1 + monthlyRate, months);
+        
+        // Future value of monthly contributions
+        const fvMonthly = monthly * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
+        
+        const total = fvLump + fvMonthly;
+        const contributed = lumpSum + (monthly * months);
+        const growth = total - contributed;
+
+        totalContributed.textContent = '£' + Math.round(contributed).toLocaleString();
+        totalGrowth.textContent = '£' + Math.round(growth).toLocaleString();
+        finalAmount.textContent = '£' + Math.round(total).toLocaleString();
+
+        // Update chart
+        updateChart(monthly, annualReturn, lumpSum);
+    }
+
+    function updateChart(monthly, annualReturn, lumpSum) {
+        const years = 18;
+        const labels = [];
+        const contributedData = [];
+        const totalData = [];
+
+        for (let year = 0; year <= years; year++) {
+            labels.push('Age ' + year);
+            
+            const months = year * 12;
+            const monthlyRate = annualReturn / 12;
+            
+            const fvLump = lumpSum * Math.pow(1 + monthlyRate, months);
+            const fvMonthly = monthly * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
+            
+            const contributed = lumpSum + (monthly * months);
+            const total = fvLump + fvMonthly;
+            
+            contributedData.push(Math.round(contributed));
+            totalData.push(Math.round(total));
+        }
+
+        if (compoundChart) {
+            compoundChart.destroy();
+        }
+
+        const ctx = document.getElementById('compoundChart').getContext('2d');
+        compoundChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Your Contributions',
+                        data: contributedData,
+                        borderColor: '#6B7280',
+                        backgroundColor: 'rgba(107, 114, 128, 0.1)',
+                        fill: true
+                    },
+                    {
+                        label: 'Total Value (with growth)',
+                        data: totalData,
+                        borderColor: '#10B981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        fill: true,
+                        borderWidth: 3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '£' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    monthlySlider.addEventListener('input', calculateCompound);
+    returnSlider.addEventListener('input', calculateCompound);
+    lumpSlider.addEventListener('input', calculateCompound);
+    calculateCompound();
+    </script>
+</body>
+</html>

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 7: Employer Flexible Benefits - The 100k Parent</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .module-content { max-width: 800px; margin: 0 auto; padding: 3rem 1.5rem; }
+        .module-content h2 { margin-top: 3rem; margin-bottom: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
+        .module-content h2:hover { color: #10B981; }
+        .module-content h2::before { content: '▼'; font-size: 0.8em; transition: transform 0.3s; }
+        .module-content h2.collapsed::before { transform: rotate(-90deg); }
+        .collapsible-content { max-height: 2000px; overflow: hidden; transition: max-height 0.3s ease; }
+        .collapsible-content.hidden { max-height: 0; }
+        .benefits-builder { background: linear-gradient(135deg, #EC4899 0%, #BE185D 100%); padding: 2rem; border-radius: 16px; margin: 2rem 0; color: white; }
+        .benefit-item { background: rgba(255,255,255,0.15); padding: 1.5rem; border-radius: 12px; margin: 1rem 0; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.3s; }
+        .benefit-item:hover { background: rgba(255,255,255,0.25); }
+        .benefit-checkbox { width: 24px; height: 24px; cursor: pointer; margin-right: 1rem; }
+        .quick-wins { background: #FEF3C7; border-left: 4px solid #F59E0B; padding: 1.5rem; border-radius: 0 12px 12px 0; margin: 2rem 0; }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; margin: 2rem 0; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 12px; }
+        .hr-proposal { background: white; border: 2px solid #E5E7EB; padding: 2rem; border-radius: 12px; margin: 2rem 0; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="/" class="logo">
+                <div class="logo-icon">£</div>
+                <span>THE 100K PARENT</span>
+            </a>
+            <nav class="nav">
+                <a href="dashboard.html">← Dashboard</a>
+                <a href="module-8.html">Next Module →</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero" style="padding: 3rem 0;">
+        <div class="container">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <span class="module-number">MODULE 7 OF 8</span>
+                <h1 style="color: white; margin: 1rem 0;">Employer Flexible Benefits</h1>
+                <p style="color: rgba(255,255,255,0.85); font-size: 1.25rem; margin-bottom: 1.5rem;">Negotiate benefits worth £1,000-£2,000/year tax-free</p>
+                <div style="display: flex; gap: 2rem; color: rgba(255,255,255,0.9);">
+                    <span>⏱ 13 minutes</span>
+                    <span>💰 Save £1,000-£2,000/year</span>
+                    <span>✓ Employed Only</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="module-content">
+        <!-- Quick Wins -->
+        <div class="quick-wins">
+            <h3 style="margin: 0 0 1rem 0;">⚡ Quick Wins (Start Today)</h3>
+            <ol style="margin: 0; padding-left: 1.5rem;">
+                <li><strong>Request cycle-to-work scheme (15 min) → Save £200-£500</strong><br>Email HR asking if available (template below)</li>
+                <li><strong>Check existing benefits (10 min) → Save £500+</strong><br>Review employee handbook for unused perks</li>
+                <li><strong>Build business case for flex benefits (1 hour)</strong><br>Use calculator below to show employer NI savings</li>
+            </ol>
+        </div>
+
+        <!-- Interactive Benefits Builder -->
+        <div class="benefits-builder">
+            <h3 style="margin: 0 0 1.5rem 0;">🎁 Your Benefits Package Builder</h3>
+            <p style="opacity: 0.9; margin-bottom: 2rem;">Select benefits you'd like from your employer. We'll calculate total value.</p>
+            
+            <div class="benefit-item" onclick="toggleBenefit(this)">
+                <label style="display: flex; align-items: center; gap: 1rem; flex: 1; cursor: pointer;">
+                    <input type="checkbox" class="benefit-checkbox" data-value="500">
+                    <div>
+                        <div style="font-weight: 700;">Cycle to Work Scheme</div>
+                        <div style="font-size: 0.875rem; opacity: 0.8;">Buy bike tax-free (£500 saving on £1,500 bike)</div>
+                    </div>
+                </label>
+                <div style="font-weight: 800; font-size: 1.25rem;">£500</div>
+            </div>
+
+            <div class="benefit-item" onclick="toggleBenefit(this)">
+                <label style="display: flex; align-items: center; gap: 1rem; flex: 1; cursor: pointer;">
+                    <input type="checkbox" class="benefit-checkbox" data-value="600">
+                    <div>
+                        <div style="font-weight: 700;">Childcare Vouchers (legacy)</div>
+                        <div style="font-size: 0.875rem; opacity: 0.8;">If enrolled pre-2018, keep using (£600/year saving)</div>
+                    </div>
+                </label>
+                <div style="font-weight: 800; font-size: 1.25rem;">£600</div>
+            </div>
+
+            <div class="benefit-item" onclick="toggleBenefit(this)">
+                <label style="display: flex; align-items: center; gap: 1rem; flex: 1; cursor: pointer;">
+                    <input type="checkbox" class="benefit-checkbox" data-value="300">
+                    <div>
+                        <div style="font-weight: 700;">Electric Car Scheme</div>
+                        <div style="font-size: 0.875rem; opacity: 0.8;">Lease electric car through salary sacrifice (£300-£2k saving)</div>
+                    </div>
+                </label>
+                <div style="font-weight: 800; font-size: 1.25rem;">£300+</div>
+            </div>
+
+            <div class="benefit-item" onclick="toggleBenefit(this)">
+                <label style="display: flex; align-items: center; gap: 1rem; flex: 1; cursor: pointer;">
+                    <input type="checkbox" class="benefit-checkbox" data-value="200">
+                    <div>
+                        <div style="font-weight: 700;">Health Insurance (Private)</div>
+                        <div style="font-size: 0.875rem; opacity: 0.8;">Employer pays, you save tax (£200/year benefit-in-kind saving)</div>
+                    </div>
+                </label>
+                <div style="font-weight: 800; font-size: 1.25rem;">£200</div>
+            </div>
+
+            <div class="benefit-item" onclick="toggleBenefit(this)">
+                <label style="display: flex; align-items: center; gap: 1rem; flex: 1; cursor: pointer;">
+                    <input type="checkbox" class="benefit-checkbox" data-value="150">
+                    <div>
+                        <div style="font-weight: 700;">Season Ticket Loan</div>
+                        <div style="font-size: 0.875rem; opacity: 0.8;">Interest-free loan for annual travel card (£150 saving vs monthly tickets)</div>
+                    </div>
+                </label>
+                <div style="font-weight: 800; font-size: 1.25rem;">£150</div>
+            </div>
+
+            <div class="benefit-item" onclick="toggleBenefit(this)">
+                <label style="display: flex; align-items: center; gap: 1rem; flex: 1; cursor: pointer;">
+                    <input type="checkbox" class="benefit-checkbox" data-value="100">
+                    <div>
+                        <div style="font-weight: 700;">Gym Membership</div>
+                        <div style="font-size: 0.875rem; opacity: 0.8;">Employer-paid membership (£100/year tax saving)</div>
+                    </div>
+                </label>
+                <div style="font-weight: 800; font-size: 1.25rem;">£100</div>
+            </div>
+
+            <div class="benefit-item" onclick="toggleBenefit(this)">
+                <label style="display: flex; align-items: center; gap: 1rem; flex: 1; cursor: pointer;">
+                    <input type="checkbox" class="benefit-checkbox" data-value="250">
+                    <div>
+                        <div style="font-weight: 700;">Additional Pension Match</div>
+                        <div style="font-size: 0.875rem; opacity: 0.8;">Negotiate higher employer contribution (£250+ extra/year)</div>
+                    </div>
+                </label>
+                <div style="font-weight: 800; font-size: 1.25rem;">£250</div>
+            </div>
+
+            <div class="benefit-item" onclick="toggleBenefit(this)">
+                <label style="display: flex; align-items: center; gap: 1rem; flex: 1; cursor: pointer;">
+                    <input type="checkbox" class="benefit-checkbox" data-value="50">
+                    <div>
+                        <div style="font-weight: 700;">Mobile Phone</div>
+                        <div style="font-size: 0.875rem; opacity: 0.8;">Company phone (£50/year saving on personal contract)</div>
+                    </div>
+                </label>
+                <div style="font-weight: 800; font-size: 1.25rem;">£50</div>
+            </div>
+
+            <div style="background: rgba(16, 185, 129, 0.3); padding: 1.5rem; border-radius: 12px; margin-top: 1.5rem; text-align: center;">
+                <div style="font-size: 0.875rem; opacity: 0.9; margin-bottom: 0.5rem;">TOTAL BENEFITS VALUE</div>
+                <div style="font-size: 3rem; font-weight: 900;" id="total-benefits">£0</div>
+                <div style="font-size: 0.875rem; opacity: 0.8; margin-top: 0.5rem;">per year tax-free</div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; font-size: 0.9rem; margin-top: 1.5rem;">
+                💡 <strong>Employer saves too!</strong> NI savings: £<span id="employer-savings">0</span>/year (use this in your pitch)
+            </div>
+        </div>
+
+        <!-- Employer NI Calculator -->
+        <div class="hr-proposal">
+            <h3 style="margin: 0 0 1.5rem 0; color: #0F172A;">💼 Pitch to Employer: NI Savings Calculator</h3>
+            <p style="color: #6B7280; margin-bottom: 1.5rem;">Show your employer how much THEY save by offering flexible benefits</p>
+            
+            <div style="margin: 1.5rem 0;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #0F172A;">Your Annual Salary:</label>
+                <input type="number" id="employer-salary" value="95000" style="width: 100%; padding: 0.75rem; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;">
+            </div>
+
+            <div style="margin: 1.5rem 0;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #0F172A;">Benefits Value (from above):</label>
+                <input type="number" id="benefits-value" value="1500" style="width: 100%; padding: 0.75rem; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 1rem;">
+            </div>
+
+            <button onclick="calculateEmployerSavings()" style="width: 100%; background: #10B981; color: white; padding: 1rem; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1rem;">Calculate Employer Savings</button>
+
+            <div id="employer-result" style="background: #F9FAFB; padding: 1.5rem; border-radius: 12px; margin-top: 1.5rem; display: none;">
+                <h4 style="margin: 0 0 1rem 0; color: #0F172A;">Your Pitch:</h4>
+                <div style="background: white; padding: 1.5rem; border-radius: 8px; color: #0F172A;">
+                    <p style="margin: 0 0 1rem 0;">"By offering flexible benefits worth £<span id="pitch-benefits">1,500</span>/year, you'd save £<span id="pitch-ni">207</span>/year in employer NI contributions."</p>
+                    <p style="margin: 0; font-weight: 700;">"This costs you £<span id="pitch-net">1,293</span> but gives me £<span id="pitch-benefits-2">1,500</span> value - win/win!"</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Embed -->
+        <div class="video-container">
+            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <p style="text-align: center; color: #6B7280; font-size: 0.875rem;">📺 Video: Negotiating Flexible Benefits (5 min)</p>
+
+        <!-- Collapsible Sections -->
+        <h2 onclick="toggleSection(this)">Most Valuable Benefits</h2>
+        <div class="collapsible-content">
+            <h3>1. Cycle to Work (£200-£500/year)</h3>
+            <p>Buy bike through salary sacrifice. Save 25-40% on retail price.</p>
+            <p><strong>How it works:</strong> Employer buys bike → You lease via salary sacrifice → Saves income tax + NI</p>
+            <p><strong>Example:</strong> £1,500 bike costs you £1,000 after tax savings</p>
+
+            <h3 style="margin-top: 2rem;">2. Electric Car Scheme (£300-£2,000/year)</h3>
+            <p>Lease electric car through salary sacrifice. Massive tax break (2% benefit-in-kind for EVs).</p>
+            <p><strong>Example:</strong> £40k Tesla Model 3 = £67/month benefit-in-kind tax vs £400/month for petrol equivalent</p>
+
+            <h3 style="margin-top: 2rem;">3. Childcare Vouchers (£600/year - Legacy)</h3>
+            <p>If enrolled before October 2018, keep using! Don't switch to Tax-Free Childcare (vouchers are better).</p>
+            <p><strong>Saving:</strong> £243/month tax-free = £600/year saving vs paying after-tax</p>
+
+            <h3 style="margin-top: 2rem;">4. Additional Pension Match (£250+/year)</h3>
+            <p>Negotiate higher employer contribution. Many employers will match up to 10%.</p>
+            <p><strong>Example:</strong> Increase from 5% to 8% match = £2,850 extra into pension (on £95k salary)</p>
+        </div>
+
+        <h2 onclick="toggleSection(this)">How to Negotiate</h2>
+        <div class="collapsible-content">
+            <h3>Step 1: Research What's Available</h3>
+            <ol>
+                <li>Check employee handbook</li>
+                <li>Ask HR what flex benefits exist</li>
+                <li>Look at job ads for competitors (what do they offer?)</li>
+            </ol>
+
+            <h3 style="margin-top: 2rem;">Step 2: Build Business Case</h3>
+            <p>Use employer NI calculator above to show cost savings</p>
+            <p><strong>Key message:</strong> "This saves you money while improving employee retention"</p>
+
+            <h3 style="margin-top: 2rem;">Step 3: Email HR</h3>
+            <div style="background: #F9FAFB; padding: 1.5rem; border-radius: 12px; margin: 1.5rem 0;">
+                <h4>📧 Template Email:</h4>
+                <pre style="background: white; padding: 1rem; border-radius: 8px; overflow-x: auto; font-size: 0.875rem; color: #0F172A;">
+Subject: Flexible Benefits Request
+
+Hi [HR Manager],
+
+I'd like to discuss adding flexible benefits to my package.
+
+I'm interested in:
+- Cycle to Work scheme (£1,500 bike)
+- Increased pension match (5% → 8%)
+
+This would cost the company approximately £[X] after NI savings, 
+while providing me £[Y] value - a win/win.
+
+Could we discuss this in my next review?
+
+Thanks,
+[Your name]
+                </pre>
+            </div>
+
+            <h3 style="margin-top: 2rem;">Step 4: Time It Right</h3>
+            <ul>
+                <li><strong>Best time:</strong> Annual review, promotion, job offer stage</li>
+                <li><strong>Avoid:</strong> Company cost-cutting periods, immediately after payrise</li>
+                <li><strong>Leverage:</strong> Competing job offers, retention concerns</li>
+            </ul>
+        </div>
+
+        <h2 onclick="toggleSection(this)">Common Mistakes</h2>
+        <div class="collapsible-content">
+            <ol>
+                <li><strong>❌ Not asking</strong><br>Many employers offer benefits but don't advertise them</li>
+                
+                <li><strong>❌ Asking for everything at once</strong><br>Pick 1-2 benefits max, show value, then expand later</li>
+                
+                <li><strong>❌ Forgetting childcare vouchers if already enrolled</strong><br>DON'T switch to Tax-Free Childcare (vouchers are better)</li>
+                
+                <li><strong>❌ Not showing employer benefit</strong><br>Always frame as "saves you £X in NI"</li>
+                
+                <li><strong>❌ Treating as entitlement</strong><br>Frame as "mutual benefit" not "I deserve this"</li>
+            </ol>
+        </div>
+
+        <!-- Action Checklist -->
+        <div style="background: #DBEAFE; padding: 2rem; border-radius: 12px; margin: 3rem 0;">
+            <h3 style="margin: 0 0 1rem 0;">✅ Your Action Checklist</h3>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Check employee handbook for available benefits
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Calculate employer NI savings using tool above
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Email HR requesting cycle-to-work scheme
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Schedule benefits discussion at next review
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Track total benefits value (£1k-£2k target)
+            </label>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-top: 3rem;">
+            <a href="module-6.html" class="btn btn-secondary">← Previous Module</a>
+            <a href="module-8.html" class="btn btn-primary">Final Module →</a>
+        </div>
+    </div>
+
+    <script>
+    // Collapsible sections
+    function toggleSection(header) {
+        header.classList.toggle('collapsed');
+        const content = header.nextElementSibling;
+        content.classList.toggle('hidden');
+    }
+
+    // Benefits Builder
+    function toggleBenefit(element) {
+        const checkbox = element.querySelector('.benefit-checkbox');
+        checkbox.checked = !checkbox.checked;
+        calculateTotalBenefits();
+    }
+
+    function calculateTotalBenefits() {
+        const checkboxes = document.querySelectorAll('.benefit-checkbox');
+        let total = 0;
+        
+        checkboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                total += parseInt(checkbox.dataset.value);
+            }
+        });
+        
+        document.getElementById('total-benefits').textContent = '£' + total.toLocaleString();
+        
+        // Employer NI savings (13.8% on benefits provided via salary sacrifice)
+        const employerSavings = Math.round(total * 0.138);
+        document.getElementById('employer-savings').textContent = employerSavings.toLocaleString();
+    }
+
+    // Employer NI Calculator
+    function calculateEmployerSavings() {
+        const salary = parseInt(document.getElementById('employer-salary').value);
+        const benefits = parseInt(document.getElementById('benefits-value').value);
+        
+        // Employer saves 13.8% NI on benefits provided
+        const niSavings = Math.round(benefits * 0.138);
+        const netCost = benefits - niSavings;
+        
+        document.getElementById('pitch-benefits').textContent = benefits.toLocaleString();
+        document.getElementById('pitch-benefits-2').textContent = benefits.toLocaleString();
+        document.getElementById('pitch-ni').textContent = niSavings.toLocaleString();
+        document.getElementById('pitch-net').textContent = netCost.toLocaleString();
+        
+        document.getElementById('employer-result').style.display = 'block';
+    }
+    </script>
+</body>
+</html>

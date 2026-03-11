@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 3: Income Splitting - The 100k Parent</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .module-content { max-width: 800px; margin: 0 auto; padding: 3rem 1.5rem; }
+        .module-content h2 { margin-top: 3rem; margin-bottom: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
+        .module-content h2:hover { color: #10B981; }
+        .module-content h2::before { content: '▼'; font-size: 0.8em; transition: transform 0.3s; }
+        .module-content h2.collapsed::before { transform: rotate(-90deg); }
+        .collapsible-content { max-height: 2000px; overflow: hidden; transition: max-height 0.3s ease; }
+        .collapsible-content.hidden { max-height: 0; }
+        .comparison-widget { background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); padding: 2rem; border-radius: 16px; margin: 2rem 0; color: white; }
+        .comparison-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem; }
+        .comparison-box { background: rgba(255,255,255,0.15); padding: 1.5rem; border-radius: 12px; }
+        .slider-container { margin: 1.5rem 0; }
+        .slider { width: 100%; height: 8px; border-radius: 4px; background: rgba(255,255,255,0.3); outline: none; }
+        .slider::-webkit-slider-thumb { width: 24px; height: 24px; border-radius: 50%; background: #10B981; cursor: pointer; }
+        .quick-wins { background: #FEF3C7; border-left: 4px solid #F59E0B; padding: 1.5rem; border-radius: 0 12px 12px 0; margin: 2rem 0; }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; margin: 2rem 0; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 12px; }
+        .decision-tree { background: #F9FAFB; padding: 2rem; border-radius: 12px; margin: 2rem 0; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="/" class="logo">
+                <div class="logo-icon">£</div>
+                <span>THE 100K PARENT</span>
+            </a>
+            <nav class="nav">
+                <a href="dashboard.html">← Dashboard</a>
+                <a href="module-4.html">Next Module →</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero" style="padding: 3rem 0;">
+        <div class="container">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <span class="module-number">MODULE 3 OF 8</span>
+                <h1 style="color: white; margin: 1rem 0;">Income Splitting Strategies</h1>
+                <p style="color: rgba(255,255,255,0.85); font-size: 1.25rem; margin-bottom: 1.5rem;">Optimize tax bands between household members</p>
+                <div style="display: flex; gap: 2rem; color: rgba(255,255,255,0.9);">
+                    <span>⏱ 18 minutes</span>
+                    <span>💰 Save £2,000-£5,000/year</span>
+                    <span>✓ HMRC Compliant</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="module-content">
+        <!-- Quick Wins -->
+        <div class="quick-wins">
+            <h3 style="margin: 0 0 1rem 0;">⚡ Quick Wins (Start Today)</h3>
+            <ol style="margin: 0; padding-left: 1.5rem;">
+                <li><strong>Check if splitting helps (2 min) → Save £2,000-£5,000/year</strong><br>Use calculator below if income gap is £20k+</li>
+                <li><strong>Issue shares if director (1 hour)</strong><br>Make partner/spouse shareholder with Companies House</li>
+                <li><strong>Set up dividends (30 min)</strong><br>Pay yourself salary, partner dividends</li>
+            </ol>
+        </div>
+
+        <!-- Interactive Comparison Calculator -->
+        <div class="comparison-widget">
+            <h3 style="margin: 0 0 1.5rem 0;">💰 Before vs After Comparison</h3>
+            
+            <div class="slider-container">
+                <label style="display: block; margin-bottom: 0.5rem;">Your Income: <span id="income1-display">£95,000</span></label>
+                <input type="range" class="slider" id="income1-slider" min="40000" max="150000" step="5000" value="95000">
+            </div>
+
+            <div class="slider-container">
+                <label style="display: block; margin-bottom: 0.5rem;">Partner's Income: <span id="income2-display">£30,000</span></label>
+                <input type="range" class="slider" id="income2-slider" min="0" max="100000" step="5000" value="30000">
+            </div>
+
+            <div class="comparison-grid">
+                <div class="comparison-box">
+                    <h4 style="margin: 0 0 0.5rem 0;">❌ Without Splitting</h4>
+                    <div style="font-size: 1.8rem; font-weight: 800;" id="without-total">£0</div>
+                    <div style="font-size: 0.875rem; opacity: 0.8; margin-top: 0.5rem;">Combined Tax Bill</div>
+                </div>
+                <div class="comparison-box">
+                    <h4 style="margin: 0 0 0.5rem 0;">✅ With Splitting</h4>
+                    <div style="font-size: 1.8rem; font-weight: 800;" id="with-total">£0</div>
+                    <div style="font-size: 0.875rem; opacity: 0.8; margin-top: 0.5rem;">Combined Tax Bill</div>
+                </div>
+            </div>
+
+            <div style="background: rgba(16, 185, 129, 0.3); padding: 1.5rem; border-radius: 12px; margin-top: 1.5rem; text-align: center;">
+                <div style="font-size: 0.875rem; opacity: 0.9; margin-bottom: 0.5rem;">ANNUAL SAVINGS</div>
+                <div style="font-size: 3rem; font-weight: 900;" id="saving-amount">£0</div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; font-size: 0.9rem; margin-top: 1rem;">
+                💡 <strong>Pro Tip:</strong> Income gap of £20k+ between partners = Strong candidate for splitting
+            </div>
+        </div>
+
+        <!-- Video Embed -->
+        <div class="video-container">
+            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <p style="text-align: center; color: #6B7280; font-size: 0.875rem;">📺 Video: Income Splitting for Couples (4 min)</p>
+
+        <!-- Decision Tree -->
+        <div class="decision-tree">
+            <h3 style="margin: 0 0 1.5rem 0;">🌳 Should We Split Income? (Decision Tree)</h3>
+            
+            <div style="padding-left: 1.5rem; border-left: 3px solid #10B981;">
+                <p><strong>Q1: Are you a company director or business owner?</strong></p>
+                <p>✅ YES → Continue to Q2<br>❌ NO → Income splitting won't work (employees can't split PAYE income)</p>
+                
+                <p style="margin-top: 1.5rem;"><strong>Q2: Is your partner earning under £50,270?</strong></p>
+                <p>✅ YES → Continue to Q3<br>❌ NO → Smaller benefit, but still worth considering</p>
+                
+                <p style="margin-top: 1.5rem;"><strong>Q3: Is the income gap £20k+?</strong></p>
+                <p>✅ YES → <strong>Definitely split!</strong> Save £2,000-£5,000/year<br>❌ NO → Benefit under £1,000, probably not worth hassle</p>
+            </div>
+        </div>
+
+        <!-- Collapsible Sections -->
+        <h2 onclick="toggleSection(this)">How Income Splitting Works</h2>
+        <div class="collapsible-content">
+            <p>Income splitting moves income from a higher-earning partner to a lower-earning partner to use their unused tax allowances and lower tax bands.</p>
+            
+            <p><strong>For Company Directors:</strong></p>
+            <ol>
+                <li>Make partner a shareholder (issue shares via Companies House)</li>
+                <li>Pay yourself minimum salary (£12,570/year)</li>
+                <li>Pay partner dividend income from company profits</li>
+                <li>Partner pays tax at their lower rate (0% or 8.75% vs your 33.75% or 39.35%)</li>
+            </ol>
+
+            <div style="background: #F9FAFB; padding: 1.5rem; border-radius: 12px; margin: 1.5rem 0;">
+                <h4>Example: Tom & Sarah (Directors)</h4>
+                <p><strong>Before:</strong><br>
+                Tom: £95k (40% tax bracket)<br>
+                Sarah: £25k (20% tax bracket)<br>
+                Combined tax: £26,540</p>
+                
+                <p><strong>After splitting:</strong><br>
+                Tom: £70k salary<br>
+                Sarah: £25k salary + £25k dividends<br>
+                Combined tax: £23,165<br>
+                <strong>Annual saving: £3,375</strong></p>
+            </div>
+        </div>
+
+        <h2 onclick="toggleSection(this)">Step-by-Step Setup</h2>
+        <div class="collapsible-content">
+            <h3>Method 1: Share Issuance (Company Directors)</h3>
+            <ol>
+                <li><strong>Issue shares to partner (1 hour)</strong><br>
+                   - Hold board meeting<br>
+                   - File Form SH01 with Companies House<br>
+                   - Update Companies House within 14 days</li>
+                
+                <li><strong>Set up dividend policy (30 min)</strong><br>
+                   - Decide dividend split (e.g. 50/50)<br>
+                   - Document in board minutes<br>
+                   - Set regular payment schedule</li>
+                
+                <li><strong>Pay dividends quarterly (15 min each)</strong><br>
+                   - Hold board meeting<br>
+                   - Issue dividend vouchers<br>
+                   - Transfer funds<br>
+                   - Record in accounts</li>
+            </ol>
+
+            <div style="background: #FEE2E2; padding: 1.5rem; border-radius: 12px; margin: 1.5rem 0;">
+                <h4>⚠️ HMRC Will Check:</h4>
+                <p><strong>"Genuine commercial benefit"</strong> - Partner must actually work in the business. Document their role and hours.</p>
+                <p><strong>"Settlements legislation"</strong> - Don't give shares as a gift then pay all dividends to them. Must be proportional to shareholding.</p>
+            </div>
+        </div>
+
+        <h2 onclick="toggleSection(this)">Common Mistakes</h2>
+        <div class="collapsible-content">
+            <ol>
+                <li><strong>❌ Giving all shares to lower earner</strong><br>
+                HMRC will challenge. Keep it proportional (max 50/50).</li>
+                
+                <li><strong>❌ Not documenting partner's work</strong><br>
+                Keep timesheets, emails, meeting notes proving they work in business.</li>
+                
+                <li><strong>❌ Forgetting dividend tax</strong><br>
+                Dividends aren't tax-free. Partner pays 8.75% (basic) or 33.75% (higher).</li>
+                
+                <li><strong>❌ Mixing with Tax-Free Childcare</strong><br>
+                Dividend income counts toward £100k limit.</li>
+            </ol>
+        </div>
+
+        <h2 onclick="toggleSection(this)">Dividend Calculator</h2>
+        <div class="collapsible-content">
+            <div style="background: white; border: 2px solid #E5E7EB; padding: 2rem; border-radius: 12px;">
+                <h4>Calculate Optimal Dividend Split</h4>
+                
+                <div style="margin: 1.5rem 0;">
+                    <label>Company Profit (after expenses): £<input type="number" id="company-profit" value="100000" style="border: 2px solid #E5E7EB; padding: 0.5rem; border-radius: 6px; width: 150px;"></label>
+                </div>
+
+                <div style="margin: 1.5rem 0;">
+                    <label>Your Current Salary: £<input type="number" id="your-salary" value="95000" style="border: 2px solid #E5E7EB; padding: 0.5rem; border-radius: 6px; width: 150px;"></label>
+                </div>
+
+                <div style="margin: 1.5rem 0;">
+                    <label>Partner's Current Salary: £<input type="number" id="partner-salary" value="25000" style="border: 2px solid #E5E7EB; padding: 0.5rem; border-radius: 6px; width: 150px;"></label>
+                </div>
+
+                <button onclick="calculateDividend()" style="background: #10B981; color: white; padding: 0.75rem 2rem; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">Calculate</button>
+
+                <div id="dividend-result" style="margin-top: 1.5rem; padding: 1.5rem; background: #F9FAFB; border-radius: 8px; display: none;">
+                    <h4 style="margin: 0 0 1rem 0;">Recommended Structure:</h4>
+                    <div id="dividend-recommendation"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Checklist -->
+        <div style="background: #DBEAFE; padding: 2rem; border-radius: 12px; margin: 3rem 0;">
+            <h3 style="margin: 0 0 1rem 0;">✅ Your Action Checklist</h3>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Use calculator to check if splitting saves money
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Make partner shareholder (if director)
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Document partner's work in business
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Set up quarterly dividend schedule
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Review annually to optimize split
+            </label>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-top: 3rem;">
+            <a href="module-2.html" class="btn btn-secondary">← Previous Module</a>
+            <a href="module-4.html" class="btn btn-primary">Next Module →</a>
+        </div>
+    </div>
+
+    <script>
+    // Collapsible sections
+    function toggleSection(header) {
+        header.classList.toggle('collapsed');
+        const content = header.nextElementSibling;
+        content.classList.toggle('hidden');
+    }
+
+    // Income Splitting Comparison Calculator
+    const income1Slider = document.getElementById('income1-slider');
+    const income2Slider = document.getElementById('income2-slider');
+    const income1Display = document.getElementById('income1-display');
+    const income2Display = document.getElementById('income2-display');
+    const withoutTotal = document.getElementById('without-total');
+    const withTotal = document.getElementById('with-total');
+    const savingAmount = document.getElementById('saving-amount');
+
+    function calculateTax(income) {
+        let tax = 0;
+        if (income > 125140) {
+            tax += (income - 125140) * 0.45;
+            tax += (125140 - 50270) * 0.40;
+            tax += (50270 - 12570) * 0.20;
+        } else if (income > 50270) {
+            tax += (income - 50270) * 0.40;
+            tax += (50270 - 12570) * 0.20;
+        } else if (income > 12570) {
+            tax += (income - 12570) * 0.20;
+        }
+        return tax;
+    }
+
+    function compareIncomeSplitting() {
+        const income1 = parseInt(income1Slider.value);
+        const income2 = parseInt(income2Slider.value);
+
+        income1Display.textContent = '£' + income1.toLocaleString();
+        income2Display.textContent = '£' + income2.toLocaleString();
+
+        // Without splitting
+        const tax1 = calculateTax(income1);
+        const tax2 = calculateTax(income2);
+        const totalWithout = tax1 + tax2;
+
+        // With splitting (move £10k from higher to lower if beneficial)
+        const totalIncome = income1 + income2;
+        const optimalSplit1 = Math.min(income1, totalIncome / 2 + 10000);
+        const optimalSplit2 = totalIncome - optimalSplit1;
+        
+        const taxSplit1 = calculateTax(optimalSplit1);
+        const taxSplit2 = calculateTax(optimalSplit2);
+        const totalWith = taxSplit1 + taxSplit2;
+
+        const saving = Math.max(0, totalWithout - totalWith);
+
+        withoutTotal.textContent = '£' + Math.round(totalWithout).toLocaleString();
+        withTotal.textContent = '£' + Math.round(totalWith).toLocaleString();
+        savingAmount.textContent = '£' + Math.round(saving).toLocaleString();
+    }
+
+    income1Slider.addEventListener('input', compareIncomeSplitting);
+    income2Slider.addEventListener('input', compareIncomeSplitting);
+    compareIncomeSplitting();
+
+    // Dividend Calculator
+    function calculateDividend() {
+        const profit = parseInt(document.getElementById('company-profit').value);
+        const yourSalary = parseInt(document.getElementById('your-salary').value);
+        const partnerSalary = parseInt(document.getElementById('partner-salary').value);
+
+        const result = document.getElementById('dividend-result');
+        const recommendation = document.getElementById('dividend-recommendation');
+
+        const yourDividend = profit * 0.5;
+        const partnerDividend = profit * 0.5;
+
+        recommendation.innerHTML = `
+            <p><strong>You:</strong> £${yourSalary.toLocaleString()} salary + £${yourDividend.toLocaleString()} dividends</p>
+            <p><strong>Partner:</strong> £${partnerSalary.toLocaleString()} salary + £${partnerDividend.toLocaleString()} dividends</p>
+            <p style="margin-top: 1rem; padding-top: 1rem; border-top: 2px solid #E5E7EB;"><strong>Estimated saving:</strong> £${Math.round((yourSalary - partnerSalary) * 0.15).toLocaleString()}/year</p>
+        `;
+
+        result.style.display = 'block';
+    }
+    </script>
+</body>
+</html>

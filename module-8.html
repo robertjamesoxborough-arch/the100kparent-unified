@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 8: 18-Year Financial Roadmap - The 100k Parent</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .module-content { max-width: 900px; margin: 0 auto; padding: 3rem 1.5rem; }
+        .module-content h2 { margin-top: 3rem; margin-bottom: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
+        .module-content h2:hover { color: #10B981; }
+        .module-content h2::before { content: '▼'; font-size: 0.8em; transition: transform 0.3s; }
+        .module-content h2.collapsed::before { transform: rotate(-90deg); }
+        .collapsible-content { max-height: 2000px; overflow: hidden; transition: max-height 0.3s ease; }
+        .collapsible-content.hidden { max-height: 0; }
+        .timeline-widget { background: linear-gradient(135deg, #0EA5E9 0%, #0284C7 100%); padding: 2rem; border-radius: 16px; margin: 2rem 0; color: white; }
+        .timeline-container { position: relative; margin: 2rem 0; }
+        .timeline-bar { height: 12px; background: rgba(255,255,255,0.3); border-radius: 6px; position: relative; overflow: hidden; }
+        .timeline-progress { height: 100%; background: #10B981; border-radius: 6px; width: 0%; transition: width 0.5s; }
+        .timeline-milestones { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+        .milestone { background: rgba(255,255,255,0.15); padding: 1.5rem; border-radius: 12px; }
+        .quick-wins { background: #FEF3C7; border-left: 4px solid #F59E0B; padding: 1.5rem; border-radius: 0 12px 12px 0; margin: 2rem 0; }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; margin: 2rem 0; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 12px; }
+        .summary-box { background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: white; padding: 3rem 2rem; border-radius: 16px; margin: 3rem 0; text-align: center; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="/" class="logo">
+                <div class="logo-icon">£</div>
+                <span>THE 100K PARENT</span>
+            </a>
+            <nav class="nav">
+                <a href="dashboard.html">← Dashboard</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero" style="padding: 3rem 0;">
+        <div class="container">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <span class="module-number">MODULE 8 OF 8</span>
+                <h1 style="color: white; margin: 1rem 0;">Your 18-Year Financial Roadmap</h1>
+                <p style="color: rgba(255,255,255,0.85); font-size: 1.25rem; margin-bottom: 1.5rem;">Build £50k-£150k in savings by the time your child turns 18</p>
+                <div style="display: flex; gap: 2rem; color: rgba(255,255,255,0.9);">
+                    <span>⏱ 20 minutes</span>
+                    <span>💰 Lifetime: £127,200</span>
+                    <span>✓ All Strategies Combined</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="module-content">
+        <!-- Quick Wins -->
+        <div class="quick-wins">
+            <h3 style="margin: 0 0 1rem 0;">⚡ Quick Wins (Start Today)</h3>
+            <ol style="margin: 0; padding-left: 1.5rem;">
+                <li><strong>Create your 18-year spreadsheet (30 min) → Track £127k journey</strong><br>Download template from templates page</li>
+                <li><strong>Set calendar reminders (10 min)</strong><br>Reconfirm TFC every 3 months, annual review in January</li>
+                <li><strong>Calculate your lifetime total (5 min)</strong><br>Use calculator below to see your full savings potential</li>
+            </ol>
+        </div>
+
+        <!-- Total Savings Calculator -->
+        <div class="timeline-widget">
+            <h3 style="margin: 0 0 1.5rem 0;">💰 Your Total 18-Year Savings</h3>
+            <p style="opacity: 0.9; margin-bottom: 2rem;">Select which strategies you'll use. We'll project your total savings.</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr; gap: 1rem; margin-bottom: 2rem;">
+                <label style="display: flex; align-items: center; gap: 1rem; background: rgba(255,255,255,0.15); padding: 1rem; border-radius: 8px; cursor: pointer;">
+                    <input type="checkbox" class="strategy-checkbox" data-annual="2000" data-module="1" checked style="width: 20px; height: 20px;">
+                    <div style="flex: 1;">
+                        <div style="font-weight: 700;">Tax-Free Childcare</div>
+                        <div style="font-size: 0.875rem; opacity: 0.8;">£2,000/child/year × 18 years</div>
+                    </div>
+                    <div style="font-weight: 800;">£36,000</div>
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 1rem; background: rgba(255,255,255,0.15); padding: 1rem; border-radius: 8px; cursor: pointer;">
+                    <input type="checkbox" class="strategy-checkbox" data-annual="6840" data-module="1" checked style="width: 20px; height: 20px;">
+                    <div style="flex: 1;">
+                        <div style="font-weight: 700;">30 Hours Free Childcare</div>
+                        <div style="font-size: 0.875rem; opacity: 0.8;">£6,840/year × 4 years (ages 9mo-4yrs)</div>
+                    </div>
+                    <div style="font-weight: 800;">£27,360</div>
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 1rem; background: rgba(255,255,255,0.15); padding: 1rem; border-radius: 8px; cursor: pointer;">
+                    <input type="checkbox" class="strategy-checkbox" data-annual="2000" data-module="2" checked style="width: 20px; height: 20px;">
+                    <div style="flex: 1;">
+                        <div style="font-weight: 700;">Salary Sacrifice</div>
+                        <div style="font-size: 0.875rem; opacity: 0.8;">£2,000/year × 18 years</div>
+                    </div>
+                    <div style="font-weight: 800;">£36,000</div>
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 1rem; background: rgba(255,255,255,0.15); padding: 1rem; border-radius: 8px; cursor: pointer;">
+                    <input type="checkbox" class="strategy-checkbox" data-annual="3500" data-module="3" style="width: 20px; height: 20px;">
+                    <div style="flex: 1;">
+                        <div style="font-weight: 700;">Income Splitting</div>
+                        <div style="font-size: 0.875rem; opacity: 0.8;">£3,500/year × 18 years</div>
+                    </div>
+                    <div style="font-weight: 800;">£63,000</div>
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 1rem; background: rgba(255,255,255,0.15); padding: 1rem; border-radius: 8px; cursor: pointer;">
+                    <input type="checkbox" class="strategy-checkbox" data-annual="800" data-module="4" style="width: 20px; height: 20px;">
+                    <div style="flex: 1;">
+                        <div style="font-weight: 700;">Business Expenses</div>
+                        <div style="font-size: 0.875rem; opacity: 0.8;">£800/year × 18 years</div>
+                    </div>
+                    <div style="font-weight: 800;">£14,400</div>
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 1rem; background: rgba(255,255,255,0.15); padding: 1rem; border-radius: 8px; cursor: pointer;">
+                    <input type="checkbox" class="strategy-checkbox" data-annual="2074" data-module="5" style="width: 20px; height: 20px;">
+                    <div style="flex: 1;">
+                        <div style="font-weight: 700;">Keep Child Benefit</div>
+                        <div style="font-size: 0.875rem; opacity: 0.8;">£2,074/year × 18 years (stay under £60k)</div>
+                    </div>
+                    <div style="font-weight: 800;">£37,332</div>
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 1rem; background: rgba(255,255,255,0.15); padding: 1rem; border-radius: 8px; cursor: pointer;">
+                    <input type="checkbox" class="strategy-checkbox" data-annual="1500" data-module="6" checked style="width: 20px; height: 20px;">
+                    <div style="flex: 1;">
+                        <div style="font-weight: 700;">Junior ISA Growth</div>
+                        <div style="font-size: 0.875rem; opacity: 0.8;">£100/month compound growth (conservative)</div>
+                    </div>
+                    <div style="font-weight: 800;">£41,447</div>
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 1rem; background: rgba(255,255,255,0.15); padding: 1rem; border-radius: 8px; cursor: pointer;">
+                    <input type="checkbox" class="strategy-checkbox" data-annual="1000" data-module="7" style="width: 20px; height: 20px;">
+                    <div style="flex: 1;">
+                        <div style="font-weight: 700;">Employer Benefits</div>
+                        <div style="font-size: 0.875rem; opacity: 0.8;">£1,000/year × 18 years</div>
+                    </div>
+                    <div style="font-weight: 800;">£18,000</div>
+                </label>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.15); padding: 2rem; border-radius: 12px;">
+                <div style="text-align: center;">
+                    <div style="font-size: 0.875rem; opacity: 0.9; margin-bottom: 0.5rem;">YOUR 18-YEAR TOTAL</div>
+                    <div style="font-size: 4rem; font-weight: 900; line-height: 1;" id="lifetime-total">£127,200</div>
+                    <div style="font-size: 0.875rem; opacity: 0.8; margin-top: 1rem;">by your child's 18th birthday</div>
+                </div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; font-size: 0.9rem; margin-top: 1.5rem;">
+                💡 <strong>That's £7,067/year average</strong> - More than most families earn in a month!
+            </div>
+        </div>
+
+        <!-- Timeline Visualization -->
+        <div style="background: white; padding: 2rem; border-radius: 16px; margin: 2rem 0;">
+            <h3 style="margin: 0 0 2rem 0; color: #0F172A;">📅 Your 18-Year Journey</h3>
+            
+            <div class="timeline-milestones">
+                <div style="border-left: 4px solid #10B981; padding-left: 1.5rem;">
+                    <div style="font-weight: 800; color: #10B981; margin-bottom: 0.5rem;">Year 0-1 (Birth)</div>
+                    <ul style="margin: 0; padding-left: 1.5rem; color: #6B7280; font-size: 0.875rem;">
+                        <li>Open Tax-Free Childcare account</li>
+                        <li>Open Junior ISA</li>
+                        <li>Set up salary sacrifice</li>
+                        <li>Claim Child Benefit</li>
+                    </ul>
+                    <div style="font-weight: 700; color: #10B981; margin-top: 0.75rem;">Year 1 savings: £11,340</div>
+                </div>
+
+                <div style="border-left: 4px solid #3B82F6; padding-left: 1.5rem;">
+                    <div style="font-weight: 800; color: #3B82F6; margin-bottom: 0.5rem;">Age 9mo-4yrs</div>
+                    <ul style="margin: 0; padding-left: 1.5rem; color: #6B7280; font-size: 0.875rem;">
+                        <li>Apply for 30 Hours Free</li>
+                        <li>Reconfirm TFC quarterly</li>
+                        <li>Continue Junior ISA (£100/mo)</li>
+                        <li>Annual savings review</li>
+                    </ul>
+                    <div style="font-weight: 700; color: #3B82F6; margin-top: 0.75rem;">Years 1-4 total: £45,440</div>
+                </div>
+
+                <div style="border-left: 4px solid #8B5CF6; padding-left: 1.5rem;">
+                    <div style="font-weight: 800; color: #8B5CF6; margin-bottom: 0.5rem;">Age 5-11 (Primary)</div>
+                    <ul style="margin: 0; padding-left: 1.5rem; color: #6B7280; font-size: 0.875rem;">
+                        <li>Continue TFC (after-school clubs)</li>
+                        <li>Salary sacrifice ongoing</li>
+                        <li>Junior ISA compounds</li>
+                        <li>Review strategies annually</li>
+                    </ul>
+                    <div style="font-weight: 700; color: #8B5CF6; margin-top: 0.75rem;">Years 5-11 total: £56,340</div>
+                </div>
+
+                <div style="border-left: 4px solid #F59E0B; padding-left: 1.5rem;">
+                    <div style="font-weight: 800; color: #F59E0B; margin-bottom: 0.5rem;">Age 12-18 (Secondary)</div>
+                    <ul style="margin: 0; padding-left: 1.5rem; color: #6B7280; font-size: 0.875rem;">
+                        <li>TFC ends (age 12)</li>
+                        <li>Focus on Junior ISA growth</li>
+                        <li>Salary sacrifice continues</li>
+                        <li>Plan university funding</li>
+                    </ul>
+                    <div style="font-weight: 700; color: #F59E0B; margin-top: 0.75rem;">Years 12-18 total: £25,420</div>
+                </div>
+            </div>
+
+            <div style="background: #F9FAFB; padding: 1.5rem; border-radius: 12px; margin-top: 2rem; text-align: center;">
+                <div style="color: #6B7280; font-size: 0.875rem; margin-bottom: 0.5rem;">GRAND TOTAL BY AGE 18</div>
+                <div style="font-size: 2.5rem; font-weight: 900; color: #10B981;">£127,200</div>
+            </div>
+        </div>
+
+        <!-- Video Embed -->
+        <div class="video-container">
+            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <p style="text-align: center; color: #6B7280; font-size: 0.875rem;">📺 Video: Your 18-Year Savings Roadmap (6 min)</p>
+
+        <!-- Collapsible Sections -->
+        <h2 onclick="toggleSection(this)">Annual Review Checklist</h2>
+        <div class="collapsible-content">
+            <p>Set a calendar reminder for <strong>January every year</strong> to review:</p>
+            
+            <h3>Tax-Free Childcare (15 min)</h3>
+            <ul>
+                <li>✅ Reconfirm eligibility (every 3 months automatically)</li>
+                <li>✅ Check you're maxing out £2,000/child</li>
+                <li>✅ Update income if changed jobs</li>
+            </ul>
+
+            <h3 style="margin-top: 2rem;">Salary Sacrifice (10 min)</h3>
+            <ul>
+                <li>✅ Check if pension % can increase</li>
+                <li>✅ Review if income crossed £60k or £100k thresholds</li>
+                <li>✅ Adjust to stay below cliff edges</li>
+            </ul>
+
+            <h3 style="margin-top: 2rem;">Junior ISA (10 min)</h3>
+            <ul>
+                <li>✅ Check investment performance</li>
+                <li>✅ Confirm standing order still running</li>
+                <li>✅ Consider increasing if funds allow</li>
+            </ul>
+
+            <h3 style="margin-top: 2rem;">Income/Employment Changes (15 min)</h3>
+            <ul>
+                <li>✅ New job? Update TFC account</li>
+                <li>✅ Pay rise? Recalculate optimal strategies</li>
+                <li>✅ Crossed £100k? Salary sacrifice to stay under</li>
+            </ul>
+        </div>
+
+        <h2 onclick="toggleSection(this)">Life Stage Milestones</h2>
+        <div class="collapsible-content">
+            <h3>Birth to Age 1</h3>
+            <p><strong>Priority:</strong> Set up ALL accounts</p>
+            <ul>
+                <li>Tax-Free Childcare account</li>
+                <li>Junior ISA</li>
+                <li>Salary sacrifice</li>
+                <li>Claim Child Benefit</li>
+            </ul>
+            <p><strong>Time investment:</strong> 3 hours total setup</p>
+            <p><strong>Benefit:</strong> £11,340 first year</p>
+
+            <h3 style="margin-top: 2rem;">9 Months Old</h3>
+            <p><strong>Priority:</strong> Apply for 30 Hours Free Childcare</p>
+            <ul>
+                <li>Check eligibility (both incomes under £100k)</li>
+                <li>Apply via Childcare Choices</li>
+                <li>Get code before term starts</li>
+            </ul>
+            <p><strong>Time investment:</strong> 30 minutes</p>
+            <p><strong>Benefit:</strong> £6,840/year for 4 years = £27,360</p>
+
+            <h3 style="margin-top: 2rem;">Age 5 (School Starts)</h3>
+            <p><strong>Priority:</strong> Continue TFC for wraparound care</p>
+            <ul>
+                <li>After-school clubs covered</li>
+                <li>Holiday clubs covered</li>
+                <li>30 Hours Free ends</li>
+            </ul>
+            <p><strong>Benefit:</strong> £2,000/year continues until age 12</p>
+
+            <h3 style="margin-top: 2rem;">Age 12</h3>
+            <p><strong>Priority:</strong> TFC ends, focus on Junior ISA</p>
+            <ul>
+                <li>Tax-Free Childcare stops at 12</li>
+                <li>Redirect money to Junior ISA</li>
+                <li>Junior ISA compounds for 6 more years</li>
+            </ul>
+
+            <h3 style="margin-top: 2rem;">Age 18</h3>
+            <p><strong>Celebration!</strong> Your child receives Junior ISA</p>
+            <ul>
+                <li>£41,447 in Junior ISA (if followed plan)</li>
+                <li>£85,753 saved via other strategies</li>
+                <li><strong>Total: £127,200 saved</strong></li>
+            </ul>
+        </div>
+
+        <h2 onclick="toggleSection(this)">What Can Go Wrong (And How to Fix It)</h2>
+        <div class="collapsible-content">
+            <h3>Problem 1: Forget to Reconfirm TFC</h3>
+            <p><strong>Impact:</strong> Lose £2,000/year</p>
+            <p><strong>Fix:</strong> Set phone reminder every 3 months. TFC emails you but easy to miss.</p>
+
+            <h3 style="margin-top: 2rem;">Problem 2: Income Crosses £100k</h3>
+            <p><strong>Impact:</strong> Lose TFC + 30 Hours Free (£8,840/year)</p>
+            <p><strong>Fix:</strong> Salary sacrifice to drop back under £100k. This ALSO saves tax.</p>
+
+            <h3 style="margin-top: 2rem;">Problem 3: Change Jobs</h3>
+            <p><strong>Impact:</strong> Forget to update TFC, account gets closed</p>
+            <p><strong>Fix:</strong> Update within 14 days of job change. Add to resignation checklist.</p>
+
+            <h3 style="margin-top: 2rem;">Problem 4: Junior ISA Provider Fees Too High</h3>
+            <p><strong>Impact:</strong> Lose £3,000 to fees over 18 years</p>
+            <p><strong>Fix:</strong> Switch to Vanguard (0.15% fee). Can transfer existing ISA.</p>
+
+            <h3 style="margin-top: 2rem;">Problem 5: Stop Contributions in Market Crash</h3>
+            <p><strong>Impact:</strong> Miss buying opportunity, lower returns</p>
+            <p><strong>Fix:</strong> KEEP contributing. Market crashes = discount prices. You have 18 years.</p>
+        </div>
+
+        <!-- Final Summary Box -->
+        <div class="summary-box">
+            <h2 style="margin: 0 0 1rem 0;">🎉 Congratulations! You've Completed All 8 Modules</h2>
+            <p style="font-size: 1.25rem; margin: 1.5rem 0; opacity: 0.95;">You now have a complete roadmap to save <strong>£127,200</strong> over the next 18 years.</p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1.5rem; margin: 2rem 0; text-align: center;">
+                <div>
+                    <div style="font-size: 2rem; font-weight: 900;">8</div>
+                    <div style="font-size: 0.875rem; opacity: 0.9;">Modules Completed</div>
+                </div>
+                <div>
+                    <div style="font-size: 2rem; font-weight: 900;">£127k</div>
+                    <div style="font-size: 0.875rem; opacity: 0.9;">Potential Savings</div>
+                </div>
+                <div>
+                    <div style="font-size: 2rem; font-weight: 900;">18</div>
+                    <div style="font-size: 0.875rem; opacity: 0.9;">Years of Security</div>
+                </div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.2); padding: 1.5rem; border-radius: 12px; margin-top: 2rem;">
+                <h3 style="margin: 0 0 1rem 0;">Next Steps:</h3>
+                <ol style="text-align: left; margin: 0; padding-left: 1.5rem;">
+                    <li style="margin: 0.5rem 0;">Download the 18-year tracking spreadsheet</li>
+                    <li style="margin: 0.5rem 0;">Set calendar reminders for quarterly TFC reconfirmation</li>
+                    <li style="margin: 0.5rem 0;">Schedule your first annual review for January</li>
+                    <li style="margin: 0.5rem 0;">Share this guide with other high-earning parents!</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Action Checklist -->
+        <div style="background: #DBEAFE; padding: 2rem; border-radius: 12px; margin: 3rem 0;">
+            <h3 style="margin: 0 0 1rem 0;">✅ Your Final Action Checklist</h3>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Calculate my 18-year total using calculator above
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Download 18-year tracking spreadsheet
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Set quarterly TFC reminder (every 3 months)
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Set annual review reminder (January 15th)
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Share guide with partner/spouse
+            </label>
+        </div>
+
+        <div style="text-align: center; margin: 3rem 0;">
+            <a href="dashboard.html" class="btn btn-primary" style="padding: 1rem 3rem; font-size: 1.125rem;">Back to Dashboard</a>
+        </div>
+    </div>
+
+    <script>
+    // Collapsible sections
+    function toggleSection(header) {
+        header.classList.toggle('collapsed');
+        const content = header.nextElementSibling;
+        content.classList.toggle('hidden');
+    }
+
+    // Total Savings Calculator
+    const checkboxes = document.querySelectorAll('.strategy-checkbox');
+    const lifetimeTotal = document.getElementById('lifetime-total');
+
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', calculateLifetimeTotal);
+    });
+
+    function calculateLifetimeTotal() {
+        let total = 0;
+        
+        checkboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                const annual = parseInt(checkbox.dataset.annual);
+                const module = parseInt(checkbox.dataset.module);
+                
+                // Special cases
+                if (module === 1 && annual === 6840) {
+                    // 30 Hours Free - only 4 years
+                    total += annual * 4;
+                } else if (module === 6) {
+                    // Junior ISA - compound growth
+                    total += 41447; // Pre-calculated compound value
+                } else {
+                    // Regular annual savings × 18 years
+                    total += annual * 18;
+                }
+            }
+        });
+        
+        lifetimeTotal.textContent = '£' + Math.round(total).toLocaleString();
+    }
+
+    calculateLifetimeTotal();
+    </script>
+</body>
+</html>

@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 1: Tax-Free Childcare Setup - The 100k Parent</title>
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Interactive Tools & Protection -->
+    <script src="module-tools.js"></script>
+    
+    <!-- Memberstack - Only paying customers can see this page -->
+    <script src="https://api.memberstack.io/static/memberstack.js?custom" data-memberstack-id="PASTE_YOUR_PROJECT_ID_HERE"></script>
+    <script>
+        // Redirect to checkout if not logged in
+        window.$memberstackDom.getCurrentMember()
+            .then(({ data: member }) => {
+                if (!member) {
+                    window.location.href = '/checkout.html';
+                }
+            });
+    </script>
+    
+    <style>
+        .module-content { max-width: 800px; margin: 0 auto; padding: 3rem 1.5rem; }
+        .module-content h2 { margin-top: 3rem; margin-bottom: 1.5rem; }
+        .module-content h3 { margin-top: 2rem; margin-bottom: 1rem; }
+        .module-content p { margin-bottom: 1.25rem; line-height: 1.8; }
+        .module-content ul, .module-content ol { margin: 1.5rem 0 1.5rem 2rem; line-height: 1.8; }
+        .module-content li { margin-bottom: 0.75rem; }
+        .callout { background: #F9FAFB; border-left: 4px solid #10B981; padding: 1.5rem; border-radius: 0 12px 12px 0; margin: 2rem 0; }
+        .callout-warning { border-left-color: #F59E0B; background: #FFF7ED; }
+        .example-box { background: white; border: 2px solid #E5E7EB; padding: 1.5rem; border-radius: 12px; margin: 2rem 0; }
+        .example-box h4 { color: #10B981; margin-bottom: 1rem; }
+        table { width: 100%; border-collapse: collapse; margin: 2rem 0; background: white; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #E5E7EB; }
+        th { background: #F9FAFB; font-weight: 700; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="/" class="logo">
+                <div class="logo-icon">£</div>
+                <span>THE 100K PARENT</span>
+            </a>
+            <nav class="nav">
+                <a href="dashboard.html">← Dashboard</a>
+                <a href="module-2.html">Next Module →</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero" style="padding: 3rem 0;">
+        <div class="container">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <span class="module-number">MODULE 1 OF 8</span>
+                <h1 style="color: white; margin: 1rem 0;">Tax-Free Childcare Setup</h1>
+                <p style="color: rgba(255,255,255,0.85); font-size: 1.25rem; margin-bottom: 1.5rem;">Complete guide to claiming your 20% government top-up on childcare costs</p>
+                <div style="display: flex; gap: 2rem; color: rgba(255,255,255,0.9);">
+                    <span>⏱ 15 minutes</span>
+                    <span>💰 Save up to £2,000 per child</span>
+                    <span>✓ HMRC Compliant</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="module-content">
+        <div class="callout">
+            <h3 style="margin: 0 0 1rem 0;">💡 What You'll Learn</h3>
+            <ul style="margin: 0;">
+                <li>How the 20% government top-up actually works</li>
+                <li>Exact eligibility criteria for high earners</li>
+                <li>Step-by-step application walkthrough</li>
+                <li>Common mistakes that cost thousands</li>
+                <li>How to calculate your exact savings</li>
+            </ul>
+        </div>
+
+        <!-- Interactive Tax-Free Childcare Calculator -->
+        <div id="tfc-calculator"></div>
+
+        <h2>Understanding Tax-Free Childcare</h2>
+        
+        <p>Tax-Free Childcare is one of the most valuable but underutilized schemes for high-earning parents in the UK. For every £8 you pay into your Tax-Free Childcare account, the government adds £2 - effectively a 20% discount on your childcare costs.</p>
+        
+        <p>For high-earning families spending £2,000-£3,000 per month on childcare (nursery, nanny, after-school clubs), this scheme alone can save you £4,000-£8,000 per year.</p>
+
+        <div class="example-box">
+            <h4>Real Example: The Johnson Family</h4>
+            <p><strong>Situation:</strong> Two children in full-time nursery, £2,400/month total cost</p>
+            <p><strong>Household income:</strong> £165,000 (£95k + £70k)</p>
+            <p><strong>Annual childcare cost:</strong> £28,800</p>
+            <p><strong>Government top-up:</strong> £4,000 (maximum £2,000 per child)</p>
+            <p><strong>Effective childcare cost:</strong> £24,800</p>
+            <p style="color: #10B981; font-weight: 700; font-size: 1.25rem; margin-top: 1rem;">Annual saving: £4,000</p>
+        </div>
+
+        <h2>How the 20% Top-Up Works</h2>
+        
+        <p>The mechanism is beautifully simple:</p>
+        
+        <ol>
+            <li><strong>You open a Tax-Free Childcare account</strong> through childcarechoices.gov.uk</li>
+            <li><strong>You pay money into this account</strong> - up to £8,000 per child per year</li>
+            <li><strong>The government automatically adds 20%</strong> - up to £2,000 per child per year</li>
+            <li><strong>You pay your childcare provider</strong> directly from this account</li>
+        </ol>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Your Payment</th>
+                    <th>Government Adds</th>
+                    <th>Total Available</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>£800</td>
+                    <td>£200</td>
+                    <td>£1,000</td>
+                </tr>
+                <tr>
+                    <td>£1,600</td>
+                    <td>£400</td>
+                    <td>£2,000</td>
+                </tr>
+                <tr>
+                    <td>£4,000</td>
+                    <td>£1,000</td>
+                    <td>£5,000</td>
+                </tr>
+                <tr>
+                    <td>£8,000 (annual max)</td>
+                    <td>£2,000 (annual max)</td>
+                    <td>£10,000</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Eligibility Criteria for High Earners</h2>
+        
+        <p>This is where many high earners get confused. The rules are specific:</p>
+
+        <h3>✓ You ARE eligible if:</h3>
+        <ul>
+            <li><strong>Each parent earns between £8,632 and £100,000</strong> per year (adjusted net income)</li>
+            <li>You work at least 16 hours per week (both parents if there are two)</li>
+            <li>Your child is under 12 (or under 17 if disabled)</li>
+            <li>You use a registered childcare provider</li>
+            <li>You're not already claiming Tax Credits or Universal Credit</li>
+        </ul>
+
+        <h3>✗ You are NOT eligible if:</h3>
+        <ul>
+            <li>Either parent earns over £100,000 (adjusted net income)</li>
+            <li>You're currently claiming Working Tax Credit or Universal Credit with childcare element</li>
+            <li>Either parent gets Tax-Free Childcare Vouchers from their employer (legacy scheme)</li>
+            <li>Your child is looked after by a relative who isn't a registered childcare provider</li>
+        </ul>
+
+        <div class="callout callout-warning">
+            <h3 style="margin-bottom: 0.75rem;">⚠️ The £100k Income Trap</h3>
+            <p>If either parent earns over £100,000 (adjusted net income), the entire family is ineligible. This creates a cliff edge where earning £100,001 can cost you £2,000-£4,000 in lost childcare support.</p>
+            <p style="margin: 0;"><strong>Solution:</strong> Module 2 (Salary Sacrifice) shows you how to reduce your adjusted net income below £100k through pension contributions, making you eligible again while also saving tax.</p>
+        </div>
+
+        <h2>What is "Adjusted Net Income"?</h2>
+        
+        <p>This is crucial for high earners. Adjusted net income is NOT the same as your gross salary.</p>
+        
+        <p><strong>Adjusted Net Income =</strong> Gross income - Pension contributions - Gift Aid donations - Trading losses</p>
+
+        <div class="example-box">
+            <h4>Example: Reducing Your Adjusted Net Income</h4>
+            <p><strong>Gross salary:</strong> £110,000</p>
+            <p><strong>Pension contribution:</strong> £12,000</p>
+            <p><strong>Adjusted net income:</strong> £98,000</p>
+            <p style="color: #10B981; font-weight: 700; margin-top: 1rem;">Result: Now eligible for Tax-Free Childcare!</p>
+            <p><strong>Total benefit:</strong> Pension tax relief (£4,800) + Childcare top-up (£4,000) = <strong>£8,800 gain</strong></p>
+        </div>
+
+        <h2>Step-by-Step Application Process</h2>
+        
+        <p>Setting up Tax-Free Childcare takes about 15 minutes. Here's exactly what to do:</p>
+
+        <h3>Step 1: Gather Your Information</h3>
+        <p>Before you start, you'll need:</p>
+        <ul>
+            <li>National Insurance numbers (both parents)</li>
+            <li>Date of birth for each child</li>
+            <li>Childcare provider details (name, address, registration number)</li>
+            <li>Bank account details</li>
+            <li>Details of your income (P60 or Self Assessment)</li>
+        </ul>
+
+        <h3>Step 2: Create Your Account</h3>
+        <ol>
+            <li>Go to <a href="https://www.childcarechoices.gov.uk" target="_blank" style="color: #10B981; text-decoration: underline;">www.childcarechoices.gov.uk</a></li>
+            <li>Click "Apply now" for Tax-Free Childcare</li>
+            <li>Create a Government Gateway account (if you don't have one)</li>
+            <li>Answer questions about your circumstances</li>
+        </ol>
+
+        <h3>Step 3: Verify Your Eligibility</h3>
+        <p>The system will check your eligibility instantly. If approved, you'll get:</p>
+        <ul>
+            <li>A childcare account number for each child</li>
+            <li>Login details to manage your account</li>
+            <li>Instructions on how to pay money in</li>
+        </ul>
+
+        <h3>Step 4: Add Money to Your Account</h3>
+        <p>You can add money:</p>
+        <ul>
+            <li><strong>Bank transfer</strong> - Usually processes within 24 hours</li>
+            <li><strong>Debit card</strong> - Instant</li>
+            <li><strong>Standing order</strong> - Best for regular monthly payments</li>
+        </ul>
+
+        <p>The government top-up is added automatically within 24 hours of your payment.</p>
+
+        <h3>Step 5: Pay Your Childcare Provider</h3>
+        <p>From your online account, you can:</p>
+        <ul>
+            <li>Make one-off payments to your provider</li>
+            <li>Set up regular payments</li>
+            <li>View your balance and transaction history</li>
+        </ul>
+
+        <div class="callout">
+            <h3 style="margin-bottom: 0.75rem;">💡 Pro Tip: Set Up a Standing Order</h3>
+            <p style="margin: 0;">Set up a monthly standing order to your childcare account for exactly 80% of your childcare costs. For example, if your nursery costs £2,000/month, set up a standing order for £1,600. The government adds £400, giving you the full £2,000 to pay the nursery. This "set it and forget it" approach ensures you never miss the top-up.</p>
+        </div>
+
+        <h2>Common Mistakes (That Cost Thousands)</h2>
+
+        <h3>Mistake #1: Not Reconfirming Every 3 Months</h3>
+        <p>You must reconfirm your eligibility every 3 months, even if nothing has changed. Miss this, and your account is suspended - you lose the top-up until you reconfirm.</p>
+        <p><strong>Fix:</strong> Set a calendar reminder 5 days before your reconfirmation date. Reconfirmation takes 2 minutes.</p>
+
+        <h3>Mistake #2: Staying on Old Childcare Vouchers</h3>
+        <p>If you're on the legacy Childcare Voucher scheme through your employer, you can't also use Tax-Free Childcare. Many people stay on vouchers because "if it ain't broke, don't fix it."</p>
+        <p><strong>Reality check:</strong> For high earners, Tax-Free Childcare is almost always better. A £100k earner saves £933/year on vouchers but can get £2,000-£4,000 from Tax-Free Childcare.</p>
+        <p><strong>Action:</strong> Calculate which is better using the government's Childcare Calculator, then opt out of vouchers if Tax-Free Childcare wins.</p>
+
+        <h3>Mistake #3: Not Using It for Holiday Clubs</h3>
+        <p>Tax-Free Childcare works for:</p>
+        <ul>
+            <li>Nursery and daycare</li>
+            <li>Childminders</li>
+            <li>After-school clubs</li>
+            <li>Holiday clubs and summer camps</li>
+            <li>Home-based registered nannies</li>
+        </ul>
+        <p>Many parents only use it for nursery and miss out on hundreds of pounds in top-ups for holiday clubs.</p>
+
+        <h3>Mistake #4: Forgetting About the £100k Cliff Edge</h3>
+        <p>If your income creeps over £100k (especially with a bonus), you become ineligible immediately. The government doesn't give you a warning - they just stop your account.</p>
+        <p><strong>Solution:</strong> If you're close to £100k, make a pension contribution to bring your adjusted net income back below the threshold. See Module 2 for exact strategies.</p>
+
+        <h2>Your Implementation Checklist</h2>
+
+        <div style="background: #F9FAFB; padding: 1.5rem; border-radius: 12px; margin: 2rem 0;">
+            <h3 style="margin-top: 0;">✓ Complete These Steps This Week:</h3>
+            <ul class="checklist" style="list-style: none; margin: 1rem 0; padding: 0;">
+                <li style="padding: 0.75rem 0; border-bottom: 1px solid #E5E7EB;">
+                    <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
+                        <input type="checkbox" style="width: 20px; height: 20px;">
+                        <span>Gather required documents (NI numbers, child DOB, provider details)</span>
+                    </label>
+                </li>
+                <li style="padding: 0.75rem 0; border-bottom: 1px solid #E5E7EB;">
+                    <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
+                        <input type="checkbox" style="width: 20px; height: 20px;">
+                        <span>Calculate your adjusted net income</span>
+                    </label>
+                </li>
+                <li style="padding: 0.75rem 0; border-bottom: 1px solid #E5E7EB;">
+                    <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
+                        <input type="checkbox" style="width: 20px; height: 20px;">
+                        <span>Apply at childcarechoices.gov.uk (15 minutes)</span>
+                    </label>
+                </li>
+                <li style="padding: 0.75rem 0; border-bottom: 1px solid #E5E7EB;">
+                    <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
+                        <input type="checkbox" style="width: 20px; height: 20px;">
+                        <span>Set up standing order for monthly top-ups</span>
+                    </label>
+                </li>
+                <li style="padding: 0.75rem 0; border-bottom: 1px solid #E5E7EB;">
+                    <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
+                        <input type="checkbox" style="width: 20px; height: 20px;">
+                        <span>Set calendar reminder for 3-month reconfirmation</span>
+                    </label>
+                </li>
+                <li style="padding: 0.75rem 0; border-bottom: 1px solid #E5E7EB;">
+                    <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
+                        <input type="checkbox" style="width: 20px; height: 20px;">
+                        <span>Make first payment and confirm government top-up received</span>
+                    </label>
+                </li>
+                <li style="padding: 0.75rem 0; background: #F0FDF4;">
+                    <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
+                        <input type="checkbox" style="width: 20px; height: 20px;">
+                        <span><strong>If child 9mo-4yrs: Apply for 30 Hours Free Childcare (same website, 5 minutes)</strong></span>
+                    </label>
+                </li>
+                <li style="padding: 0.75rem 0;">
+                    <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
+                        <input type="checkbox" style="width: 20px; height: 20px;">
+                        <span><strong>Give 30 hours code to nursery/childminder</strong></span>
+                    </label>
+                </li>
+            </ul>
+        </div>
+
+        <h2>Stacking Tax-Free Childcare with 30 Hours Free Childcare</h2>
+
+        <div class="callout">
+            <h3 style="margin: 0 0 1rem 0;">🎯 The Power Combo</h3>
+            <p style="margin: 0;">If your child is between <strong>9 months and school age</strong>, you can use BOTH schemes together for maximum savings:</p>
+            <ul style="margin: 0.5rem 0 0 0;">
+                <li><strong>Tax-Free Childcare:</strong> 20% top-up (up to £2,000/year per child)</li>
+                <li><strong>30 Hours Free Childcare:</strong> Free childcare (worth £5,000-£7,000/year per child)</li>
+            </ul>
+        </div>
+
+        <h3>What is 30 Hours Free Childcare?</h3>
+        
+        <p>30 Hours Free Childcare (England only) provides <strong>30 hours per week</strong> of government-funded childcare for working parents. This is worth approximately <strong>£5,000-£7,000 per year per child</strong> depending on your location.</p>
+
+        <p><strong>Key details:</strong></p>
+        <ul>
+            <li><strong>Eligibility:</strong> SAME as Tax-Free Childcare (both parents under £100k, work 16h/week minimum wage)</li>
+            <li><strong>Age range:</strong> 9 months to school reception class</li>
+            <li><strong>Coverage:</strong> 30 hours/week for 38 weeks (term-time) OR stretched to 52 weeks (~22 hours/week)</li>
+            <li><strong>Providers:</strong> Registered nurseries, childminders, pre-schools</li>
+        </ul>
+
+        <div class="example-box">
+            <h4>Real Example: Combined Savings</h4>
+            <p><strong>Family:</strong> One child aged 2, full-time nursery in London</p>
+            <p><strong>Without any schemes:</strong></p>
+            <ul style="margin-left: 1.5rem;">
+                <li>Full-time nursery: 50 hours/week × 52 weeks = 2,600 hours/year</li>
+                <li>Cost: £8/hour × 2,600 hours = <strong>£20,800/year</strong></li>
+            </ul>
+            <p><strong>With 30 Hours Free Childcare:</strong></p>
+            <ul style="margin-left: 1.5rem;">
+                <li>Free: 30 hours/week × 38 weeks = 1,140 hours</li>
+                <li>You pay for: 2,600 - 1,140 = 1,460 hours</li>
+                <li>Cost: £8 × 1,460 = £11,680/year</li>
+                <li><strong style="color: #10B981;">Saving: £9,120/year</strong></li>
+            </ul>
+            <p><strong>Add Tax-Free Childcare on top:</strong></p>
+            <ul style="margin-left: 1.5rem;">
+                <li>20% top-up on £11,680 = £2,000 (max per child)</li>
+                <li>Final cost: £9,680/year</li>
+                <li><strong style="color: #10B981; font-size: 1.25rem;">Total saving: £11,120/year</strong></li>
+            </ul>
+        </div>
+
+        <h3>How to Apply for 30 Hours Free Childcare</h3>
+
+        <div class="callout-warning callout">
+            <h3 style="margin: 0 0 1rem 0;">⚠️ Apply at Least One Term in Advance</h3>
+            <p style="margin: 0;">You must apply <strong>before the end of the month</strong> to get funding for the next term. If you miss the deadline, you'll have to wait an entire term (3 months).</p>
+        </div>
+
+        <p><strong>Step-by-step:</strong></p>
+
+        <ol>
+            <li><strong>Go to Childcare Choices website</strong>
+                <p style="margin: 0.5rem 0 0 0; color: #6B7280;">https://www.childcarechoices.gov.uk - This is the SAME account as Tax-Free Childcare</p>
+            </li>
+            <li><strong>Apply for 30 hours</strong>
+                <p style="margin: 0.5rem 0 0 0; color: #6B7280;">You'll get a code immediately if eligible (takes 5 minutes)</p>
+            </li>
+            <li><strong>Give code to nursery</strong>
+                <p style="margin: 0.5rem 0 0 0; color: #6B7280;">Your childcare provider validates the code and claims the funding</p>
+            </li>
+            <li><strong>Reconfirm every 3 months</strong>
+                <p style="margin: 0.5rem 0 0 0; color: #6B7280;">Government sends reminder emails - you MUST reconfirm or you lose eligibility</p>
+            </li>
+        </ol>
+
+        <h3>Term Deadlines (Critical!)</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Apply By</th>
+                    <th>Funding Starts</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>31st December</td>
+                    <td>Spring term (January)</td>
+                </tr>
+                <tr>
+                    <td>31st March</td>
+                    <td>Summer term (April)</td>
+                </tr>
+                <tr>
+                    <td>31st August</td>
+                    <td>Autumn term (September)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Common Mistakes with 30 Hours</h3>
+
+        <div class="callout-warning callout">
+            <h3 style="margin: 0 0 1rem 0;">Mistake #1: Missing Reconfirmation</h3>
+            <p style="margin: 0;">You must reconfirm your eligibility <strong>every 3 months</strong>. Miss one reminder and your child loses their place. Set up calendar alerts!</p>
+        </div>
+
+        <div class="callout-warning callout">
+            <h3 style="margin: 0 0 1rem 0;">Mistake #2: Forgetting the £100k Cliff Edge</h3>
+            <p style="margin: 0;">If EITHER parent goes over £100k (even with a bonus), you lose BOTH Tax-Free Childcare AND 30 hours immediately. This can cost you £11,000+/year.</p>
+            <p style="margin: 0.5rem 0 0 0;"><strong>Solution:</strong> Module 2 (Salary Sacrifice) shows how to keep income below £100k.</p>
+        </div>
+
+        <div class="callout-warning callout">
+            <h3 style="margin: 0 0 1rem 0;">Mistake #3: Choosing Childcare Vouchers Instead</h3>
+            <p style="margin: 0;">Some employers still offer old childcare vouchers. If you're eligible for 30 hours, Tax-Free Childcare is almost always better (save £5,000-£7,000 more).</p>
+        </div>
+
+        <h3>Stretch vs Term-Time</h3>
+
+        <p>You have two options for how to use your 30 hours:</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Option</th>
+                    <th>Hours/Week</th>
+                    <th>Best For</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Term-time only</strong></td>
+                    <td>30 hours for 38 weeks</td>
+                    <td>Parents who don't need full-year childcare or prefer holidays off</td>
+                </tr>
+                <tr>
+                    <td><strong>Stretched</strong></td>
+                    <td>~22 hours for 52 weeks</td>
+                    <td>Working parents who need year-round childcare (most common)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p><strong>Reality check:</strong> Most working parents choose stretched because you need childcare during school holidays too. The math: 30 hours × 38 weeks = 1,140 hours ÷ 52 weeks = 21.9 hours/week.</p>
+
+        <h2>Expected Savings From This Module</h2>
+
+        <div class="example-box">
+            <h4>Your Potential Annual Savings</h4>
+            <p><strong>Tax-Free Childcare only:</strong></p>
+            <ul style="margin-bottom: 1rem;">
+                <li>1 child: <strong>£2,000/year</strong></li>
+                <li>2 children: <strong>£4,000/year</strong></li>
+            </ul>
+            <p><strong>Tax-Free Childcare + 30 Hours (ages 9mo-4yrs):</strong></p>
+            <ul style="margin-bottom: 1rem;">
+                <li>1 child: <strong>£7,000-£9,000/year</strong></li>
+                <li>2 children: <strong>£14,000-£18,000/year</strong></li>
+            </ul>
+            <p style="font-size: 1.125rem; font-weight: 700; color: #10B981; margin: 0;">Time to implement: 1-2 hours total (both schemes)</p>
+            <p style="font-size: 1.125rem; font-weight: 700; color: #10B981;">Return on time: £3,500-£9,000 per hour</p>
+        </div>
+
+        <div style="margin: 3rem 0; padding: 3rem; background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); border-radius: 20px; text-align: center;">
+            <h2 style="color: white; margin-bottom: 1rem;">Ready for Module 2?</h2>
+            <p style="font-size: 1.125rem; color: rgba(255,255,255,0.85); margin-bottom: 2rem;">Learn how salary sacrifice can save you an additional £1,000-£3,000/year in tax and NI</p>
+            <a href="module-2.html" class="btn btn-primary btn-large">Continue to Module 2 →</a>
+            <br><br>
+            <a href="dashboard.html" style="color: rgba(255,255,255,0.7); text-decoration: underline;">Or return to dashboard</a>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 The 100k Parent. Educational content only. Not regulated financial advice.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

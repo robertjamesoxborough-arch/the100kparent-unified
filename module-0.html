@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 0: The £100k+ Unlock Strategy - The 100k Parent</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .module-content { max-width: 800px; margin: 0 auto; padding: 3rem 1.5rem; }
+        .module-content h2 { margin-top: 3rem; margin-bottom: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
+        .module-content h2:hover { color: #10B981; }
+        .module-content h2::before { content: '▼'; font-size: 0.8em; transition: transform 0.3s; }
+        .module-content h2.collapsed::before { transform: rotate(-90deg); }
+        .collapsible-content { max-height: 2000px; overflow: hidden; transition: max-height 0.3s ease; }
+        .collapsible-content.hidden { max-height: 0; }
+        
+        .unlock-calculator { background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%); padding: 2rem; border-radius: 16px; margin: 2rem 0; color: white; }
+        .quick-wins { background: #FEF3C7; border-left: 4px solid #F59E0B; padding: 1.5rem; border-radius: 0 12px 12px 0; margin: 2rem 0; }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; margin: 2rem 0; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 12px; }
+        
+        .cliff-visual { background: white; padding: 2rem; border-radius: 16px; margin: 2rem 0; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+        .threshold-bar { height: 60px; background: linear-gradient(90deg, #10B981 0%, #10B981 50%, #DC2626 50%, #DC2626 100%); border-radius: 8px; position: relative; margin: 2rem 0; }
+        .threshold-marker { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: white; padding: 0.5rem 1rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); font-weight: 700; white-space: nowrap; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="/" class="logo">
+                <div class="logo-icon">£</div>
+                <span>THE 100K PARENT</span>
+            </a>
+            <nav class="nav">
+                <a href="dashboard.html">← Dashboard</a>
+                <a href="module-1.html">Next Module →</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero" style="padding: 3rem 0;">
+        <div class="container">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <span class="module-number">MODULE 0: START HERE</span>
+                <h1 style="color: white; margin: 1rem 0;">The £100,000 Cliff Edge</h1>
+                <p style="color: rgba(255,255,255,0.85); font-size: 1.25rem; margin-bottom: 1.5rem;">If you earn over £100k, you're locked out of £8,840/year in childcare benefits. Here's how to unlock them.</p>
+                <div style="display: flex; gap: 2rem; color: rgba(255,255,255,0.9);">
+                    <span>⏱ 8 minutes</span>
+                    <span>💰 Unlock £8,840-£18,000/year</span>
+                    <span>✓ Critical First Step</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="module-content">
+        <!-- Quick Wins -->
+        <div class="quick-wins">
+            <h3 style="margin: 0 0 1rem 0;">⚡ If You Only Do ONE Thing (5 minutes)</h3>
+            <p style="margin: 0; font-size: 1.125rem; font-weight: 700;">
+                Use the calculator below to see exactly how much to salary sacrifice. Email HR today. This unlocks £8,840-£18,000/year.
+            </p>
+        </div>
+
+        <!-- The Problem Visualization -->
+        <div class="cliff-visual">
+            <h3 style="margin: 0 0 1rem 0; color: #0F172A;">The £100,000 Cliff Edge</h3>
+            <p style="color: #6B7280; margin-bottom: 2rem;">At £100,000 you fall off a tax cliff and lose access to critical benefits:</p>
+            
+            <div class="threshold-bar">
+                <div class="threshold-marker">£100,000</div>
+                <div style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: white; font-weight: 700;">✓ Benefits Active</div>
+                <div style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); color: white; font-weight: 700;">✗ Locked Out</div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem;">
+                <div style="background: #F0FDF4; padding: 1.5rem; border-radius: 12px; border: 2px solid #10B981;">
+                    <div style="font-weight: 800; color: #10B981; margin-bottom: 1rem;">✓ Under £100k</div>
+                    <ul style="margin: 0; padding-left: 1.5rem; color: #065F46;">
+                        <li>Tax-Free Childcare: £2,000/child/year</li>
+                        <li>30 Hours Free: £6,840/year</li>
+                        <li><strong>Total: £8,840+/year</strong></li>
+                    </ul>
+                </div>
+                <div style="background: #FEF2F2; padding: 1.5rem; border-radius: 12px; border: 2px solid #DC2626;">
+                    <div style="font-weight: 800; color: #DC2626; margin-bottom: 1rem;">✗ Over £100k</div>
+                    <ul style="margin: 0; padding-left: 1.5rem; color: #991B1B;">
+                        <li>Tax-Free Childcare: BLOCKED</li>
+                        <li>30 Hours Free: BLOCKED</li>
+                        <li><strong>Losing: £8,840+/year</strong></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- The Unlock Calculator -->
+        <div class="unlock-calculator">
+            <h3 style="margin: 0 0 1.5rem 0;">💡 Your Unlock Calculator</h3>
+            <p style="opacity: 0.9; margin-bottom: 2rem;">Enter your income to see exactly how much to salary sacrifice:</p>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 700;">Your Annual Income (Gross)</label>
+                <input type="number" id="unlock-income" value="105000" style="width: 100%; padding: 0.875rem 1rem; border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white; border-radius: 12px; font-size: 1.125rem; font-weight: 700;" placeholder="e.g. 105000">
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 700;">Number of Children</label>
+                <input type="number" id="unlock-children" value="1" min="1" max="5" style="width: 100%; padding: 0.875rem 1rem; border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white; border-radius: 12px; font-size: 1.125rem; font-weight: 700;">
+            </div>
+
+            <button onclick="calculateUnlock()" style="width: 100%; background: #10B981; color: white; padding: 1rem; border: none; border-radius: 12px; font-weight: 700; font-size: 1.125rem; cursor: pointer;">Calculate My Unlock Strategy</button>
+
+            <div id="unlock-results" style="display: none; margin-top: 2rem;">
+                <div style="background: rgba(255,255,255,0.15); padding: 2rem; border-radius: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid rgba(255,255,255,0.2);">
+                        <div>
+                            <div style="opacity: 0.9; font-size: 0.875rem; margin-bottom: 0.5rem;">SALARY SACRIFICE NEEDED:</div>
+                            <div style="font-weight: 900; font-size: 2.5rem;" id="sacrifice-amount">£5,001</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="opacity: 0.9; font-size: 0.875rem; margin-bottom: 0.5rem;">DROPS YOU TO:</div>
+                            <div style="font-weight: 900; font-size: 2.5rem;">£99,999</div>
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(16,185,129,0.3); padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                        <div style="font-weight: 800; font-size: 1.125rem; margin-bottom: 1rem;">✅ BENEFITS UNLOCKED:</div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+                            <span>Tax-Free Childcare:</span>
+                            <strong id="tfc-unlocked">£2,000/year</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+                            <span>30 Hours Free Childcare:</span>
+                            <strong>£6,840/year</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+                            <span>Tax + NI saved on sacrifice:</span>
+                            <strong id="tax-saved">£2,100/year</strong>
+                        </div>
+                        <div style="border-top: 2px solid rgba(255,255,255,0.3); margin-top: 1rem; padding-top: 1rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-weight: 800; font-size: 1.125rem;">TOTAL ANNUAL SAVING:</span>
+                                <span style="font-weight: 900; font-size: 2rem;" id="total-unlock">£10,940</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px;">
+                        <strong>Net cost to you:</strong> Only <span id="net-cost">£2,901</span>/year (the money goes into your pension, not lost)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIDEO: Replace the src URL below with your actual video embed URL -->
+        <div style="background: #F3F4F6; border: 2px dashed #D1D5DB; border-radius: 12px; padding: 3rem 2rem; text-align: center; margin: 2rem 0;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">📺</div>
+            <div style="font-weight: 700; color: #374151; margin-bottom: 0.5rem;">Video: The £100k Cliff Edge Explained</div>
+            <div style="color: #9CA3AF; font-size: 0.875rem;">Short walkthrough of the salary sacrifice unlock strategy — coming soon</div>
+        </div>
+
+        <!-- Collapsible Sections -->
+        <h2 onclick="toggleSection(this)">Why Does The £100k Threshold Exist?</h2>
+        <div class="collapsible-content">
+            <p>The £100,000 threshold was introduced by HMRC as an eligibility limit for means-tested benefits. The logic: high earners don't need government subsidies for childcare.</p>
+            
+            <h3>The Two Benefits You Lose:</h3>
+            
+            <h4 style="margin-top: 1.5rem;">1. Tax-Free Childcare (£2,000/child/year)</h4>
+            <p>Government tops up your childcare account by 20%. You deposit £8,000, government adds £2,000 free. <strong>BOTH partners must each earn under £100k.</strong> If either crosses the threshold, the entire household is ineligible.</p>
+
+            <h4 style="margin-top: 1.5rem;">2. 30 Hours Free Childcare (£6,840/year)</h4>
+            <p>England-only scheme: 30 hours per week of free nursery for 38 weeks/year (9 months to 4 years old). Worth approximately £6,840/year at average nursery rates. Same rule: <strong>BOTH partners under £100k.</strong></p>
+
+            <h3 style="margin-top: 2rem;">The Real Cost</h3>
+            <p>For a family with one child aged 2:</p>
+            <ul>
+                <li>Earning £99,999: Gets £8,840/year in benefits</li>
+                <li>Earning £100,001: Gets £0 in benefits</li>
+                <li><strong>£2 extra income costs £8,840 in lost benefits</strong></li>
+            </ul>
+            <p style="margin-top: 1rem;">This is the most brutal cliff edge in the UK tax system.</p>
+        </div>
+
+        <h2 onclick="toggleSection(this)">How Salary Sacrifice Fixes This</h2>
+        <div class="collapsible-content">
+            <p>Salary sacrifice reduces your <strong>adjusted net income</strong> — the figure HMRC uses for benefit eligibility.</p>
+
+            <h3>How It Works:</h3>
+            <ol>
+                <li><strong>Current situation:</strong> You earn £105,000 gross salary</li>
+                <li><strong>Action:</strong> You salary sacrifice £5,001 into your pension</li>
+                <li><strong>Result:</strong> Your adjusted net income becomes £99,999</li>
+                <li><strong>Outcome:</strong> You're now eligible for Tax-Free Childcare + 30 Hours Free</li>
+            </ol>
+
+            <h3 style="margin-top: 2rem;">The Triple Win:</h3>
+            <div style="background: #F0FDF4; padding: 1.5rem; border-radius: 12px; margin: 1rem 0;">
+                <p style="margin: 0 0 0.5rem; color: #065F46;"><strong>Win 1:</strong> You save tax + NI on the £5,001 sacrificed (£2,100 at 42% rate)</p>
+                <p style="margin: 0 0 0.5rem; color: #065F46;"><strong>Win 2:</strong> You unlock £8,840/year in childcare benefits</p>
+                <p style="margin: 0; color: #065F46;"><strong>Win 3:</strong> The sacrificed money still belongs to you — it's in your pension</p>
+            </div>
+
+            <h3 style="margin-top: 2rem;">The Maths:</h3>
+            <ul>
+                <li>Sacrifice: £5,001</li>
+                <li>Tax + NI saved: £2,100</li>
+                <li>Benefits unlocked: £8,840</li>
+                <li><strong>Total gain: £10,940/year</strong></li>
+                <li><strong>Net cost to you: £2,901 (goes into pension)</strong></li>
+            </ul>
+
+            <p style="margin-top: 1.5rem; background: #DBEAFE; padding: 1rem; border-radius: 8px; color: #1E40AF;">
+                💡 <strong>Key insight:</strong> You're "spending" £2,901 to get £8,840 in benefits. That's a 304% return on investment.
+            </p>
+        </div>
+
+        <h2 onclick="toggleSection(this)">Step-by-Step: How To Implement</h2>
+        <div class="collapsible-content">
+            <h3>Week 1: Calculate and Request</h3>
+            <ol>
+                <li>Use the calculator above to determine your exact sacrifice amount</li>
+                <li>Email HR requesting salary sacrifice setup (template in Module 2)</li>
+                <li>Specify the exact monthly sacrifice amount (annual amount ÷ 12)</li>
+            </ol>
+
+            <h3 style="margin-top: 2rem;">Week 2: Sign and Confirm</h3>
+            <ol>
+                <li>HR will send you a new salary agreement to sign</li>
+                <li>Review carefully: ensure the gross salary reduction is correct</li>
+                <li>Ask payroll to confirm your new adjusted net income will be under £100k</li>
+                <li>Request written confirmation of the change</li>
+            </ol>
+
+            <h3 style="margin-top: 2rem;">Week 3: Apply for Benefits</h3>
+            <ol>
+                <li>Wait for your first payslip showing the reduced salary</li>
+                <li>Apply for Tax-Free Childcare at childcarechoices.gov.uk</li>
+                <li>Apply for 30 Hours Free at the same site</li>
+                <li>Both applications ask for your income — use your NEW reduced figure</li>
+            </ol>
+
+            <h3 style="margin-top: 2rem;">Week 4: Set Reminders</h3>
+            <ol>
+                <li>Tax-Free Childcare requires reconfirmation every 3 months</li>
+                <li>Set a recurring calendar reminder</li>
+                <li>Missing a reconfirmation suspends your account immediately</li>
+            </ol>
+
+            <div style="background: #FEF3C7; border-left: 4px solid #F59E0B; padding: 1rem; border-radius: 0 8px 8px 0; margin-top: 2rem;">
+                <p style="margin: 0; color: #92400E;"><strong>⚠️ Critical:</strong> Don't apply for benefits BEFORE your salary is reduced. HMRC will check your current income and reject you. Wait for the payslip.</p>
+            </div>
+        </div>
+
+        <h2 onclick="toggleSection(this)">Common Questions</h2>
+        <div class="collapsible-content">
+            <h3>What if my partner earns over £100k too?</h3>
+            <p>Both partners need to salary sacrifice below £100k. If Partner 1 earns £105k and Partner 2 earns £110k, BOTH need to sacrifice. Partner 1 sacrifices £5,001, Partner 2 sacrifices £10,001.</p>
+
+            <h3 style="margin-top: 2rem;">Can I salary sacrifice other things instead of pension?</h3>
+            <p>For the purpose of reducing adjusted net income, pension contributions are the most effective. Cycle-to-work and electric car schemes also reduce income but are capped at lower amounts.</p>
+
+            <h3 style="margin-top: 2rem;">What if I get a pay rise next year?</h3>
+            <p>You'll need to increase your sacrifice amount to stay under £100k. Review every January and adjust with HR.</p>
+
+            <h3 style="margin-top: 2rem;">Does this work if I'm self-employed?</h3>
+            <p>Self-employed people can make pension contributions that reduce adjusted net income for benefit eligibility. However, "salary sacrifice" specifically is an employment mechanism. See Module 4 for self-employed strategies.</p>
+
+            <h3 style="margin-top: 2rem;">What if my income varies month-to-month?</h3>
+            <p>HMRC looks at your annual income when you apply for benefits. If you're close to £100k, it's safer to sacrifice enough to create a buffer (e.g. drop to £97k instead of £99,999).</p>
+        </div>
+
+        <!-- Action Checklist -->
+        <div style="background: #DBEAFE; padding: 2rem; border-radius: 12px; margin: 3rem 0;">
+            <h3 style="margin: 0 0 1rem 0;">✅ Your Action Checklist</h3>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Calculate exact sacrifice amount using calculator above
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Email HR this week requesting salary sacrifice setup
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Review and sign new salary agreement
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Wait for first payslip showing reduced salary
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Apply for Tax-Free Childcare + 30 Hours Free
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Set quarterly TFC reconfirmation reminders
+            </label>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-top: 3rem;">
+            <a href="dashboard.html" class="btn btn-secondary">← Back to Dashboard</a>
+            <a href="module-1.html" class="btn btn-primary">Continue to Module 1 →</a>
+        </div>
+    </div>
+
+    <script>
+    function toggleSection(header) {
+        header.classList.toggle('collapsed');
+        const content = header.nextElementSibling;
+        content.classList.toggle('hidden');
+    }
+
+    function calculateUnlock() {
+        const income = parseInt(document.getElementById('unlock-income').value) || 100000;
+        const children = parseInt(document.getElementById('unlock-children').value) || 1;
+
+        if(income <= 100000) {
+            alert('Your income is already under £100k - you don\'t need to sacrifice!');
+            return;
+        }
+
+        const sacrificeNeeded = income - 99999;
+        const taxRate = income > 125140 ? 0.45 : 0.40;
+        const taxSaved = sacrificeNeeded * (taxRate + 0.02);
+        const tfcValue = Math.min(2000 * children, 2000 * 3); // Cap at 3 kids for display
+        const thirtyHrsValue = 6840;
+        const totalUnlock = tfcValue + thirtyHrsValue + taxSaved;
+        const netCost = sacrificeNeeded - taxSaved;
+
+        document.getElementById('sacrifice-amount').textContent = '£' + sacrificeNeeded.toLocaleString();
+        document.getElementById('tfc-unlocked').textContent = '£' + tfcValue.toLocaleString() + '/year';
+        document.getElementById('tax-saved').textContent = '£' + Math.round(taxSaved).toLocaleString() + '/year';
+        document.getElementById('total-unlock').textContent = '£' + Math.round(totalUnlock).toLocaleString();
+        document.getElementById('net-cost').textContent = '£' + Math.round(netCost).toLocaleString();
+
+        document.getElementById('unlock-results').style.display = 'block';
+        document.getElementById('unlock-results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // Auto-calculate on load if values present
+    window.addEventListener('DOMContentLoaded', () => {
+        if(document.getElementById('unlock-income').value > 100000) {
+            calculateUnlock();
+        }
+    });
+    </script>
+</body>
+</html>

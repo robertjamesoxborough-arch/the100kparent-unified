@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Personalised Tax Plan - The 100k Parent</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body{background:#F9FAFB}
+        .wrap{max-width:700px;margin:0 auto;padding:3rem 1.5rem;text-align:center}
+        .icon{width:80px;height:80px;background:#10B981;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 2rem;font-size:2.5rem}
+        .card{background:white;border-radius:16px;padding:2rem;margin:2rem 0;box-shadow:0 4px 24px rgba(0,0,0,.08);text-align:left}
+        .row{display:flex;justify-content:space-between;align-items:center;padding:1rem 0;border-bottom:1px solid #E5E7EB}
+        .row:last-child{border-bottom:none}
+        .btn-dl{background:linear-gradient(135deg,#10B981,#059669);color:white;padding:1rem 3rem;border:none;border-radius:12px;font-size:1.125rem;font-weight:700;cursor:pointer;width:100%;margin:1rem 0}
+        .btn-db{display:block;background:white;border:2px solid #10B981;color:#10B981;padding:1rem 3rem;border-radius:12px;font-size:1rem;font-weight:700;text-decoration:none;margin:1rem 0}
+        .gen{display:none;color:#10B981;font-weight:700;margin:1.5rem 0;font-size:1.125rem}
+    </style>
+</head>
+<body>
+<header class="header"><div class="container"><a href="/" class="logo"><div class="logo-icon">£</div><span>THE 100K PARENT</span></a></div></header>
+<div class="wrap">
+    <div class="icon">🎉</div>
+    <h1 style="margin-bottom:.5rem">Welcome! Your plan is ready.</h1>
+    <p style="color:#6B7280;font-size:1.125rem;margin-bottom:2rem">Your personalised PDF includes a full page for each relevant module with your exact savings numbers and step-by-step instructions.</p>
+    <div class="card">
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:2px solid #E5E7EB">
+            <div style="width:50px;height:50px;background:#10B981;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:white;flex-shrink:0">£</div>
+            <div><div style="font-weight:800;font-size:1.125rem" id="pname">Your Personalised Tax Plan</div><div style="color:#6B7280;font-size:.875rem">The 100k Parent · 2025/26 · <span id="ppages">12</span> pages</div></div>
+        </div>
+        <h3 style="margin:0 0 1.5rem;color:#0F172A">Your Annual Savings</h3>
+        <div class="row"><div><div style="font-weight:700">Tax-Free Childcare</div><div style="font-size:.875rem;color:#6B7280">20% government top-up</div></div><div style="font-weight:800;color:#10B981;font-size:1.25rem" id="ptfc">£2,000</div></div>
+        <div class="row" id="r30"><div><div style="font-weight:700">30 Hours Free Childcare</div><div style="font-size:.875rem;color:#6B7280">Free nursery hours</div></div><div style="font-weight:800;color:#10B981;font-size:1.25rem" id="p30">£6,840</div></div>
+        <div class="row" id="rsal"><div><div style="font-weight:700">Salary Sacrifice</div><div style="font-size:.875rem;color:#6B7280">Tax + NI saving</div></div><div style="font-weight:800;color:#10B981;font-size:1.25rem" id="psal">£1,824</div></div>
+        <div class="row" id="rspl"><div><div style="font-weight:700">Income Splitting</div><div style="font-size:.875rem;color:#6B7280">Optimize tax bands</div></div><div style="font-weight:800;color:#10B981;font-size:1.25rem" id="pspl">£3,500</div></div>
+        <div style="background:linear-gradient(135deg,#10B981,#059669);color:white;padding:1.5rem;border-radius:12px;margin-top:1.5rem;display:flex;justify-content:space-between;align-items:center"><div style="font-weight:700;font-size:1.125rem">Your Annual Total</div><div style="font-weight:900;font-size:2rem" id="ptot">£14,164</div></div>
+        <div style="background:#DBEAFE;padding:1rem;border-radius:8px;margin-top:1rem;font-size:.875rem;color:#1E40AF">📅 18-Year Lifetime Total: <strong id="plife">£127,200</strong></div>
+        <div style="margin-top:2rem;padding-top:1.5rem;border-top:2px solid #E5E7EB"><h3 style="margin:0 0 1rem;color:#0F172A">PDF includes full guide for:</h3><div id="mlist" style="display:flex;flex-direction:column;gap:.5rem"></div></div>
+    </div>
+    <button class="btn-dl" onclick="go()">⬇️ Download Your Personalised PDF Guide</button>
+    <div class="gen" id="gmsg">⏳ Building your personalised PDF... just a moment</div>
+    <a href="dashboard.html" class="btn-db">📚 Access Interactive Modules →</a>
+    <p style="color:#6B7280;font-size:.875rem;margin-top:2rem">Need help? Email hello@the100kparent.com</p>
+</div>
+<script>
+const p=JSON.parse(localStorage.getItem('userProfile')||'{}');
+const i1=p.income1||95000,i2=p.income2||0,ch=p.children||1,ca=p.childAge||2,em=p.employment||'employed',mc=p.monthlyChildcare||1500,fn=p.firstName||'Your';
+const tr=i1>125140?.45:i1>50270?.40:.20;
+const tfc=(i1<=100000&&i2<=100000)?Math.min(mc*12*.2,2000*ch):0;
+const h30=(ca>=.75&&ca<=4&&i1<=100000)?6840:0;
+const sal=em==='employed'?Math.min(mc*12*(tr+.02),6000*(tr+.02)):0;
+const dif=Math.abs(i1-i2);
+const spl=(i2>0&&dif>20000&&(em==='director'||em==='self-employed'))?Math.min(dif*.15,5000):0;
+const tot=tfc+h30+sal+spl+(em==='employed'?1000:0);
+const lif=(tfc*12)+(h30*4)+(sal*18)+(spl*18)+41447;
+
+const mods=[
+  // Module 0: £100k+ Unlock Strategy (only show if over £100k)
+  {n:0,t:'The £100k+ Unlock Strategy',c:[220,38,38],s:0,show:(i1>100000||i2>100000),
+   w:`At £100,000 income you hit a brutal cliff edge: HMRC blocks access to Tax-Free Childcare (£${Math.min(2000*ch,6000).toLocaleString()}/year) and 30 Hours Free Childcare (£6,840/year). You're losing £${Math.round(Math.min(2000*ch,6000)+6840).toLocaleString()}/year in benefits for earning just £1 too much. The fix: salary sacrifice ${i1>100000?'your':'your partner\'s'} income to £99,999. This unlocks the benefits AND saves you tax on the sacrificed amount — a triple win that can save £10,000-£18,000/year.`,
+   h:[
+    `Your ${i1>100000?'':'partner\'s '}income of £${Math.max(i1,i2).toLocaleString()} exceeds £100k — you're currently locked out of £${Math.round(Math.min(2000*ch,6000)+6840).toLocaleString()}/year in benefits`,
+    `Salary sacrifice £${Math.max(i1,i2)-99999} into pension to drop adjusted net income to £99,999 — this unlocks BOTH benefits instantly`,
+    `You save ${Math.round((tr+.02)*100)}% tax + NI on the sacrificed amount (£${Math.round((Math.max(i1,i2)-99999)*(tr+.02)).toLocaleString()}) so net cost is only £${Math.round((Math.max(i1,i2)-99999)*(1-tr-.02)).toLocaleString()}/year`,
+    `Total unlock: £${Math.round(Math.min(2000*ch,6000)+6840+(Math.max(i1,i2)-99999)*(tr+.02)).toLocaleString()}/year for a net cost of £${Math.round((Math.max(i1,i2)-99999)*(1-tr-.02)).toLocaleString()} — money that goes into your pension, not lost`
+   ],
+   st:[
+    `Use Module 0 online calculator to determine your exact sacrifice amount — precision matters here`,
+    `Email HR this week requesting salary sacrifice setup — include the exact monthly amount (annual ÷ 12)`,
+    `Sign new salary agreement and get written confirmation your adjusted net income will be £99,999`,
+    `Wait for first payslip showing reduced salary BEFORE applying for benefits — HMRC checks current income`,
+    `Apply for Tax-Free Childcare + 30 Hours Free at childcarechoices.gov.uk using your NEW income figure`
+   ],
+   w2:`CRITICAL: Do not apply for benefits until your salary is actually reduced. HMRC checks your current payslip and will reject you if you're still over £100k. Wait for the paperwork.`},
+  {n:1,t:'Tax-Free Childcare',c:[16,185,129],s:tfc,show:true,
+   w:`The government tops up your childcare account by 20p for every 80p you put in — up to £2,000 per child per year. Money goes into an HMRC-managed account, you top it up, and the government adds 20% within days. It covers nurseries, childminders, nannies, after-school clubs and holiday camps. You apply online in 15 minutes and funds are available immediately.`,
+   h:[
+    `Saves £${Math.round(tfc).toLocaleString()}/year for ${ch} child${ch>1?'ren':''} based on your £${mc.toLocaleString()}/month childcare spend`,
+    `Both you and your partner must each earn under £100,000 to qualify — salary sacrifice can fix this if you're over`,
+    `Eligible providers include nurseries, childminders, nannies, after-school and holiday clubs — not just nursery`,
+    `Critical: you must reconfirm your eligibility every 3 months or your account is suspended — set a phone reminder now`
+   ],
+   st:[
+    `Apply in 15 minutes at childcarechoices.gov.uk — you'll need your National Insurance number and employer details`,
+    `Deposit up to £8,000/year per child into the account — government automatically adds £2,000 free on top`,
+    `Log in and pay your childcare provider directly from the account using their Ofsted registration number`,
+    `Set a recurring calendar reminder every 3 months to reconfirm — missing this suspends your account instantly`
+   ],
+   w2:i1>100000?`Your income of £${i1.toLocaleString()} exceeds £100,000. Salary sacrifice to below £100k to unlock this benefit worth £${Math.round(tfc).toLocaleString()}/year.`:null},
+  {n:2,t:'Salary Sacrifice',c:[99,102,241],s:sal,show:em==='employed',
+   w:`Salary sacrifice means your employer reduces your gross salary before tax, then pays that amount into your pension instead. Because pension contributions come out before tax and National Insurance, you save on both. At your ${Math.round(tr*100)}% tax rate plus 2% NI, every £1,000 sacrificed only costs you £${Math.round((1-tr-.02)*1000)} net — the government pays the rest. Your employer also saves 13.8% NI on the amount, which you can use as a negotiating point.`,
+   h:[
+    `Your ${Math.round(tr*100)}% income tax rate plus 2% NI means you save ${Math.round((tr+.02)*100)}% on every pound sacrificed`,
+    `Sacrificing £${Math.round(sal/(tr+.02)).toLocaleString()}/year into pension saves you £${Math.round(sal).toLocaleString()}/year in tax`,
+    i1>100000?`Crucially: sacrificing £${(i1-99999).toLocaleString()} also drops your income below £100k, unlocking Tax-Free Childcare and 30 Hours Free`:`Your employer saves 13.8% employer NI — that's £${Math.round(sal/(tr+.02)*0.138).toLocaleString()}/year they save too`,
+    `Money still goes into your pension so you're not losing it — it's building your retirement fund tax-efficiently`
+   ],
+   st:[
+    `Email your HR team requesting a salary sacrifice arrangement — use the copy-paste template in Module 2 online`,
+    `Agree the monthly sacrifice amount with HR and sign a new salary agreement (legally required)`,
+    `Confirm with payroll the change will take effect from the next payroll cycle — usually within 30 days`,
+    `Review the amount every January — increase when income rises or childcare costs increase`
+   ],
+   w2:null},
+  {n:3,t:'Income Splitting',c:[139,92,246],s:spl,show:em==='director'||em==='self-employed',
+   w:`With an income gap of £${dif.toLocaleString()} between you and your partner, there is an opportunity to move taxable income into their lower tax band. As a company director or self-employed person, you can issue shares to your partner and pay dividends. They pay a much lower rate — 8.75% dividend tax vs your ${Math.round(tr*100)}% income tax. This saves £${Math.round(spl).toLocaleString()}/year in tax legally. HMRC permits this where the partner genuinely contributes to the business.`,
+   h:[
+    `Income splitting saves £${Math.round(spl).toLocaleString()}/year by moving profits into your partner's lower tax band`,
+    `Your partner pays 8.75% dividend tax vs your ${Math.round(tr*100)}% income tax — a saving of ${Math.round(tr*100-8.75)}% on every pound moved`,
+    `You issue shares to your partner through Companies House — a one-off process that takes about 1 hour and costs £12`,
+    `HMRC's 'settlements legislation' requires your partner to genuinely contribute work to the business — document this carefully`
+   ],
+   st:[
+    `Hold a board meeting (even as a sole director) and minute the decision to issue shares to your partner`,
+    `File Form SH01 with Companies House to officially issue the shares — costs £12 online, takes 1 week to process`,
+    `Open a business bank account if you haven't already — dividends must be paid from retained profit`,
+    `Keep a simple timesheet showing your partner's contributions — HMRC may ask for evidence in an enquiry`
+   ],
+   w2:`HMRC's settlements legislation means your partner must genuinely work in the business. Keep timesheets, email records and a written job description as evidence of their real role.`},
+  {n:4,t:'Business Expenses',c:[245,158,11],s:800,show:em==='self-employed',
+   w:`As a self-employed person, you can deduct legitimate business expenses from your profit before tax is calculated. At your ${Math.round(tr*100)}% tax rate, every £1,000 in valid expenses saves you £${Math.round(tr*1000)} in tax. Most self-employed parents miss £2,000-£5,000 in claimable expenses each year — particularly home office, mileage and equipment costs. HMRC requires you keep records for 6 years.`,
+   h:[
+    `Home office claim: measure your office as a proportion of total home floor space and claim that % of rent and utilities`,
+    `Business mileage: 45p per mile for first 10,000 miles, 25p after — every client visit, meeting and business errand counts`,
+    `Equipment: laptop, monitor, phone, software subscriptions, professional tools all fully deductible in year of purchase`,
+    `Training, books, professional memberships, accountant fees and relevant magazine subscriptions are all claimable`
+   ],
+   st:[
+    `Install MileIQ or Driversnote on your phone today — it automatically logs trips so you never miss a mile`,
+    `Measure your home office floor space and calculate it as a percentage of total home area for the proportion claim`,
+    `Open a dedicated business bank account — mixing personal and business transactions creates HMRC problems`,
+    `Use Dext or Expensify to photograph every receipt as it happens — a shoebox of receipts becomes a tax nightmare`
+   ],
+   w2:`HMRC requires 6 years of records. If you can't evidence a claim, it gets disallowed. Note: childcare is NOT a business expense — use Tax-Free Childcare for that. Keep clear separation between personal and business spending.`},
+  {n:5,t:'Child Benefit & High Income Charge',c:[220,38,38],s:i1>60000?2074:0,show:i1>60000||i2>60000,
+   w:`Child Benefit pays £1,331/year for your first child plus £881 for each additional child (2025/26). However the High Income Child Benefit Charge claws it back at 1% for every £100 your income exceeds £60,000. At your income of £${i1.toLocaleString()}, you ${i1>=80000?'lose all of it':'lose a significant portion'}. The solution is salary sacrifice — reducing your adjusted net income to below £60,000 saves the full benefit AND gives you tax/NI savings on the sacrificed amount.`,
+   h:[
+    `Child Benefit is worth £${(ch===1?1331:1331+(ch-1)*743).toLocaleString()}/year for ${ch} child${ch>1?'ren':''} — worth claiming even if you lose some to the charge`,
+    `The charge applies to adjusted net income — salary sacrifice and Gift Aid donations reduce this figure`,
+    `Sacrificing £${Math.max(0,i1-59999).toLocaleString()} into your pension would bring you below £60k and protect the full benefit`,
+    `Always keep claiming Child Benefit even if opting out of payments — it protects your National Insurance record`
+   ],
+   st:[
+    i1>80000?`Opt out of receiving Child Benefit payments at gov.uk/child-benefit-tax-charge to avoid Self Assessment hassle`:`Increase salary sacrifice by £${Math.max(0,i1-59999).toLocaleString()} to push adjusted net income below £60,000`,
+    `If opting out of payments, still submit the Child Benefit claim form — this protects NI credits worth thousands to your pension`,
+    `Register for Self Assessment if your income is over £60k — you must declare and pay the charge via tax return`,
+    `Review every January — income changes, pay rises or job changes can affect whether the charge applies`
+   ],
+   w2:i1>80000?`At £${i1.toLocaleString()} you currently lose 100% of Child Benefit (£${(ch===1?1331:1331+(ch-1)*743).toLocaleString()}/year). Salary sacrifice is the most tax-efficient way to recover this as it also saves income tax and NI.`:null},
+  {n:6,t:'Junior ISAs',c:[14,165,233],s:0,show:true,
+   w:`A Junior ISA is a tax-free investment account held in your child's name. Every penny of growth, every dividend and every capital gain is completely free of tax — forever. The annual contribution limit is £9,000 per child (2025/26). Invested from birth in a low-cost global index fund, £100 per month grows to £41,447 by age 18 at a 7% average annual return. Your child gains full control at 18. This is the single most powerful long-term wealth building tool available to UK families.`,
+   h:[
+    `£9,000 annual limit per child — parents, grandparents and family friends can all contribute`,
+    `£100/month from birth = £41,447 at age 18 using the historical 7% average annual return of global stock markets`,
+    `Stocks and Shares Junior ISA strongly recommended over Cash ISA for any investment horizon over 5 years`,
+    `Vanguard FTSE Global All Cap Index Fund at 0.23% annual fee invests in 7,000 companies across 50 countries`
+   ],
+   st:[
+    `Open a Vanguard Junior ISA online at vanguard.co.uk — takes 15 minutes and needs child's birth certificate`,
+    `Select 'Vanguard FTSE Global All Cap Index Fund' — this is the fund recommended by most independent financial planners`,
+    `Set up a monthly standing order from your bank account — even £50/month makes a transformative difference`,
+    `Do not stop contributions during market downturns — falling markets mean you're buying more units at discount prices`
+   ],
+   w2:null},
+  {n:7,t:'Employer Flexible Benefits',c:[236,72,153],s:1000,show:em==='employed',
+   w:`Most employees leave £1,000-£2,000/year of tax-free benefits unclaimed simply because they never ask. Your employer can provide certain benefits completely free of income tax — including cycle-to-work schemes, electric car leasing, private health insurance, enhanced pension contributions and season ticket loans. Your employer also saves 13.8% employer National Insurance on salary-sacrificed benefits, which is a powerful argument when you ask for them.`,
+   h:[
+    `Cycle to Work: buy a bike worth up to £3,500 through salary sacrifice — save 25-40% vs buying outright`,
+    `Electric car via salary sacrifice: pay benefit-in-kind tax of just 2% of list price — vs 20%+ for petrol cars`,
+    `Private health insurance: employer pays, you receive it as a benefit — taxable but still cheaper than buying direct`,
+    `Enhanced pension match: negotiate from 5% to 8% match — that's an extra £2,850/year free money on a £95k salary`
+   ],
+   st:[
+    `Read your employee handbook fully — many benefits exist but aren't prominently advertised to staff`,
+    `Email HR this week requesting the cycle-to-work scheme — use the copy-paste template in Module 7 online`,
+    `At your next annual review, specifically ask to negotiate an increased employer pension match percentage`,
+    `Ask HR about electric vehicle salary sacrifice — many large employers offer this but only if you ask directly`
+   ],
+   w2:null},
+  {n:8,t:'Your 18-Year Roadmap',c:[6,182,212],s:0,show:true,
+   w:`Combining all your relevant strategies, you save £${Math.round(tot).toLocaleString()}/year. That compounds over 18 years — with Junior ISA growth — to a lifetime total of £${Math.round(lif).toLocaleString()}. The key is starting everything now and reviewing once a year. Most families who implement all relevant strategies in year one save more in that first year than the cost of this guide multiplied by 50.`,
+   h:[
+    `Years 0-4: highest savings period — TFC + 30 Hours Free + salary sacrifice + Junior ISA all running simultaneously`,
+    `Years 5-11: Tax-Free Childcare continues covering after-school clubs and holiday camps worth £2,000/year`,
+    `Years 12-18: TFC ends at age 12, but Junior ISA enters its most powerful compounding phase`,
+    `Annual review every January 15th: check income, update TFC, review salary sacrifice, top up Junior ISA`
+   ],
+   st:[
+    `This week: apply for Tax-Free Childcare and open Vanguard Junior ISA — both take under 20 minutes each`,
+    `Within 14 days: email HR about salary sacrifice, confirm pension match percentage in writing`,
+    `Set recurring phone reminders: every 3 months for TFC reconfirmation, every January 15th for annual review`,
+    `If your income or employment situation changes, revisit the site — your relevant strategies may change`
+   ],
+   w2:null}
+].filter(m=>m.show);
+
+document.getElementById('ppages').textContent=mods.length+3;
+document.getElementById('pname').textContent=`${fn}'s Personalised Tax Plan`;
+document.getElementById('ptfc').textContent='£'+Math.round(tfc).toLocaleString();
+document.getElementById('p30').textContent='£'+Math.round(h30).toLocaleString();
+document.getElementById('psal').textContent='£'+Math.round(sal).toLocaleString();
+document.getElementById('pspl').textContent='£'+Math.round(spl).toLocaleString();
+document.getElementById('ptot').textContent='£'+Math.round(tot).toLocaleString();
+document.getElementById('plife').textContent='£'+Math.round(lif).toLocaleString();
+if(!h30)document.getElementById('r30').style.display='none';
+if(!sal)document.getElementById('rsal').style.display='none';
+if(!spl)document.getElementById('rspl').style.display='none';
+
+const ml=document.getElementById('mlist');
+mods.forEach(m=>{
+  const d=document.createElement('div');
+  d.style.cssText='display:flex;align-items:center;gap:.75rem;padding:.75rem;background:#F9FAFB;border-radius:8px;';
+  d.innerHTML=`<div style="width:28px;height:28px;background:rgb(${m.c.join(',')});border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:.75rem;flex-shrink:0">${m.n}</div><div style="font-weight:600;font-size:.9rem;flex:1">${m.t}</div>${m.s>0?`<div style="color:#10B981;font-weight:700;white-space:nowrap">£${Math.round(m.s).toLocaleString()}/yr</div>`:'<div style="color:#6B7280;font-size:.8rem">Included</div>'}`;
+  ml.appendChild(d);
+});
+
+function go(){
+  document.getElementById('gmsg').style.display='block';
+  setTimeout(makePDF,200);
+}
+
+function makePDF(){
+  const{jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const W=210, M=16, CW=W-M*2; // page width, margin, content width
+
+  // ── helpers ──────────────────────────────────────────────────
+  function hdr(col){
+    doc.setFillColor(...col);
+    doc.rect(0,0,W,14,'F');
+    doc.setTextColor(255,255,255);
+    doc.setFontSize(7);
+    doc.setFont('helvetica','bold');
+    doc.text(`THE 100K PARENT  ·  ${fn.toUpperCase()}'S PERSONALISED TAX PLAN  ·  2025/26 TAX YEAR`,M,9);
+  }
+
+  function ftr(){
+    doc.setFillColor(243,244,246);
+    doc.rect(0,283,W,14,'F');
+    doc.setTextColor(156,163,175);
+    doc.setFontSize(7);
+    doc.setFont('helvetica','normal');
+    doc.text('Educational content only · Not regulated financial advice · © 2026 The 100k Parent',M,290);
+    doc.setTextColor(16,185,129);
+    doc.setFont('helvetica','bold');
+    const u='the100kparent-unified.vercel.app/dashboard.html';
+    doc.text(u,W-M-doc.getTextWidth(u),290);
+  }
+
+  // wraps text and returns new Y
+  function txt(text, x, y, maxW, size, bold, color){
+    doc.setFontSize(size);
+    doc.setFont('helvetica', bold?'bold':'normal');
+    doc.setTextColor(...(color||[15,23,42]));
+    const lines=doc.splitTextToSize(text, maxW);
+    lines.forEach(l=>{doc.text(l,x,y); y+=size*0.45;});
+    return y;
+  }
+
+  // coloured pill label
+  function label(text, x, y, col){
+    doc.setFillColor(...col);
+    doc.roundedRect(x,y-4,doc.getTextWidth(text)+6,6,1.5,1.5,'F');
+    doc.setTextColor(255,255,255);
+    doc.setFontSize(7);
+    doc.setFont('helvetica','bold');
+    doc.text(text,x+3,y);
+  }
+
+  // section header bar
+  function sectionBar(text, x, y, w, col){
+    doc.setFillColor(...col);
+    doc.roundedRect(x,y,w,8,2,2,'F');
+    doc.setTextColor(255,255,255);
+    doc.setFontSize(8);
+    doc.setFont('helvetica','bold');
+    doc.text(text,x+4,y+5.5);
+    return y+11;
+  }
+
+  // ── COVER PAGE ────────────────────────────────────────────────
+  hdr([16,185,129]); ftr();
+
+  // Dark hero band
+  doc.setFillColor(15,23,42);
+  doc.rect(0,14,W,72,'F');
+
+  // Brand
+  doc.setTextColor(16,185,129);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(9);
+  doc.text('THE 100K PARENT',M,26);
+
+  // Name + title
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(28);
+  doc.text(`${fn}'s`,M,42);
+  doc.setFontSize(18);
+  doc.text('Personalised Tax Savings Plan',M,54);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  doc.setTextColor(156,163,175);
+  doc.text(`2025/26 Tax Year  ·  ${mods.length} Modules Selected  ·  Full step-by-step guide included`,M,64);
+
+  // Annual saving green banner
+  doc.setFillColor(16,185,129);
+  doc.roundedRect(M,74,CW,17,3,3,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(10);
+  doc.text('Annual Saving Potential:',M+5,84);
+  const bigNum='£'+Math.round(tot).toLocaleString()+'/year';
+  doc.setFontSize(16);
+  doc.text(bigNum, W-M-doc.getTextWidth(bigNum),84);
+
+  // Profile box
+  let y=100;
+  doc.setFillColor(248,250,252);
+  doc.roundedRect(M,y,CW,36,4,4,'F');
+  doc.setFillColor(229,231,235);
+  doc.roundedRect(M,y,CW,8,4,4,'F');
+  doc.roundedRect(M,y+4,CW,4,0,0,'F');
+  doc.setTextColor(107,114,128);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(7.5);
+  doc.text('YOUR PROFILE',M+4,y+5.5);
+
+  const col2=M+4+CW/2;
+  doc.setTextColor(15,23,42);
+  doc.setFontSize(9.5);
+  doc.setFont('helvetica','bold');
+  doc.text('Income:',M+4,y+17);
+  doc.setFont('helvetica','normal');
+  doc.text(`£${i1.toLocaleString()}${i2>0?' + £'+i2.toLocaleString():''}`,M+22,y+17);
+  doc.setFont('helvetica','bold');
+  doc.text('Employment:',M+4,y+26);
+  doc.setFont('helvetica','normal');
+  doc.text(em.charAt(0).toUpperCase()+em.slice(1),M+35,y+26);
+  doc.setFont('helvetica','bold');
+  doc.text(`Children:`,col2,y+17);
+  doc.setFont('helvetica','normal');
+  doc.text(`${ch}`,col2+21,y+17);
+  doc.setFont('helvetica','bold');
+  doc.text('Childcare:',col2,y+26);
+  doc.setFont('helvetica','normal');
+  doc.text(`£${mc.toLocaleString()}/month`,col2+23,y+26);
+
+  // Savings table
+  y=145;
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(13);
+  doc.setTextColor(15,23,42);
+  doc.text('Your Savings Summary',M,y);
+  y+=8;
+
+  const rows=[
+    ['Tax-Free Childcare','20% government top-up on childcare costs',tfc,true],
+    ['30 Hours Free Childcare','Free nursery hours (ages 9 months to 4 years)',h30,h30>0],
+    ['Salary Sacrifice',`Tax + NI saving at your ${Math.round(tr*100)}% rate`,sal,sal>0],
+    ['Income Splitting','Move profit into partner\'s lower tax band',spl,spl>0],
+    ['Junior ISA (18yr growth)','£100/month at 7% = £41,447 at age 18',41447,true],
+    ['Employer Benefits','Cycle-to-work, EV, pension match etc',1000,em==='employed'],
+  ].filter(r=>r[3]);
+
+  rows.forEach(([title,desc,amt],i)=>{
+    doc.setFillColor(i%2===0?248:255,i%2===0?250:255,i%2===0?252:255);
+    doc.rect(M,y,CW,14,'F');
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(9.5);
+    doc.setTextColor(15,23,42);
+    doc.text(title,M+4,y+6);
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(8);
+    doc.setTextColor(107,114,128);
+    doc.text(desc,M+4,y+11);
+    doc.setFont('helvetica','bold');
+    doc.setTextColor(16,185,129);
+    doc.setFontSize(10);
+    const sv=title.includes('ISA')?'£41,447 total':'£'+Math.round(amt).toLocaleString()+'/yr';
+    doc.text(sv,W-M-doc.getTextWidth(sv),y+8.5);
+    y+=15;
+  });
+
+  // Total row
+  y+=2;
+  doc.setFillColor(15,23,42);
+  doc.roundedRect(M,y,CW,13,3,3,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(10);
+  doc.text('Annual Total',M+5,y+9);
+  const ts='£'+Math.round(tot).toLocaleString();
+  doc.setTextColor(16,185,129);
+  doc.setFontSize(14);
+  doc.text(ts,W-M-doc.getTextWidth(ts)-2,y+9.5);
+
+  y+=16;
+  doc.setFillColor(219,234,254);
+  doc.roundedRect(M,y,CW,10,3,3,'F');
+  doc.setTextColor(30,64,175);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(8.5);
+  doc.text(`📅  18-Year Lifetime Total (inc. Junior ISA compound growth):  £${Math.round(lif).toLocaleString()}`,M+5,y+7);
+
+  // ── MODULE PAGES ──────────────────────────────────────────────
+  mods.forEach(m=>{
+    doc.addPage(); hdr(m.c); ftr();
+    let y=18;
+
+    // Module title band
+    doc.setFillColor(...m.c);
+    doc.roundedRect(M,y,CW,14,3,3,'F');
+    doc.setTextColor(255,255,255);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(12);
+    doc.text(`Module ${m.n}: ${m.t}`,M+5,y+9.5);
+
+    // Saving badge
+    if(m.s>0){
+      const badge='£'+Math.round(m.s).toLocaleString()+'/yr';
+      const bw=doc.getTextWidth(badge)+8;
+      doc.setFillColor(255,255,255);
+      doc.roundedRect(W-M-bw-2,y+4,bw,6,2,2,'F');
+      doc.setTextColor(...m.c);
+      doc.setFontSize(8);
+      doc.text(badge,W-M-bw+2,y+8.5);
+    }
+    y+=19;
+
+    // WHAT IS IT
+    doc.setFillColor(243,244,246);
+    doc.roundedRect(M,y,CW,8,2,2,'F');
+    doc.setTextColor(107,114,128);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(8);
+    doc.text('WHAT IS IT?',M+4,y+5.5);
+    y+=11;
+
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(9.5);
+    doc.setTextColor(15,23,42);
+    const wlines=doc.splitTextToSize(m.w, CW-4);
+    wlines.forEach(l=>{doc.text(l,M+4,y); y+=5;});
+    y+=6;
+
+    // HOW IT WORKS
+    doc.setFillColor(243,244,246);
+    doc.roundedRect(M,y,CW,8,2,2,'F');
+    doc.setTextColor(107,114,128);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(8);
+    doc.text('HOW IT WORKS FOR YOU',M+4,y+5.5);
+    y+=11;
+
+    m.h.forEach((pt,i)=>{
+      const ptlines=doc.splitTextToSize(pt, CW-18);
+      const rowH=Math.max(12, ptlines.length*5.2+5);
+
+      doc.setFillColor(i%2===0?248:255,i%2===0?250:255,i%2===0?252:255);
+      doc.roundedRect(M,y,CW,rowH,2,2,'F');
+
+      // number circle
+      doc.setFillColor(...m.c);
+      doc.circle(M+7,y+rowH/2,4,'F');
+      doc.setTextColor(255,255,255);
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(8);
+      doc.text(`${i+1}`,M+5.5,y+rowH/2+2.5);
+
+      doc.setTextColor(15,23,42);
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(9.5);
+      ptlines.forEach((l,li)=>doc.text(l,M+15,y+6+li*5.2));
+      y+=rowH+3;
+    });
+    y+=5;
+
+    // ACTION STEPS
+    doc.setFillColor(...m.c);
+    doc.roundedRect(M,y,CW,8,2,2,'F');
+    doc.setTextColor(255,255,255);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(8);
+    doc.text('YOUR ACTION STEPS',M+4,y+5.5);
+    y+=11;
+
+    m.st.forEach((st,i)=>{
+      const stlines=doc.splitTextToSize(st, CW-18);
+      const rowH=Math.max(12, stlines.length*5.2+5);
+
+      doc.setFillColor(240,253,244);
+      doc.roundedRect(M,y,CW,rowH,2,2,'F');
+
+      doc.setFillColor(...m.c);
+      doc.roundedRect(M+3,y+(rowH-6)/2,6,6,1.5,1.5,'F');
+      doc.setTextColor(255,255,255);
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(8);
+      doc.text(`${i+1}`,M+4.8,y+(rowH-6)/2+4.5);
+
+      doc.setTextColor(15,23,42);
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(9.5);
+      stlines.forEach((l,li)=>doc.text(l,M+13,y+6+li*5.2));
+      y+=rowH+3;
+    });
+
+    // Warning box
+    if(m.w2){
+      y+=4;
+      const warnlines=doc.splitTextToSize(m.w2, CW-12);
+      const warnH=warnlines.length*5+10;
+      doc.setFillColor(254,243,199);
+      doc.roundedRect(M,y,CW,warnH,3,3,'F');
+      doc.setFillColor(245,158,11);
+      doc.roundedRect(M,y,4,warnH,3,0,'F');
+      doc.roundedRect(M,y,4,warnH,0,3,'F');
+      doc.setTextColor(146,64,14);
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(8);
+      doc.text('⚠  Important:',M+8,y+7);
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(8.5);
+      warnlines.forEach((l,li)=>doc.text(l,M+8,y+13+li*5));
+      y+=warnH+5;
+    }
+
+    // Module link footer
+    y+=4;
+    doc.setFillColor(15,23,42);
+    doc.roundedRect(M,y,CW,13,3,3,'F');
+    doc.setTextColor(156,163,175);
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(8);
+    doc.text('Full interactive module with live calculators, video guides and templates:',M+4,y+5.5);
+    doc.setTextColor(16,185,129);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(9);
+    doc.text(`the100kparent-unified.vercel.app/module-${m.n}.html`,M+4,y+10.5);
+  });
+
+  // ── ACTION PLAN PAGE ──────────────────────────────────────────
+  doc.addPage(); hdr([16,185,129]); ftr();
+
+  doc.setFillColor(15,23,42);
+  doc.rect(0,14,W,22,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(18);
+  doc.text('Your 30-Day Action Plan',M,28);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  doc.setTextColor(156,163,175);
+  doc.text(`Start today and you'll be saving £${Math.round(tot).toLocaleString()}/year within 30 days.`,M,36);
+
+  let yf=42;
+  const weeks=[
+    {lb:'THIS WEEK',col:[16,185,129],items:[
+      'Apply for Tax-Free Childcare at childcarechoices.gov.uk — takes 15 minutes, starts saving immediately',
+      h30>0?'Apply for 30 Hours Free Childcare at the same time — same website, doubles your childcare savings':null,
+      em==='employed'?'Email HR requesting salary sacrifice setup — use the copy-paste template in Module 2':null,
+      em!=='employed'?'Install MileIQ on your phone to automatically track business mileage from today':null,
+      'Open a Vanguard Junior ISA at vanguard.co.uk — 15 minutes, needs child\'s birth date',
+    ].filter(Boolean)},
+    {lb:'WEEK 2',col:[99,102,241],items:[
+      'Set up a monthly standing order to Junior ISA — even £50/month starts building the tax-free pot',
+      em==='employed'?'Email HR to confirm pension match percentage in writing — this is money you may be leaving behind':null,
+      i1>60000?`Confirm salary sacrifice amount to bring adjusted net income below £60,000 — protects Child Benefit`:null,
+      em==='director'||em==='self-employed'?'Schedule meeting with accountant to discuss income splitting structure and optimal dividend amount':null,
+      'Download 18-year tracking spreadsheet from the templates page and fill in your numbers',
+    ].filter(Boolean)},
+    {lb:'WITHIN 30 DAYS',col:[245,158,11],items:[
+      'Set a recurring phone reminder every 3 months to reconfirm Tax-Free Childcare — missing this suspends your account',
+      `Complete all ${mods.length} modules in your interactive online dashboard — each has a calculator for your exact numbers`,
+      'Add January 15th as a recurring annual calendar event labelled "Annual Tax Review" — review all strategies every year',
+      'If your income or employment situation changes at any point, revisit the site to update your personalised plan',
+    ]},
+  ];
+
+  weeks.forEach(sec=>{
+    const secH=8;
+    doc.setFillColor(...sec.col);
+    doc.roundedRect(M,yf,CW,secH,3,3,'F');
+    doc.setTextColor(255,255,255);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(9);
+    doc.text(sec.lb,M+5,yf+5.8);
+    yf+=secH+3;
+
+    sec.items.forEach(it=>{
+      const itlines=doc.splitTextToSize(it, CW-18);
+      const rh=Math.max(11,itlines.length*4.8+5);
+
+      doc.setFillColor(248,250,252);
+      doc.roundedRect(M,yf,CW,rh,2,2,'F');
+
+      doc.setFillColor(...sec.col);
+      doc.circle(M+6,yf+rh/2,3.5,'F');
+      doc.setTextColor(255,255,255);
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(7);
+      doc.text('✓',M+4.5,yf+rh/2+2.2);
+
+      doc.setTextColor(15,23,42);
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(9);
+      itlines.forEach((l,li)=>doc.text(l,M+13,yf+5.5+li*4.8));
+      yf+=rh+2;
+    });
+    yf+=5;
+  });
+
+  // Final CTA
+  yf+=3;
+  doc.setFillColor(16,185,129);
+  doc.roundedRect(M,yf,CW,24,4,4,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(12);
+  doc.text('Access Your Interactive Modules Online',M+5,yf+9);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  doc.text('Full calculators, step-by-step video guides and downloadable templates for every strategy:',M+5,yf+15.5);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(10);
+  doc.text('the100kparent-unified.vercel.app/dashboard.html',M+5,yf+22);
+
+  doc.save(`The-100k-Parent-${fn}-Tax-Plan.pdf`);
+  document.getElementById('gmsg').style.display='none';
+}
+
+setTimeout(go,1500);
+</script>
+</body>
+</html>

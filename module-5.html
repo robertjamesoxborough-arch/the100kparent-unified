@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 5: Child Benefit Tax Charge - The 100k Parent</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .module-content { max-width: 800px; margin: 0 auto; padding: 3rem 1.5rem; }
+        .module-content h2 { margin-top: 3rem; margin-bottom: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
+        .module-content h2:hover { color: #10B981; }
+        .module-content h2::before { content: '▼'; font-size: 0.8em; transition: transform 0.3s; }
+        .module-content h2.collapsed::before { transform: rotate(-90deg); }
+        .collapsible-content { max-height: 2000px; overflow: hidden; transition: max-height 0.3s ease; }
+        .collapsible-content.hidden { max-height: 0; }
+        .threshold-widget { background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%); padding: 2rem; border-radius: 16px; margin: 2rem 0; color: white; }
+        .slider-container { margin: 1.5rem 0; }
+        .slider { width: 100%; height: 8px; border-radius: 4px; background: rgba(255,255,255,0.3); outline: none; }
+        .slider::-webkit-slider-thumb { width: 24px; height: 24px; border-radius: 50%; background: #10B981; cursor: pointer; }
+        .threshold-bar { height: 60px; background: linear-gradient(90deg, #10B981 0%, #10B981 60%, #FBBF24 60%, #FBBF24 80%, #DC2626 80%, #DC2626 100%); border-radius: 8px; position: relative; margin: 2rem 0; }
+        .threshold-marker { position: absolute; top: -30px; transform: translateX(-50%); font-size: 0.875rem; font-weight: 700; }
+        .income-pointer { position: absolute; width: 4px; height: 80px; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.3); top: -10px; transition: left 0.3s; }
+        .quick-wins { background: #FEF3C7; border-left: 4px solid #F59E0B; padding: 1.5rem; border-radius: 0 12px 12px 0; margin: 2rem 0; }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; margin: 2rem 0; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 12px; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="/" class="logo">
+                <div class="logo-icon">£</div>
+                <span>THE 100K PARENT</span>
+            </a>
+            <nav class="nav">
+                <a href="dashboard.html">← Dashboard</a>
+                <a href="module-6.html">Next Module →</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero" style="padding: 3rem 0;">
+        <div class="container">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <span class="module-number">MODULE 5 OF 8</span>
+                <h1 style="color: white; margin: 1rem 0;">High Income Child Benefit Charge</h1>
+                <p style="color: rgba(255,255,255,0.85); font-size: 1.25rem; margin-bottom: 1.5rem;">Navigate the £60k cliff edge without losing £2,074/year</p>
+                <div style="display: flex; gap: 2rem; color: rgba(255,255,255,0.9);">
+                    <span>⏱ 14 minutes</span>
+                    <span>💰 Keep £2,074/year</span>
+                    <span>⚠️ Income £60k-£80k</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="module-content">
+        <!-- Quick Wins -->
+        <div class="quick-wins">
+            <h3 style="margin: 0 0 1rem 0;">⚡ Quick Wins (Start Today)</h3>
+            <ol style="margin: 0; padding-left: 1.5rem;">
+                <li><strong>Use calculator below (2 min) → Keep £2,074/year</strong><br>See exactly how much you'll lose at different incomes</li>
+                <li><strong>Salary sacrifice to stay under £60k (15 min)</strong><br>Combine with Module 2 pension strategy</li>
+                <li><strong>Opt out if over £80k (10 min)</strong><br>File form online to stop losing money</li>
+            </ol>
+        </div>
+
+        <!-- Interactive Threshold Calculator -->
+        <div class="threshold-widget">
+            <h3 style="margin: 0 0 1.5rem 0;">💰 The £60k-£80k Cliff Edge</h3>
+            <p style="opacity: 0.9; margin-bottom: 2rem;">Drag the slider to see how your income affects Child Benefit</p>
+            
+            <div class="slider-container">
+                <label style="display: block; margin-bottom: 0.5rem;">Your Adjusted Net Income: <span id="income-display">£65,000</span></label>
+                <input type="range" class="slider" id="income-slider" min="55000" max="85000" step="1000" value="65000">
+            </div>
+
+            <div class="slider-container">
+                <label style="display: block; margin-bottom: 0.5rem;">Number of Children: <span id="children-display">2</span></label>
+                <input type="range" class="slider" id="children-slider" min="1" max="5" step="1" value="2">
+            </div>
+
+            <!-- Visual Threshold Bar -->
+            <div style="margin: 2rem 0;">
+                <div class="threshold-bar">
+                    <div class="threshold-marker" style="left: 0%;">£55k<br>✅ Safe</div>
+                    <div class="threshold-marker" style="left: 60%;">£60k<br>⚠️ Start</div>
+                    <div class="threshold-marker" style="left: 80%;">£70k<br>⚠️ 50%</div>
+                    <div class="threshold-marker" style="right: 0%; transform: translateX(50%);">£80k<br>❌ Lost</div>
+                    <div class="income-pointer" id="income-pointer"></div>
+                </div>
+                <div style="text-align: center; margin-top: 1rem; font-size: 0.875rem;">
+                    <span style="color: rgba(255,255,255,0.7);">Your position on the cliff edge</span>
+                </div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.15); padding: 2rem; border-radius: 12px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div>
+                        <div style="opacity: 0.8; margin-bottom: 0.5rem;">Total Child Benefit</div>
+                        <div style="font-size: 2rem; font-weight: 800;" id="total-benefit">£2,074</div>
+                    </div>
+                    <div>
+                        <div style="opacity: 0.8; margin-bottom: 0.5rem;">Tax Charge</div>
+                        <div style="font-size: 2rem; font-weight: 800; color: #FCA5A5;" id="tax-charge">£0</div>
+                    </div>
+                </div>
+                <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid rgba(255,255,255,0.2); text-align: center;">
+                    <div style="opacity: 0.8; margin-bottom: 0.5rem;">You Keep</div>
+                    <div style="font-size: 3rem; font-weight: 900;" id="amount-kept">£2,074</div>
+                </div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; font-size: 0.9rem; margin-top: 1.5rem;">
+                💡 <strong>Pro Tip:</strong> Sacrifice <span id="sacrifice-amount">£0</span> to pension to drop below £60k threshold
+            </div>
+        </div>
+
+        <!-- Video Embed -->
+        <div class="video-container">
+            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <p style="text-align: center; color: #6B7280; font-size: 0.875rem;">📺 Video: Child Benefit High Income Charge Explained (3 min)</p>
+
+        <!-- Collapsible Sections -->
+        <h2 onclick="toggleSection(this)">How The Charge Works</h2>
+        <div class="collapsible-content">
+            <p>The High Income Child Benefit Charge (HICBC) claws back Child Benefit if you or your partner earn over £60,000.</p>
+            
+            <h3>The Rules:</h3>
+            <ul>
+                <li><strong>Under £60k:</strong> Keep full Child Benefit (no charge)</li>
+                <li><strong>£60k-£80k:</strong> Pay back 1% for every £100 over £60k</li>
+                <li><strong>Over £80k:</strong> Pay back 100% (lose all Child Benefit)</li>
+            </ul>
+
+            <div style="background: #F9FAFB; padding: 1.5rem; border-radius: 12px; margin: 1.5rem 0;">
+                <h4>Example: Sarah earns £65,000 with 2 children</h4>
+                <p><strong>Child Benefit:</strong> £2,074/year</p>
+                <p><strong>Over threshold:</strong> £65,000 - £60,000 = £5,000</p>
+                <p><strong>Charge rate:</strong> £5,000 ÷ £100 = 50% of benefit</p>
+                <p><strong>Tax charge:</strong> £2,074 × 50% = £1,037</p>
+                <p><strong>She keeps:</strong> £1,037</p>
+            </div>
+
+            <div style="background: #FEE2E2; padding: 1.5rem; border-radius: 12px; margin: 1.5rem 0;">
+                <h4>⚠️ Critical: It's HOUSEHOLD income</h4>
+                <p>The charge applies to the highest earner in the household. If your partner earns £75k and you earn £40k, you'll pay the charge based on £75k.</p>
+            </div>
+        </div>
+
+        <h2 onclick="toggleSection(this)">3 Strategies to Keep Your Benefit</h2>
+        <div class="collapsible-content">
+            <h3>Strategy 1: Salary Sacrifice to £59,999 ✅ BEST</h3>
+            <p>Sacrifice enough salary to pension to drop your adjusted net income below £60,000.</p>
+            <p><strong>Example:</strong> Earn £65k → Sacrifice £5,001 → Stay at £59,999 → Keep full £2,074</p>
+            <p><strong>Bonus:</strong> The £5,001 also saves you tax + NI (£2,100 saved)</p>
+            <p><strong>Total benefit:</strong> £2,074 + £2,100 = £4,174/year</p>
+
+            <h3 style="margin-top: 2rem;">Strategy 2: Gift Aid Donations</h3>
+            <p>Charitable donations reduce your adjusted net income for HICBC purposes.</p>
+            <p><strong>Example:</strong> Earn £62k → Donate £2k → Adjusted income £60k → Keep benefit</p>
+            <p><strong>Cost:</strong> £2,000 donation to keep £2,074 benefit = £74 gain</p>
+
+            <h3 style="margin-top: 2rem;">Strategy 3: Opt Out (if over £80k)</h3>
+            <p>If earning over £80k, opt out of Child Benefit entirely to avoid tax return hassle.</p>
+            <p><strong>BUT:</strong> Still claim it! Just opt out of receiving payment. This protects National Insurance credits.</p>
+            
+            <div style="background: #DBEAFE; padding: 1.5rem; border-radius: 12px; margin: 1.5rem 0;">
+                <h4>💡 Why Still Claim Even If Opting Out?</h4>
+                <p>Claiming protects your NI record even if you don't receive payment. This matters for state pension later.</p>
+            </div>
+        </div>
+
+        <h2 onclick="toggleSection(this)">How to Opt Out</h2>
+        <div class="collapsible-content">
+            <p>If you're over £80k and don't want the admin of claiming then paying back:</p>
+            
+            <ol>
+                <li><strong>Go to:</strong> gov.uk/child-benefit-tax-charge</li>
+                <li><strong>Sign in</strong> to your Government Gateway account</li>
+                <li><strong>Select:</strong> "I want to opt out of getting Child Benefit payments"</li>
+                <li><strong>Confirm</strong> - Takes effect from next payment</li>
+            </ol>
+
+            <p style="margin-top: 1.5rem;"><strong>Important:</strong> You still need to file a Self Assessment tax return if you've received ANY Child Benefit payments during the year, even if you opt out mid-year.</p>
+        </div>
+
+        <h2 onclick="toggleSection(this)">Common Mistakes</h2>
+        <div class="collapsible-content">
+            <ol>
+                <li><strong>❌ Not filing tax return</strong><br>HMRC will charge penalties if you don't report the charge</li>
+                
+                <li><strong>❌ Using gross income</strong><br>It's ADJUSTED net income (after pension contributions, not before)</li>
+                
+                <li><strong>❌ Opting out unnecessarily</strong><br>If earning £60k-£80k, keep some benefit rather than opt out</li>
+                
+                <li><strong>❌ Forgetting NI credits</strong><br>Always claim even if opting out of payment</li>
+                
+                <li><strong>❌ Not combining with pension</strong><br>Salary sacrifice is the most efficient way to stay under £60k</li>
+            </ol>
+        </div>
+
+        <!-- Action Checklist -->
+        <div style="background: #DBEAFE; padding: 2rem; border-radius: 12px; margin: 3rem 0;">
+            <h3 style="margin: 0 0 1rem 0;">✅ Your Action Checklist</h3>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Calculate my exact charge using slider above
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Set up salary sacrifice if earning £60k-£80k
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Opt out online if earning over £80k
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Register for Self Assessment (if not already)
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Review annually as income changes
+            </label>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-top: 3rem;">
+            <a href="module-4.html" class="btn btn-secondary">← Previous Module</a>
+            <a href="module-6.html" class="btn btn-primary">Next Module →</a>
+        </div>
+    </div>
+
+    <script>
+    // Collapsible sections
+    function toggleSection(header) {
+        header.classList.toggle('collapsed');
+        const content = header.nextElementSibling;
+        content.classList.toggle('hidden');
+    }
+
+    // Child Benefit Calculator
+    const incomeSlider = document.getElementById('income-slider');
+    const childrenSlider = document.getElementById('children-slider');
+    const incomeDisplay = document.getElementById('income-display');
+    const childrenDisplay = document.getElementById('children-display');
+    const totalBenefit = document.getElementById('total-benefit');
+    const taxCharge = document.getElementById('tax-charge');
+    const amountKept = document.getElementById('amount-kept');
+    const incomePointer = document.getElementById('income-pointer');
+    const sacrificeAmount = document.getElementById('sacrifice-amount');
+
+    function calculateCharge() {
+        const income = parseInt(incomeSlider.value);
+        const children = parseInt(childrenSlider.value);
+
+        incomeDisplay.textContent = '£' + income.toLocaleString();
+        childrenDisplay.textContent = children;
+
+        // Child Benefit rates 2025/26
+        const firstChild = 1331; // £25.60/week
+        const otherChildren = (children - 1) * 743; // £14.30/week each
+        const total = firstChild + otherChildren;
+
+        totalBenefit.textContent = '£' + total.toLocaleString();
+
+        // Calculate charge
+        let charge = 0;
+        if (income > 80000) {
+            charge = total; // 100% clawed back
+        } else if (income > 60000) {
+            const excess = income - 60000;
+            const chargePercent = excess / 100; // 1% per £100
+            charge = Math.min(total, (total * chargePercent) / 100);
+        }
+
+        const kept = total - charge;
+
+        taxCharge.textContent = '£' + Math.round(charge).toLocaleString();
+        amountKept.textContent = '£' + Math.round(kept).toLocaleString();
+
+        // Update visual pointer
+        const pointerPosition = ((income - 55000) / 30000) * 100;
+        incomePointer.style.left = Math.min(100, Math.max(0, pointerPosition)) + '%';
+
+        // Calculate sacrifice needed
+        if (income > 60000) {
+            const needToSacrifice = income - 59999;
+            sacrificeAmount.textContent = '£' + needToSacrifice.toLocaleString();
+        } else {
+            sacrificeAmount.textContent = '£0';
+        }
+    }
+
+    incomeSlider.addEventListener('input', calculateCharge);
+    childrenSlider.addEventListener('input', calculateCharge);
+    calculateCharge();
+    </script>
+</body>
+</html>

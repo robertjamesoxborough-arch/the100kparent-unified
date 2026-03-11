@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 2: Salary Sacrifice - The 100k Parent</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .module-content { max-width: 800px; margin: 0 auto; padding: 3rem 1.5rem; }
+        .module-content h2 { margin-top: 3rem; margin-bottom: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
+        .module-content h2:hover { color: #10B981; }
+        .module-content h2::before { content: '▼'; font-size: 0.8em; transition: transform 0.3s; }
+        .module-content h2.collapsed::before { transform: rotate(-90deg); }
+        .collapsible-content { max-height: 2000px; overflow: hidden; transition: max-height 0.3s ease; }
+        .collapsible-content.hidden { max-height: 0; }
+        .calculator-widget { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 2rem; border-radius: 16px; margin: 2rem 0; color: white; }
+        .slider-container { margin: 1.5rem 0; }
+        .slider { width: 100%; height: 8px; border-radius: 4px; background: rgba(255,255,255,0.3); outline: none; }
+        .slider::-webkit-slider-thumb { width: 24px; height: 24px; border-radius: 50%; background: #10B981; cursor: pointer; }
+        .result-box { background: rgba(255,255,255,0.15); padding: 1.5rem; border-radius: 12px; margin: 1rem 0; }
+        .quick-wins { background: #FEF3C7; border-left: 4px solid #F59E0B; padding: 1.5rem; border-radius: 0 12px 12px 0; margin: 2rem 0; }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; margin: 2rem 0; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 12px; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="/" class="logo">
+                <div class="logo-icon">£</div>
+                <span>THE 100K PARENT</span>
+            </a>
+            <nav class="nav">
+                <a href="dashboard.html">← Dashboard</a>
+                <a href="module-3.html">Next Module →</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero" style="padding: 3rem 0;">
+        <div class="container">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <span class="module-number">MODULE 2 OF 8</span>
+                <h1 style="color: white; margin: 1rem 0;">Salary Sacrifice Schemes</h1>
+                <p style="color: rgba(255,255,255,0.85); font-size: 1.25rem; margin-bottom: 1.5rem;">Reduce your tax and NI bill through strategic pension contributions</p>
+                <div style="display: flex; gap: 2rem; color: rgba(255,255,255,0.9);">
+                    <span>⏱ 12 minutes</span>
+                    <span>💰 Save £1,000-£3,000/year</span>
+                    <span>✓ HMRC Compliant</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="module-content">
+        <!-- Quick Wins -->
+        <div class="quick-wins">
+            <h3 style="margin: 0 0 1rem 0;">⚡ Quick Wins (Start Today)</h3>
+            <ol style="margin: 0; padding-left: 1.5rem;">
+                <li><strong>Email HR (15 min) → Save £1,000-£3,000/year</strong><br>Use the template below to request salary sacrifice setup</li>
+                <li><strong>Calculate your exact savings (5 min)</strong><br>Use the calculator below to see your tax + NI savings</li>
+                <li><strong>Set up next month (0 min)</strong><br>Most employers can start salary sacrifice within 30 days</li>
+            </ol>
+        </div>
+
+        <!-- Interactive Calculator -->
+        <div class="calculator-widget">
+            <h3 style="margin: 0 0 1.5rem 0;">💰 Your Salary Sacrifice Calculator</h3>
+            
+            <div class="slider-container">
+                <label style="display: block; margin-bottom: 0.5rem;">Your Annual Salary: <span id="salary-display">£95,000</span></label>
+                <input type="range" class="slider" id="salary-slider" min="50000" max="200000" step="5000" value="95000">
+            </div>
+
+            <div class="slider-container">
+                <label style="display: block; margin-bottom: 0.5rem;">Monthly Sacrifice Amount: <span id="sacrifice-display">£500</span></label>
+                <input type="range" class="slider" id="sacrifice-slider" min="0" max="3000" step="100" value="500">
+            </div>
+
+            <div class="result-box">
+                <h4 style="margin: 0 0 1rem 0;">Your Annual Savings:</h4>
+                <div style="font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem;" id="total-saving">£0</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.9rem;">
+                    <div>
+                        <div style="opacity: 0.8;">Tax Saved:</div>
+                        <div style="font-size: 1.5rem; font-weight: 700;" id="tax-saved">£0</div>
+                    </div>
+                    <div>
+                        <div style="opacity: 0.8;">NI Saved:</div>
+                        <div style="font-size: 1.5rem; font-weight: 700;" id="ni-saved">£0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; font-size: 0.9rem;">
+                💡 <strong>Pro Tip:</strong> If earning over £100k, sacrifice enough to drop below £100k to keep Tax-Free Childcare (worth £2,000/child)
+            </div>
+        </div>
+
+        <!-- Video Embed -->
+        <div class="video-container">
+            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <p style="text-align: center; color: #6B7280; font-size: 0.875rem;">📺 Video: Salary Sacrifice Explained (3 min)</p>
+
+        <!-- Collapsible Sections -->
+        <h2 onclick="toggleSection(this)">How Salary Sacrifice Works</h2>
+        <div class="collapsible-content">
+            <p>Salary sacrifice lets you trade salary for pension contributions BEFORE tax. This means you save both Income Tax and National Insurance.</p>
+            
+            <p><strong>The Magic Formula:</strong></p>
+            <p>Your employer takes £X from your salary → Puts £X into your pension → You save tax + NI on £X</p>
+
+            <div style="background: #F9FAFB; padding: 1.5rem; border-radius: 12px; margin: 1.5rem 0;">
+                <h4>Example: Sarah earns £95,000</h4>
+                <p><strong>Without salary sacrifice:</strong><br>
+                Pays 40% tax + 2% NI on £2,000/month childcare = £1,008/month (£12,096/year) after tax</p>
+                
+                <p><strong>With salary sacrifice:</strong><br>
+                Sacrifices £2,000/month to pension = Only costs £1,160/month (£13,920/year)<br>
+                <strong>Annual saving: £1,824</strong></p>
+            </div>
+        </div>
+
+        <h2 onclick="toggleSection(this)">Step-by-Step Setup Guide</h2>
+        <div class="collapsible-content">
+            <ol>
+                <li><strong>Check eligibility (2 min)</strong><br>Must be employed (PAYE), not self-employed</li>
+                <li><strong>Email HR (15 min)</strong><br>Use template below</li>
+                <li><strong>HR processes request (1-2 weeks)</strong><br>They'll send paperwork</li>
+                <li><strong>Sign agreement (5 min)</strong><br>Confirm monthly amount</li>
+                <li><strong>Setup complete (30 days)</strong><br>Starts next payroll cycle</li>
+            </ol>
+
+            <div style="background: white; border: 2px solid #E5E7EB; padding: 1.5rem; border-radius: 12px; margin: 2rem 0;">
+                <h4>📧 Copy-Paste Email Template:</h4>
+                <pre style="background: #F9FAFB; padding: 1rem; border-radius: 8px; overflow-x: auto; font-size: 0.875rem;">
+Subject: Salary Sacrifice Pension Request
+
+Hi [HR Manager],
+
+I'd like to set up a salary sacrifice arrangement for pension contributions.
+
+Details:
+- Current salary: £[your salary]
+- Monthly sacrifice: £[amount]
+- Start date: [next month]
+
+This will help me optimize my tax position while building my pension.
+
+Could you send me the necessary forms?
+
+Thanks,
+[Your name]
+                </pre>
+            </div>
+        </div>
+
+        <h2 onclick="toggleSection(this)">Common Mistakes to Avoid</h2>
+        <div class="collapsible-content">
+            <ol>
+                <li><strong>❌ Sacrificing too much</strong><br>Keep salary above £12,570 to maintain personal allowance</li>
+                <li><strong>❌ Forgetting employer match</strong><br>Many employers match up to 5% - make sure you get it</li>
+                <li><strong>❌ Not combining with Tax-Free Childcare</strong><br>Can use BOTH schemes simultaneously</li>
+                <li><strong>❌ Ignoring the £100k cliff edge</strong><br>If earning £100k+, sacrifice to drop below threshold</li>
+            </ol>
+        </div>
+
+        <h2 onclick="toggleSection(this)">Advanced Strategies</h2>
+        <div class="collapsible-content">
+            <p><strong>Strategy 1: The £100k Sweet Spot</strong><br>
+            If earning £105k, sacrifice £5k to drop to £100k. This keeps Tax-Free Childcare eligibility (worth £2,000/child) PLUS saves tax/NI on £5k.</p>
+
+            <p><strong>Strategy 2: Maximize Employer Match</strong><br>
+            If employer matches up to 5%, sacrifice at least 5% to get free money. That's an instant 100% return.</p>
+
+            <p><strong>Strategy 3: Combine with Bonus Sacrifice</strong><br>
+            Sacrifice annual bonus to pension. Saves even more tax (especially if bonus pushes you into 45% bracket).</p>
+        </div>
+
+        <!-- Action Checklist -->
+        <div style="background: #DBEAFE; padding: 2rem; border-radius: 12px; margin: 3rem 0;">
+            <h3 style="margin: 0 0 1rem 0;">✅ Your Action Checklist</h3>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Calculate my exact savings using calculator above
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Email HR with request (use template)
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Confirm employer match percentage
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Check if it keeps me under £100k threshold
+            </label>
+            <label style="display: block; margin: 0.75rem 0; cursor: pointer;">
+                <input type="checkbox"> Set reminder to start next month
+            </label>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-top: 3rem;">
+            <a href="module-1.html" class="btn btn-secondary">← Previous Module</a>
+            <a href="module-3.html" class="btn btn-primary">Next Module →</a>
+        </div>
+    </div>
+
+    <script>
+    // Collapsible sections
+    function toggleSection(header) {
+        header.classList.toggle('collapsed');
+        const content = header.nextElementSibling;
+        content.classList.toggle('hidden');
+    }
+
+    // Salary Sacrifice Calculator
+    const salarySlider = document.getElementById('salary-slider');
+    const sacrificeSlider = document.getElementById('sacrifice-slider');
+    const salaryDisplay = document.getElementById('salary-display');
+    const sacrificeDisplay = document.getElementById('sacrifice-display');
+    const totalSaving = document.getElementById('total-saving');
+    const taxSaved = document.getElementById('tax-saved');
+    const niSaved = document.getElementById('ni-saved');
+
+    function calculateSavings() {
+        const salary = parseInt(salarySlider.value);
+        const monthlySacrifice = parseInt(sacrificeSlider.value);
+        const annualSacrifice = monthlySacrifice * 12;
+
+        // Update displays
+        salaryDisplay.textContent = '£' + salary.toLocaleString();
+        sacrificeDisplay.textContent = '£' + monthlySacrifice.toLocaleString();
+
+        // Calculate tax rate
+        let taxRate = 0;
+        let niRate = 0;
+        
+        if (salary > 125140) {
+            taxRate = 0.45;
+            niRate = 0.02;
+        } else if (salary > 50270) {
+            taxRate = 0.40;
+            niRate = 0.02;
+        } else {
+            taxRate = 0.20;
+            niRate = 0.12;
+        }
+
+        const taxSavings = annualSacrifice * taxRate;
+        const niSavings = annualSacrifice * niRate;
+        const total = taxSavings + niSavings;
+
+        totalSaving.textContent = '£' + Math.round(total).toLocaleString();
+        taxSaved.textContent = '£' + Math.round(taxSavings).toLocaleString();
+        niSaved.textContent = '£' + Math.round(niSavings).toLocaleString();
+    }
+
+    salarySlider.addEventListener('input', calculateSavings);
+    sacrificeSlider.addEventListener('input', calculateSavings);
+    calculateSavings();
+    </script>
+</body>
+</html>
