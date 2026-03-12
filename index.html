@@ -17,6 +17,7 @@
             <nav class="nav">
                 <a href="#calculator">Calculator</a>
                 <a href="#how-it-works">How It Works</a>
+                <a href="#advisors">Advisors</a>
                 <a href="checkout.html" class="btn btn-primary" style="padding: 0.625rem 1.25rem;">Get the Guide</a>
             </nav>
             <button class="mobile-menu-btn" onclick="document.getElementById('mobileNav').style.display='flex'" style="display:none;" id="hamburgerBtn">
@@ -30,7 +31,8 @@
         <button class="mobile-nav-close" onclick="document.getElementById('mobileNav').style.display='none'">&times;</button>
         <a href="#calculator" onclick="document.getElementById('mobileNav').style.display='none'">Calculator</a>
         <a href="#how-it-works" onclick="document.getElementById('mobileNav').style.display='none'">How It Works</a>
-        <a href="checkout.html" class="btn btn-primary">Get the Guide - £79</a>
+        <a href="#advisors" onclick="document.getElementById('mobileNav').style.display='none'">Advisors</a>
+        <a href="checkout.html" class="btn btn-primary">Get the Guide &mdash; &pound;79</a>
     </div>
 
     <section class="hero">
@@ -276,37 +278,7 @@
                 <!-- Calculator Results (injected by calculator.js) -->
                 <div id="calculatorResults" style="display: none;"></div>
 
-                <!-- NEXT STEPS (shown after results) -->
-                <div id="resultsActions" style="display: none; margin-top: 2rem;">
-                    <div style="background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%); border: 2px solid #10B981; border-radius: 16px; padding: 2rem; text-align: center; margin-bottom: 1.5rem;">
-                        <h3 style="margin: 0 0 0.75rem; color: #065F46; font-size: 1.375rem;">Ready to Start Saving?</h3>
-                        <p style="color: #047857; margin-bottom: 1.5rem; font-size: 0.9375rem;">Get the complete step-by-step guide with templates, scripts, and checklists</p>
-                        <a href="checkout.html" id="buyGuideBtn" class="btn btn-primary" style="
-                            display: inline-block;
-                            padding: 1rem 2.5rem;
-                            font-size: 1.125rem;
-                            font-weight: 800;
-                            text-align: center;
-                            box-shadow: 0 8px 24px rgba(16,185,129,0.4);
-                        " onclick="saveUserProfile()">Get the Complete Guide &mdash; £79</a>
-                        <p style="font-size: 0.8125rem; color: #6B7280; margin-top: 1rem;">30-day money-back guarantee &middot; Lifetime updates &middot; 9 modules included</p>
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                        <div style="background: white; border: 2px solid #E5E7EB; border-radius: 12px; padding: 1.5rem; text-align: center;">
-                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">&#128172;</div>
-                            <h4 style="margin: 0 0 0.5rem; font-size: 1rem;">Have Questions?</h4>
-                            <p style="font-size: 0.8125rem; color: #6B7280; margin-bottom: 1rem;">Our team can help with your specific situation</p>
-                            <a href="mailto:hello@the100kparent.com" style="color: #10B981; font-weight: 600; font-size: 0.9375rem; text-decoration: none;">Get in Touch</a>
-                        </div>
-                        <div style="background: white; border: 2px solid #E5E7EB; border-radius: 12px; padding: 1.5rem; text-align: center;">
-                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">&#127974;</div>
-                            <h4 style="margin: 0 0 0.5rem; font-size: 1rem;">Need an Advisor?</h4>
-                            <p style="font-size: 0.8125rem; color: #6B7280; margin-bottom: 1rem;">Complex situation? Speak to an FCA-regulated expert</p>
-                            <a href="mailto:hello@the100kparent.com?subject=Advisor%20Referral" style="color: #10B981; font-weight: 600; font-size: 0.9375rem; text-decoration: none;">Find an Advisor</a>
-                        </div>
-                    </div>
-                </div>
+                <!-- Results actions are now embedded in calculator.js output -->
             </div>
         </div>
     </section>
@@ -333,6 +305,157 @@
                     <p style="font-weight: 700; color: #374151;">The Williams Family</p>
                     <p style="font-size: 0.875rem; color: #9CA3AF;">Bristol &middot; £340k household</p>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FINANCIAL ADVISORS SECTION -->
+    <section id="advisors" style="padding: 5rem 0; background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);">
+        <div class="container">
+            <div style="text-align: center; margin-bottom: 3rem;">
+                <div style="display: inline-block; background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); color: white; padding: 0.5rem 1.25rem; border-radius: 100px; font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 1rem;">FCA-REGULATED SPECIALISTS</div>
+                <h2 style="margin-bottom: 0.75rem;">Speak to a Specialist Advisor</h2>
+                <p style="color: #6B7280; font-size: 1.125rem; max-width: 650px; margin: 0 auto;">Complex situation? Our vetted panel of FCA-regulated advisors specialise in high-income family tax planning.</p>
+            </div>
+
+            <div class="advisor-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; max-width: 1100px; margin: 0 auto;">
+
+                <!-- Advisor 1 -->
+                <div class="advisor-card" style="background: white; border-radius: 16px; padding: 1.75rem; box-shadow: 0 4px 16px rgba(0,0,0,0.06); border: 1px solid #E5E7EB; transition: all 0.3s ease; position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #10B981 0%, #059669 100%);"></div>
+                    <div style="display: flex; gap: 1.25rem; align-items: flex-start;">
+                        <div style="width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, #1E3A5F 0%, #2563EB 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 1.5rem; flex-shrink: 0;">RM</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 800; font-size: 1.125rem; color: #0F172A; margin-bottom: 0.25rem;">Rachel Mitchell, CFP</div>
+                            <div style="font-size: 0.8125rem; color: #6B7280; margin-bottom: 0.75rem;">Senior Financial Planner &middot; 14 years experience</div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 0.375rem; margin-bottom: 0.75rem;">
+                                <span style="background: #F0FDF4; color: #065F46; padding: 0.25rem 0.625rem; border-radius: 100px; font-size: 0.75rem; font-weight: 600;">Salary Sacrifice</span>
+                                <span style="background: #EFF6FF; color: #1E40AF; padding: 0.25rem 0.625rem; border-radius: 100px; font-size: 0.75rem; font-weight: 600;">Pension Planning</span>
+                                <span style="background: #FEF3C7; color: #92400E; padding: 0.25rem 0.625rem; border-radius: 100px; font-size: 0.75rem; font-weight: 600;">HMRC Compliance</span>
+                            </div>
+                            <p style="font-size: 0.875rem; color: #4B5563; line-height: 1.6; margin-bottom: 1rem;">"I help parents earning &pound;100k-&pound;250k unlock every childcare benefit available. Most families I work with save &pound;8,000-&pound;15,000 in their first year."</p>
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <a href="mailto:hello@the100kparent.com?subject=Advisor%20Booking%20-%20Rachel%20Mitchell" style="display: inline-block; background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: white; padding: 0.625rem 1.25rem; border-radius: 8px; font-size: 0.875rem; font-weight: 700; text-decoration: none; box-shadow: 0 2px 8px rgba(16,185,129,0.3);">Book Free Intro Call</a>
+                                <span style="font-size: 0.75rem; color: #9CA3AF;">Next available: 2 days</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advisor 2 -->
+                <div class="advisor-card" style="background: white; border-radius: 16px; padding: 1.75rem; box-shadow: 0 4px 16px rgba(0,0,0,0.06); border: 1px solid #E5E7EB; transition: all 0.3s ease; position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #10B981 0%, #059669 100%);"></div>
+                    <div style="display: flex; gap: 1.25rem; align-items: flex-start;">
+                        <div style="width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 1.5rem; flex-shrink: 0;">JP</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 800; font-size: 1.125rem; color: #0F172A; margin-bottom: 0.25rem;">James Patel, APFS</div>
+                            <div style="font-size: 0.8125rem; color: #6B7280; margin-bottom: 0.75rem;">Chartered Financial Planner &middot; 11 years experience</div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 0.375rem; margin-bottom: 0.75rem;">
+                                <span style="background: #F0FDF4; color: #065F46; padding: 0.25rem 0.625rem; border-radius: 100px; font-size: 0.75rem; font-weight: 600;">Company Directors</span>
+                                <span style="background: #EFF6FF; color: #1E40AF; padding: 0.25rem 0.625rem; border-radius: 100px; font-size: 0.75rem; font-weight: 600;">Income Splitting</span>
+                                <span style="background: #F5F3FF; color: #5B21B6; padding: 0.25rem 0.625rem; border-radius: 100px; font-size: 0.75rem; font-weight: 600;">Dividend Strategy</span>
+                            </div>
+                            <p style="font-size: 0.875rem; color: #4B5563; line-height: 1.6; margin-bottom: 1rem;">"I specialise in company directors and business owners. There are strategies most accountants miss that can save your family thousands."</p>
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <a href="mailto:hello@the100kparent.com?subject=Advisor%20Booking%20-%20James%20Patel" style="display: inline-block; background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: white; padding: 0.625rem 1.25rem; border-radius: 8px; font-size: 0.875rem; font-weight: 700; text-decoration: none; box-shadow: 0 2px 8px rgba(16,185,129,0.3);">Book Free Intro Call</a>
+                                <span style="font-size: 0.75rem; color: #9CA3AF;">Next available: 3 days</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advisor 3 -->
+                <div class="advisor-card" style="background: white; border-radius: 16px; padding: 1.75rem; box-shadow: 0 4px 16px rgba(0,0,0,0.06); border: 1px solid #E5E7EB; transition: all 0.3s ease; position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #10B981 0%, #059669 100%);"></div>
+                    <div style="display: flex; gap: 1.25rem; align-items: flex-start;">
+                        <div style="width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 1.5rem; flex-shrink: 0;">SC</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 800; font-size: 1.125rem; color: #0F172A; margin-bottom: 0.25rem;">Sophie Clarke, DipPFS</div>
+                            <div style="font-size: 0.8125rem; color: #6B7280; margin-bottom: 0.75rem;">Wealth Manager &middot; 9 years experience</div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 0.375rem; margin-bottom: 0.75rem;">
+                                <span style="background: #F0FDF4; color: #065F46; padding: 0.25rem 0.625rem; border-radius: 100px; font-size: 0.75rem; font-weight: 600;">Tax-Free Childcare</span>
+                                <span style="background: #FEF3C7; color: #92400E; padding: 0.25rem 0.625rem; border-radius: 100px; font-size: 0.75rem; font-weight: 600;">Child Benefit</span>
+                                <span style="background: #FCE7F3; color: #9D174D; padding: 0.25rem 0.625rem; border-radius: 100px; font-size: 0.75rem; font-weight: 600;">ISA Optimisation</span>
+                            </div>
+                            <p style="font-size: 0.875rem; color: #4B5563; line-height: 1.6; margin-bottom: 1rem;">"I focus on families with &pound;100k-&pound;150k incomes who are just over the threshold. Small adjustments can unlock massive benefits."</p>
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <a href="mailto:hello@the100kparent.com?subject=Advisor%20Booking%20-%20Sophie%20Clarke" style="display: inline-block; background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: white; padding: 0.625rem 1.25rem; border-radius: 8px; font-size: 0.875rem; font-weight: 700; text-decoration: none; box-shadow: 0 2px 8px rgba(16,185,129,0.3);">Book Free Intro Call</a>
+                                <span style="font-size: 0.75rem; color: #9CA3AF;">Next available: 1 day</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advisor 4 -->
+                <div class="advisor-card" style="background: white; border-radius: 16px; padding: 1.75rem; box-shadow: 0 4px 16px rgba(0,0,0,0.06); border: 1px solid #E5E7EB; transition: all 0.3s ease; position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #10B981 0%, #059669 100%);"></div>
+                    <div style="display: flex; gap: 1.25rem; align-items: flex-start;">
+                        <div style="width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, #0369A1 0%, #0284C7 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 1.5rem; flex-shrink: 0;">DW</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 800; font-size: 1.125rem; color: #0F172A; margin-bottom: 0.25rem;">David Williams, CFA</div>
+                            <div style="font-size: 0.8125rem; color: #6B7280; margin-bottom: 0.75rem;">Investment &amp; Tax Specialist &middot; 17 years experience</div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 0.375rem; margin-bottom: 0.75rem;">
+                                <span style="background: #F0FDF4; color: #065F46; padding: 0.25rem 0.625rem; border-radius: 100px; font-size: 0.75rem; font-weight: 600;">High Earners &pound;200k+</span>
+                                <span style="background: #EFF6FF; color: #1E40AF; padding: 0.25rem 0.625rem; border-radius: 100px; font-size: 0.75rem; font-weight: 600;">Trust Structures</span>
+                                <span style="background: #ECFDF5; color: #065F46; padding: 0.25rem 0.625rem; border-radius: 100px; font-size: 0.75rem; font-weight: 600;">SIPP Strategy</span>
+                            </div>
+                            <p style="font-size: 0.875rem; color: #4B5563; line-height: 1.6; margin-bottom: 1rem;">"For families earning &pound;200k+, the strategies go well beyond salary sacrifice. I build comprehensive plans that save &pound;15-25k annually."</p>
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <a href="mailto:hello@the100kparent.com?subject=Advisor%20Booking%20-%20David%20Williams" style="display: inline-block; background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: white; padding: 0.625rem 1.25rem; border-radius: 8px; font-size: 0.875rem; font-weight: 700; text-decoration: none; box-shadow: 0 2px 8px rgba(16,185,129,0.3);">Book Free Intro Call</a>
+                                <span style="font-size: 0.75rem; color: #9CA3AF;">Next available: 4 days</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advisor 5 -->
+                <div class="advisor-card" style="background: white; border-radius: 16px; padding: 1.75rem; box-shadow: 0 4px 16px rgba(0,0,0,0.06); border: 1px solid #E5E7EB; transition: all 0.3s ease; position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #10B981 0%, #059669 100%);"></div>
+                    <div style="display: flex; gap: 1.25rem; align-items: flex-start;">
+                        <div style="width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, #059669 0%, #047857 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 1.5rem; flex-shrink: 0;">AH</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 800; font-size: 1.125rem; color: #0F172A; margin-bottom: 0.25rem;">Amina Hassan, FPFS</div>
+                            <div style="font-size: 0.8125rem; color: #6B7280; margin-bottom: 0.75rem;">Paraplanner &amp; Tax Strategist &middot; 8 years experience</div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 0.375rem; margin-bottom: 0.75rem;">
+                                <span style="background: #F0FDF4; color: #065F46; padding: 0.25rem 0.625rem; border-radius: 100px; font-size: 0.75rem; font-weight: 600;">Self-Employed</span>
+                                <span style="background: #EFF6FF; color: #1E40AF; padding: 0.25rem 0.625rem; border-radius: 100px; font-size: 0.75rem; font-weight: 600;">Partnership Structures</span>
+                                <span style="background: #FEF3C7; color: #92400E; padding: 0.25rem 0.625rem; border-radius: 100px; font-size: 0.75rem; font-weight: 600;">30 Hours Free</span>
+                            </div>
+                            <p style="font-size: 0.875rem; color: #4B5563; line-height: 1.6; margin-bottom: 1rem;">"Self-employed parents have unique options. I help freelancers and contractors structure their income to maximise childcare benefits."</p>
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <a href="mailto:hello@the100kparent.com?subject=Advisor%20Booking%20-%20Amina%20Hassan" style="display: inline-block; background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: white; padding: 0.625rem 1.25rem; border-radius: 8px; font-size: 0.875rem; font-weight: 700; text-decoration: none; box-shadow: 0 2px 8px rgba(16,185,129,0.3);">Book Free Intro Call</a>
+                                <span style="font-size: 0.75rem; color: #9CA3AF;">Next available: 2 days</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advisor 6 -->
+                <div class="advisor-card" style="background: white; border-radius: 16px; padding: 1.75rem; box-shadow: 0 4px 16px rgba(0,0,0,0.06); border: 1px solid #E5E7EB; transition: all 0.3s ease; position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #10B981 0%, #059669 100%);"></div>
+                    <div style="display: flex; gap: 1.25rem; align-items: flex-start;">
+                        <div style="width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, #92400E 0%, #B45309 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 1.5rem; flex-shrink: 0;">TB</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 800; font-size: 1.125rem; color: #0F172A; margin-bottom: 0.25rem;">Thomas Bennett, ACII</div>
+                            <div style="font-size: 0.8125rem; color: #6B7280; margin-bottom: 0.75rem;">Protection &amp; Tax Advisor &middot; 12 years experience</div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 0.375rem; margin-bottom: 0.75rem;">
+                                <span style="background: #F0FDF4; color: #065F46; padding: 0.25rem 0.625rem; border-radius: 100px; font-size: 0.75rem; font-weight: 600;">NHS Consultants</span>
+                                <span style="background: #EFF6FF; color: #1E40AF; padding: 0.25rem 0.625rem; border-radius: 100px; font-size: 0.75rem; font-weight: 600;">Annual Allowance</span>
+                                <span style="background: #F5F3FF; color: #5B21B6; padding: 0.25rem 0.625rem; border-radius: 100px; font-size: 0.75rem; font-weight: 600;">Tapered Relief</span>
+                            </div>
+                            <p style="font-size: 0.875rem; color: #4B5563; line-height: 1.6; margin-bottom: 1rem;">"NHS consultants and medical professionals face unique pension challenges. I navigate the annual allowance trap alongside childcare benefits."</p>
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <a href="mailto:hello@the100kparent.com?subject=Advisor%20Booking%20-%20Thomas%20Bennett" style="display: inline-block; background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: white; padding: 0.625rem 1.25rem; border-radius: 8px; font-size: 0.875rem; font-weight: 700; text-decoration: none; box-shadow: 0 2px 8px rgba(16,185,129,0.3);">Book Free Intro Call</a>
+                                <span style="font-size: 0.75rem; color: #9CA3AF;">Next available: 5 days</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div style="text-align: center; margin-top: 2.5rem;">
+                <p style="color: #6B7280; font-size: 0.875rem;">All advisors are FCA-regulated and specialise in high-income family tax planning.<br>Free 15-minute introductory call &middot; No obligation &middot; Fees discussed upfront.</p>
             </div>
         </div>
     </section>

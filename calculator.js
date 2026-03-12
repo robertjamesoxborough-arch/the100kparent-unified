@@ -121,7 +121,6 @@ class PremiumCalculator {
 
         resultsDiv.style.display = 'block';
         resultsDiv.style.animation = 'fadeInUp 0.6s ease forwards';
-        document.getElementById('resultsActions').style.display = 'block';
 
         // Scroll to results
         resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -178,6 +177,7 @@ class PremiumCalculator {
             </div>
         </div>
         ${this.renderAdditionalSavings(d)}
+        ${this.renderCTA()}
         `;
     }
 
@@ -203,9 +203,10 @@ class PremiumCalculator {
         <div style="background: #FEF3C7; border-left: 4px solid #F59E0B; padding: 1.5rem; border-radius: 0 12px 12px 0; margin: 1.5rem 0;">
             <div style="font-weight: 800; color: #92400E; margin-bottom: 0.5rem;">Child Benefit High Income Charge</div>
             <div style="color: #78350F; font-size: 0.9375rem; line-height: 1.6;">
-                Income of £${Math.round(d.higherIncome).toLocaleString()} means you ${d.higherIncome >= 80000 ? 'lose ALL' : 'partially lose'} Child Benefit (£${Math.round(d.childBenefitSaving).toLocaleString()}/year).
+                Income of &pound;${Math.round(d.higherIncome).toLocaleString()} means you ${d.higherIncome >= 80000 ? 'lose ALL' : 'partially lose'} Child Benefit (&pound;${Math.round(d.childBenefitSaving).toLocaleString()}/year).
             </div>
         </div>` : ''}
+        ${this.renderCTA()}
         `;
     }
 
@@ -217,6 +218,19 @@ class PremiumCalculator {
             ${d.salarySaving > 0 ? `<div style="padding: 1rem; background: #F9FAFB; border-radius: 8px; margin-bottom: 1rem;"><div style="font-weight: 700; color: #0F172A; margin-bottom: 0.5rem;">Ongoing Salary Sacrifice</div><div style="color: #6B7280; font-size: 0.9375rem;">Continue sacrificing childcare costs: <strong style="color: #10B981;">£${Math.round(d.salarySaving).toLocaleString()}/year saved</strong></div></div>` : ''}
             ${d.splittingSaving > 0 ? `<div style="padding: 1rem; background: #F9FAFB; border-radius: 8px;"><div style="font-weight: 700; color: #0F172A; margin-bottom: 0.5rem;">Income Splitting</div><div style="color: #6B7280; font-size: 0.9375rem;">Move profit to partner's lower tax band: <strong style="color: #10B981;">£${Math.round(d.splittingSaving).toLocaleString()}/year saved</strong></div></div>` : ''}
         </div>`;
+    }
+
+    renderCTA() {
+        return `
+        <div style="background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%); border: 2px solid #10B981; border-radius: 16px; padding: 2rem; text-align: center; margin-top: 2rem;">
+            <h3 style="margin: 0 0 0.75rem; color: #065F46; font-size: 1.375rem;">Ready to Start Saving?</h3>
+            <p style="color: #047857; margin-bottom: 1.5rem; font-size: 0.9375rem;">Get the complete step-by-step guide with templates, scripts, and checklists</p>
+            <a href="checkout.html" class="btn btn-primary" style="display: inline-block; padding: 1rem 2.5rem; font-size: 1.125rem; font-weight: 800; text-align: center; box-shadow: 0 8px 24px rgba(16,185,129,0.4); background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: white; border: none; border-radius: 12px; text-decoration: none; cursor: pointer;" onclick="saveUserProfile()">Get the Complete Guide &mdash; &pound;79</a>
+            <p style="font-size: 0.8125rem; color: #6B7280; margin-top: 1rem;">30-day money-back guarantee &middot; Lifetime updates &middot; 9 modules included</p>
+        </div>
+        <div style="text-align: center; margin: 1.5rem 0 0.5rem; color: #6B7280; font-size: 0.9375rem;">or</div>
+        <a href="#advisors" style="display: block; background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); color: white; padding: 1.25rem 2rem; border-radius: 12px; text-align: center; text-decoration: none; font-weight: 700; font-size: 1rem; box-shadow: 0 4px 16px rgba(15,23,42,0.3); transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">Speak to a Specialist Advisor &rarr;</a>
+        `;
     }
 
     showEmpty() {
