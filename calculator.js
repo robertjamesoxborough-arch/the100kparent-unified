@@ -135,7 +135,7 @@ class PremiumCalculator {
         return `
         <div style="background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%); color: white; padding: 2rem; border-radius: 16px; margin: 2rem 0;">
             <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
-                <div style="width: 50px; height: 50px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">⚠️</div>
+                <div style="width: 50px; height: 50px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">&#9888;</div>
                 <div>
                     <div style="font-weight: 900; font-size: 1.5rem;">You're Locked Out</div>
                     <div style="opacity: 0.9; font-size: 0.9375rem;">Income over £100k blocks critical benefits</div>
