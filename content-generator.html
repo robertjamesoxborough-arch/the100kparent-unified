@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Engine &middot; AI-Powered Content Generator &amp; Ads Optimizer</title>
+    <meta name="description" content="Generate world-class content across all social channels. AI-powered content creation, scheduling, and paid ads optimization.">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="content-generator.css">
+</head>
+<body class="cg-body">
+
+    <!-- ============ TOP NAV ============ -->
+    <nav class="cg-topnav">
+        <div class="cg-topnav-left">
+            <div class="cg-logo">
+                <div class="cg-logo-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                </div>
+                <span class="cg-logo-text">ContentEngine<span class="cg-logo-ai">AI</span></span>
+            </div>
+        </div>
+        <div class="cg-topnav-center">
+            <button class="cg-nav-tab active" data-view="create" onclick="switchView('create')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                Create
+            </button>
+            <button class="cg-nav-tab" data-view="calendar" onclick="switchView('calendar')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                Calendar
+            </button>
+            <button class="cg-nav-tab" data-view="ads" onclick="switchView('ads')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                Ads Engine
+            </button>
+            <button class="cg-nav-tab" data-view="analytics" onclick="switchView('analytics')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                Analytics
+            </button>
+        </div>
+        <div class="cg-topnav-right">
+            <button class="cg-btn-icon" title="Notifications">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                <span class="cg-notif-dot"></span>
+            </button>
+            <div class="cg-avatar">
+                <span>U</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ============ MAIN CONTENT ============ -->
+    <main class="cg-main">
+
+        <!-- ======== CREATE VIEW ======== -->
+        <div class="cg-view active" id="view-create">
+
+            <!-- Wizard Progress -->
+            <div class="cg-wizard-progress">
+                <div class="cg-wizard-steps">
+                    <div class="cg-wizard-step active" data-step="1">
+                        <div class="cg-step-num">1</div>
+                        <span>Strategy</span>
+                    </div>
+                    <div class="cg-wizard-connector"></div>
+                    <div class="cg-wizard-step" data-step="2">
+                        <div class="cg-step-num">2</div>
+                        <span>Channels</span>
+                    </div>
+                    <div class="cg-wizard-connector"></div>
+                    <div class="cg-wizard-step" data-step="3">
+                        <div class="cg-step-num">3</div>
+                        <span>Content</span>
+                    </div>
+                    <div class="cg-wizard-connector"></div>
+                    <div class="cg-wizard-step" data-step="4">
+                        <div class="cg-step-num">4</div>
+                        <span>Media</span>
+                    </div>
+                    <div class="cg-wizard-connector"></div>
+                    <div class="cg-wizard-step" data-step="5">
+                        <div class="cg-step-num">5</div>
+                        <span>Review &amp; Publish</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 1: Strategy -->
+            <div class="cg-step-panel active" id="step-1">
+                <div class="cg-step-header">
+                    <h1>Let's Build Your Content Strategy</h1>
+                    <p>Tell us about your brand and what you want to achieve. Our AI will generate perfectly tailored content.</p>
+                </div>
+
+                <div class="cg-form-grid">
+                    <!-- Brand / Niche -->
+                    <div class="cg-form-group cg-full">
+                        <label>What's your brand or niche?</label>
+                        <input type="text" id="brandNiche" class="cg-input" placeholder="e.g. Fitness coaching for busy professionals, SaaS startup, E-commerce fashion...">
+                    </div>
+
+                    <!-- Content Goal -->
+                    <div class="cg-form-group">
+                        <label>What's your primary goal?</label>
+                        <div class="cg-chip-select" id="goalSelect">
+                            <button class="cg-chip" data-value="awareness">Brand Awareness</button>
+                            <button class="cg-chip" data-value="engagement">Drive Engagement</button>
+                            <button class="cg-chip" data-value="leads">Generate Leads</button>
+                            <button class="cg-chip" data-value="sales">Increase Sales</button>
+                            <button class="cg-chip" data-value="authority">Build Authority</button>
+                            <button class="cg-chip" data-value="community">Grow Community</button>
+                        </div>
+                    </div>
+
+                    <!-- Tone -->
+                    <div class="cg-form-group">
+                        <label>What tone fits your brand?</label>
+                        <div class="cg-chip-select" id="toneSelect">
+                            <button class="cg-chip" data-value="professional">Professional</button>
+                            <button class="cg-chip" data-value="casual">Casual &amp; Friendly</button>
+                            <button class="cg-chip" data-value="bold">Bold &amp; Edgy</button>
+                            <button class="cg-chip" data-value="inspirational">Inspirational</button>
+                            <button class="cg-chip" data-value="educational">Educational</button>
+                            <button class="cg-chip" data-value="humorous">Humorous</button>
+                        </div>
+                    </div>
+
+                    <!-- Target Audience -->
+                    <div class="cg-form-group cg-full">
+                        <label>Describe your target audience</label>
+                        <textarea id="targetAudience" class="cg-textarea" rows="3" placeholder="e.g. UK parents earning £100k+ who want to optimize their childcare costs and tax strategies..."></textarea>
+                    </div>
+
+                    <!-- Content to Copy / Reference -->
+                    <div class="cg-form-group cg-full">
+                        <label>Any content or competitor you want to model? <span class="cg-optional">(optional)</span></label>
+                        <textarea id="contentReference" class="cg-textarea" rows="3" placeholder="Paste a URL, describe a style, or reference a competitor whose content you admire..."></textarea>
+                    </div>
+
+                    <!-- How many pieces -->
+                    <div class="cg-form-group">
+                        <label>How many content pieces do you need?</label>
+                        <div class="cg-quantity-selector">
+                            <button class="cg-qty-btn" onclick="adjustQty(-1)">-</button>
+                            <input type="number" id="contentQty" class="cg-qty-input" value="5" min="1" max="100">
+                            <button class="cg-qty-btn" onclick="adjustQty(1)">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Content Types -->
+                    <div class="cg-form-group">
+                        <label>What types of content?</label>
+                        <div class="cg-chip-select multi" id="typeSelect">
+                            <button class="cg-chip" data-value="post">Posts</button>
+                            <button class="cg-chip" data-value="story">Stories</button>
+                            <button class="cg-chip" data-value="reel">Reels/Shorts</button>
+                            <button class="cg-chip" data-value="carousel">Carousels</button>
+                            <button class="cg-chip" data-value="thread">Threads</button>
+                            <button class="cg-chip" data-value="article">Articles</button>
+                            <button class="cg-chip" data-value="ad">Ad Creatives</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cg-step-actions">
+                    <div></div>
+                    <button class="cg-btn cg-btn-primary" onclick="goToStep(2)">
+                        Continue to Channels
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 2: Channels -->
+            <div class="cg-step-panel" id="step-2">
+                <div class="cg-step-header">
+                    <h1>Select Your Channels</h1>
+                    <p>Choose where you want to publish. We'll optimize content format and copy for each platform.</p>
+                </div>
+
+                <div class="cg-channels-grid">
+                    <!-- Instagram -->
+                    <div class="cg-channel-card" data-channel="instagram" onclick="toggleChannel(this)">
+                        <div class="cg-channel-icon" style="background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                        </div>
+                        <h3>Instagram</h3>
+                        <p>Posts, Stories, Reels</p>
+                        <div class="cg-channel-check">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                    </div>
+
+                    <!-- TikTok -->
+                    <div class="cg-channel-card" data-channel="tiktok" onclick="toggleChannel(this)">
+                        <div class="cg-channel-icon" style="background: #000;">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.34-6.34V8.75a8.24 8.24 0 004.79 1.53V6.83a4.84 4.84 0 01-1.03-.14z"/></svg>
+                        </div>
+                        <h3>TikTok</h3>
+                        <p>Short-form Video</p>
+                        <div class="cg-channel-check">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                    </div>
+
+                    <!-- Facebook -->
+                    <div class="cg-channel-card" data-channel="facebook" onclick="toggleChannel(this)">
+                        <div class="cg-channel-icon" style="background: #1877F2;">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        </div>
+                        <h3>Facebook</h3>
+                        <p>Posts, Stories, Ads</p>
+                        <div class="cg-channel-check">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                    </div>
+
+                    <!-- LinkedIn -->
+                    <div class="cg-channel-card" data-channel="linkedin" onclick="toggleChannel(this)">
+                        <div class="cg-channel-icon" style="background: #0A66C2;">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                        </div>
+                        <h3>LinkedIn</h3>
+                        <p>Posts, Articles</p>
+                        <div class="cg-channel-check">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                    </div>
+
+                    <!-- X / Twitter -->
+                    <div class="cg-channel-card" data-channel="twitter" onclick="toggleChannel(this)">
+                        <div class="cg-channel-icon" style="background: #000;">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </div>
+                        <h3>X (Twitter)</h3>
+                        <p>Tweets, Threads</p>
+                        <div class="cg-channel-check">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                    </div>
+
+                    <!-- YouTube -->
+                    <div class="cg-channel-card" data-channel="youtube" onclick="toggleChannel(this)">
+                        <div class="cg-channel-icon" style="background: #FF0000;">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        </div>
+                        <h3>YouTube</h3>
+                        <p>Shorts, Descriptions</p>
+                        <div class="cg-channel-check">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                    </div>
+
+                    <!-- Pinterest -->
+                    <div class="cg-channel-card" data-channel="pinterest" onclick="toggleChannel(this)">
+                        <div class="cg-channel-icon" style="background: #E60023;">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 01.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12.017 24c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641 0 12.017 0z"/></svg>
+                        </div>
+                        <h3>Pinterest</h3>
+                        <p>Pins, Idea Pins</p>
+                        <div class="cg-channel-check">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="cg-channel-card" data-channel="email" onclick="toggleChannel(this)">
+                        <div class="cg-channel-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        </div>
+                        <h3>Email</h3>
+                        <p>Newsletters, Sequences</p>
+                        <div class="cg-channel-check">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cg-step-actions">
+                    <button class="cg-btn cg-btn-ghost" onclick="goToStep(1)">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+                        Back
+                    </button>
+                    <button class="cg-btn cg-btn-primary" onclick="goToStep(3)">
+                        Generate Content
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 3: Generated Content -->
+            <div class="cg-step-panel" id="step-3">
+                <div class="cg-step-header">
+                    <h1>Your AI-Generated Content</h1>
+                    <p>Review, edit, and perfect your content. Each piece is optimized for its target platform.</p>
+                </div>
+
+                <!-- AI Generation Loading -->
+                <div class="cg-ai-loading" id="aiLoading" style="display:none;">
+                    <div class="cg-ai-pulse"></div>
+                    <h2>AI is crafting your content...</h2>
+                    <p id="aiLoadingStatus">Analyzing your brand voice and audience...</p>
+                    <div class="cg-progress-bar">
+                        <div class="cg-progress-fill" id="aiProgressFill"></div>
+                    </div>
+                </div>
+
+                <!-- Content Cards -->
+                <div class="cg-content-list" id="contentList">
+                    <!-- Dynamically populated -->
+                </div>
+
+                <div class="cg-step-actions">
+                    <button class="cg-btn cg-btn-ghost" onclick="goToStep(2)">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+                        Back
+                    </button>
+                    <button class="cg-btn cg-btn-secondary" onclick="regenerateAll()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                        Regenerate All
+                    </button>
+                    <button class="cg-btn cg-btn-primary" onclick="goToStep(4)">
+                        Add Media
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 4: Media -->
+            <div class="cg-step-panel" id="step-4">
+                <div class="cg-step-header">
+                    <h1>Add Visual Media</h1>
+                    <p>Browse free stock images and videos, or upload your own. Great visuals = great engagement.</p>
+                </div>
+
+                <div class="cg-media-section">
+                    <!-- Upload Area -->
+                    <div class="cg-upload-zone" id="uploadZone" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        <h3>Drag &amp; drop your files here</h3>
+                        <p>or click to browse &middot; Images, Videos, GIFs</p>
+                        <input type="file" id="fileInput" multiple accept="image/*,video/*" onchange="handleFileSelect(event)" style="display:none;">
+                        <button class="cg-btn cg-btn-secondary" onclick="document.getElementById('fileInput').click()">Browse Files</button>
+                    </div>
+
+                    <!-- Uploaded Files Preview -->
+                    <div class="cg-uploaded-files" id="uploadedFiles" style="display:none;">
+                        <h3>Your Uploads</h3>
+                        <div class="cg-file-grid" id="fileGrid"></div>
+                    </div>
+
+                    <!-- Stock Media Search -->
+                    <div class="cg-stock-section">
+                        <h3>Free Stock Media</h3>
+                        <div class="cg-stock-search">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            <input type="text" id="stockSearch" class="cg-input" placeholder="Search free images and videos..." onkeyup="searchStock(event)">
+                        </div>
+                        <div class="cg-stock-tabs">
+                            <button class="cg-stock-tab active" onclick="switchStockTab('images', this)">Images</button>
+                            <button class="cg-stock-tab" onclick="switchStockTab('videos', this)">Videos</button>
+                            <button class="cg-stock-tab" onclick="switchStockTab('illustrations', this)">Illustrations</button>
+                        </div>
+                        <div class="cg-stock-grid" id="stockGrid">
+                            <!-- Placeholder stock images -->
+                            <div class="cg-stock-item" onclick="selectStock(this)" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                                <div class="cg-stock-overlay">
+                                    <span>Business Meeting</span>
+                                    <small>Free &middot; Unsplash</small>
+                                </div>
+                            </div>
+                            <div class="cg-stock-item" onclick="selectStock(this)" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                                <div class="cg-stock-overlay">
+                                    <span>Team Collaboration</span>
+                                    <small>Free &middot; Pexels</small>
+                                </div>
+                            </div>
+                            <div class="cg-stock-item" onclick="selectStock(this)" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                                <div class="cg-stock-overlay">
+                                    <span>Digital Marketing</span>
+                                    <small>Free &middot; Unsplash</small>
+                                </div>
+                            </div>
+                            <div class="cg-stock-item" onclick="selectStock(this)" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">
+                                <div class="cg-stock-overlay">
+                                    <span>Growth Charts</span>
+                                    <small>Free &middot; Pexels</small>
+                                </div>
+                            </div>
+                            <div class="cg-stock-item" onclick="selectStock(this)" style="background: linear-gradient(135deg, #fa709a, #fee140);">
+                                <div class="cg-stock-overlay">
+                                    <span>Social Media</span>
+                                    <small>Free &middot; Unsplash</small>
+                                </div>
+                            </div>
+                            <div class="cg-stock-item" onclick="selectStock(this)" style="background: linear-gradient(135deg, #a18cd1, #fbc2eb);">
+                                <div class="cg-stock-overlay">
+                                    <span>Creative Design</span>
+                                    <small>Free &middot; Pexels</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cg-step-actions">
+                    <button class="cg-btn cg-btn-ghost" onclick="goToStep(3)">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+                        Back
+                    </button>
+                    <button class="cg-btn cg-btn-primary" onclick="goToStep(5)">
+                        Review &amp; Publish
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 5: Review & Publish -->
+            <div class="cg-step-panel" id="step-5">
+                <div class="cg-step-header">
+                    <h1>Review &amp; Publish</h1>
+                    <p>Preview your content across all platforms. Schedule or publish immediately.</p>
+                </div>
+
+                <div class="cg-review-grid" id="reviewGrid">
+                    <!-- Dynamically populated -->
+                </div>
+
+                <!-- Schedule Section -->
+                <div class="cg-schedule-section">
+                    <h3>Publishing Schedule</h3>
+                    <div class="cg-schedule-options">
+                        <label class="cg-radio-card active" onclick="selectSchedule('now', this)">
+                            <input type="radio" name="schedule" value="now" checked>
+                            <div class="cg-radio-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                            </div>
+                            <div>
+                                <strong>Publish Now</strong>
+                                <p>Post immediately to all channels</p>
+                            </div>
+                        </label>
+                        <label class="cg-radio-card" onclick="selectSchedule('optimal', this)">
+                            <input type="radio" name="schedule" value="optimal">
+                            <div class="cg-radio-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            </div>
+                            <div>
+                                <strong>AI Optimal Times</strong>
+                                <p>Post when your audience is most active</p>
+                            </div>
+                        </label>
+                        <label class="cg-radio-card" onclick="selectSchedule('custom', this)">
+                            <input type="radio" name="schedule" value="custom">
+                            <div class="cg-radio-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            </div>
+                            <div>
+                                <strong>Custom Schedule</strong>
+                                <p>Choose your own dates and times</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="cg-step-actions">
+                    <button class="cg-btn cg-btn-ghost" onclick="goToStep(4)">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+                        Back
+                    </button>
+                    <button class="cg-btn cg-btn-primary cg-btn-large" onclick="publishAll()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                        Publish to All Channels
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======== CALENDAR VIEW ======== -->
+        <div class="cg-view" id="view-calendar">
+            <div class="cg-view-header">
+                <div>
+                    <h1>Content Calendar</h1>
+                    <p>Plan and visualize your content schedule across all channels</p>
+                </div>
+                <button class="cg-btn cg-btn-primary" onclick="switchView('create')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Create Content
+                </button>
+            </div>
+
+            <div class="cg-calendar-controls">
+                <button class="cg-btn cg-btn-ghost" onclick="calendarNav(-1)">&larr; Previous</button>
+                <h2 id="calendarMonth">March 2026</h2>
+                <button class="cg-btn cg-btn-ghost" onclick="calendarNav(1)">Next &rarr;</button>
+            </div>
+
+            <div class="cg-calendar-grid" id="calendarGrid">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+
+        <!-- ======== ADS ENGINE VIEW ======== -->
+        <div class="cg-view" id="view-ads">
+            <div class="cg-view-header">
+                <div>
+                    <h1>Paid Ads Engine</h1>
+                    <p>AI-powered ad optimization across all paid channels. Constantly tweaking for maximum ROI.</p>
+                </div>
+                <div class="cg-header-actions">
+                    <button class="cg-btn cg-btn-secondary" onclick="runAdsAudit()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                        Run Full Audit
+                    </button>
+                    <button class="cg-btn cg-btn-primary" onclick="createAdCampaign()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        New Campaign
+                    </button>
+                </div>
+            </div>
+
+            <!-- Ads Dashboard Stats -->
+            <div class="cg-ads-stats">
+                <div class="cg-ads-stat-card">
+                    <div class="cg-ads-stat-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--emerald-500);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    </div>
+                    <div class="cg-ads-stat-content">
+                        <span class="cg-ads-stat-label">Total Ad Spend</span>
+                        <span class="cg-ads-stat-value">&pound;12,847</span>
+                        <span class="cg-ads-stat-change positive">+12.4% vs last month</span>
+                    </div>
+                </div>
+                <div class="cg-ads-stat-card">
+                    <div class="cg-ads-stat-icon" style="background: rgba(59, 130, 246, 0.1); color: #3B82F6;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </div>
+                    <div class="cg-ads-stat-content">
+                        <span class="cg-ads-stat-label">Impressions</span>
+                        <span class="cg-ads-stat-value">2.4M</span>
+                        <span class="cg-ads-stat-change positive">+28.7% vs last month</span>
+                    </div>
+                </div>
+                <div class="cg-ads-stat-card">
+                    <div class="cg-ads-stat-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--gold-500);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    </div>
+                    <div class="cg-ads-stat-content">
+                        <span class="cg-ads-stat-label">Conversions</span>
+                        <span class="cg-ads-stat-value">1,847</span>
+                        <span class="cg-ads-stat-change positive">+34.2% vs last month</span>
+                    </div>
+                </div>
+                <div class="cg-ads-stat-card">
+                    <div class="cg-ads-stat-icon" style="background: rgba(168, 85, 247, 0.1); color: #A855F7;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                    </div>
+                    <div class="cg-ads-stat-content">
+                        <span class="cg-ads-stat-label">ROAS</span>
+                        <span class="cg-ads-stat-value">4.2x</span>
+                        <span class="cg-ads-stat-change positive">+0.8x vs last month</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Connected Ad Platforms -->
+            <div class="cg-ads-platforms">
+                <h2>Connected Ad Platforms</h2>
+                <p class="cg-ads-subtitle">AI continuously optimizes bids, audiences, and creatives across all platforms</p>
+                <div class="cg-platforms-grid">
+                    <div class="cg-platform-card connected">
+                        <div class="cg-platform-header">
+                            <div class="cg-platform-logo" style="background: #4285F4;">G</div>
+                            <div>
+                                <h3>Google Ads</h3>
+                                <span class="cg-platform-status connected">Connected</span>
+                            </div>
+                        </div>
+                        <div class="cg-platform-metrics">
+                            <div><span>CPC</span><strong>&pound;0.42</strong></div>
+                            <div><span>CTR</span><strong>4.8%</strong></div>
+                            <div><span>Conv.</span><strong>847</strong></div>
+                        </div>
+                        <div class="cg-platform-ai">
+                            <div class="cg-ai-badge">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                                AI Active
+                            </div>
+                            <span class="cg-ai-action">Lowered CPC by 12% this week</span>
+                        </div>
+                    </div>
+
+                    <div class="cg-platform-card connected">
+                        <div class="cg-platform-header">
+                            <div class="cg-platform-logo" style="background: #1877F2;">f</div>
+                            <div>
+                                <h3>Meta Ads</h3>
+                                <span class="cg-platform-status connected">Connected</span>
+                            </div>
+                        </div>
+                        <div class="cg-platform-metrics">
+                            <div><span>CPM</span><strong>&pound;8.20</strong></div>
+                            <div><span>CTR</span><strong>3.2%</strong></div>
+                            <div><span>Conv.</span><strong>623</strong></div>
+                        </div>
+                        <div class="cg-platform-ai">
+                            <div class="cg-ai-badge">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                                AI Active
+                            </div>
+                            <span class="cg-ai-action">Split-tested 3 new audiences</span>
+                        </div>
+                    </div>
+
+                    <div class="cg-platform-card connected">
+                        <div class="cg-platform-header">
+                            <div class="cg-platform-logo" style="background: #0A66C2;">in</div>
+                            <div>
+                                <h3>LinkedIn Ads</h3>
+                                <span class="cg-platform-status connected">Connected</span>
+                            </div>
+                        </div>
+                        <div class="cg-platform-metrics">
+                            <div><span>CPC</span><strong>&pound;2.84</strong></div>
+                            <div><span>CTR</span><strong>1.9%</strong></div>
+                            <div><span>Conv.</span><strong>214</strong></div>
+                        </div>
+                        <div class="cg-platform-ai">
+                            <div class="cg-ai-badge">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                                AI Active
+                            </div>
+                            <span class="cg-ai-action">Paused 2 underperforming ads</span>
+                        </div>
+                    </div>
+
+                    <div class="cg-platform-card connected">
+                        <div class="cg-platform-header">
+                            <div class="cg-platform-logo" style="background: #000;">X</div>
+                            <div>
+                                <h3>X Ads</h3>
+                                <span class="cg-platform-status connected">Connected</span>
+                            </div>
+                        </div>
+                        <div class="cg-platform-metrics">
+                            <div><span>CPC</span><strong>&pound;0.68</strong></div>
+                            <div><span>CTR</span><strong>2.1%</strong></div>
+                            <div><span>Conv.</span><strong>163</strong></div>
+                        </div>
+                        <div class="cg-platform-ai">
+                            <div class="cg-ai-badge">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                                AI Active
+                            </div>
+                            <span class="cg-ai-action">Optimized ad schedule for peak hours</span>
+                        </div>
+                    </div>
+
+                    <div class="cg-platform-card">
+                        <div class="cg-platform-header">
+                            <div class="cg-platform-logo" style="background: #000;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.34-6.34V8.75a8.24 8.24 0 004.79 1.53V6.83a4.84 4.84 0 01-1.03-.14z"/></svg>
+                            </div>
+                            <div>
+                                <h3>TikTok Ads</h3>
+                                <span class="cg-platform-status">Not Connected</span>
+                            </div>
+                        </div>
+                        <button class="cg-btn cg-btn-secondary cg-btn-sm" onclick="connectPlatform('tiktok')">Connect</button>
+                    </div>
+
+                    <div class="cg-platform-card">
+                        <div class="cg-platform-header">
+                            <div class="cg-platform-logo" style="background: #E60023;">P</div>
+                            <div>
+                                <h3>Pinterest Ads</h3>
+                                <span class="cg-platform-status">Not Connected</span>
+                            </div>
+                        </div>
+                        <button class="cg-btn cg-btn-secondary cg-btn-sm" onclick="connectPlatform('pinterest')">Connect</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Optimization Log -->
+            <div class="cg-ai-log">
+                <h2>AI Optimization Log</h2>
+                <p class="cg-ads-subtitle">Real-time actions taken by your AI ads manager</p>
+                <div class="cg-log-list" id="aiLogList">
+                    <div class="cg-log-item">
+                        <div class="cg-log-time">2 min ago</div>
+                        <div class="cg-log-badge google">Google</div>
+                        <div class="cg-log-text">Increased bid on "childcare tax savings" keyword by 15% &mdash; trending up with 6.2% CTR</div>
+                    </div>
+                    <div class="cg-log-item">
+                        <div class="cg-log-time">18 min ago</div>
+                        <div class="cg-log-badge meta">Meta</div>
+                        <div class="cg-log-text">Paused ad set "Parents 30-40 London" &mdash; CPA exceeded threshold by 23%</div>
+                    </div>
+                    <div class="cg-log-item">
+                        <div class="cg-log-time">1 hr ago</div>
+                        <div class="cg-log-badge linkedin">LinkedIn</div>
+                        <div class="cg-log-text">Created lookalike audience from top 5% converters &mdash; projected 30% lift in conversions</div>
+                    </div>
+                    <div class="cg-log-item">
+                        <div class="cg-log-time">2 hrs ago</div>
+                        <div class="cg-log-badge google">Google</div>
+                        <div class="cg-log-text">Moved &pound;200 daily budget from Display to Search &mdash; Search ROAS 2.3x higher</div>
+                    </div>
+                    <div class="cg-log-item">
+                        <div class="cg-log-time">3 hrs ago</div>
+                        <div class="cg-log-badge meta">Meta</div>
+                        <div class="cg-log-text">New creative variant winning A/B test with 42% lower CPA &mdash; scaling spend by 25%</div>
+                    </div>
+                    <div class="cg-log-item">
+                        <div class="cg-log-time">5 hrs ago</div>
+                        <div class="cg-log-badge x">X</div>
+                        <div class="cg-log-text">Adjusted dayparting &mdash; removed 11pm-6am slots saving &pound;34/day with no conversion loss</div>
+                    </div>
+                    <div class="cg-log-item">
+                        <div class="cg-log-time">8 hrs ago</div>
+                        <div class="cg-log-badge meta">Meta</div>
+                        <div class="cg-log-text">Refreshed ad copy on 4 fatiguing creatives &mdash; frequency was at 4.2, reset to 1.0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======== ANALYTICS VIEW ======== -->
+        <div class="cg-view" id="view-analytics">
+            <div class="cg-view-header">
+                <div>
+                    <h1>Performance Analytics</h1>
+                    <p>Track engagement, reach, and ROI across all your content and channels</p>
+                </div>
+                <div class="cg-header-actions">
+                    <select class="cg-select" id="analyticsRange">
+                        <option value="7d">Last 7 Days</option>
+                        <option value="30d" selected>Last 30 Days</option>
+                        <option value="90d">Last 90 Days</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Analytics Cards -->
+            <div class="cg-analytics-grid">
+                <div class="cg-analytics-card">
+                    <div class="cg-analytics-header">
+                        <span>Total Reach</span>
+                        <span class="cg-analytics-change positive">+24.5%</span>
+                    </div>
+                    <div class="cg-analytics-value">847,293</div>
+                    <div class="cg-analytics-chart" id="reachChart">
+                        <svg width="100%" height="60" viewBox="0 0 200 60" preserveAspectRatio="none">
+                            <polyline fill="none" stroke="var(--emerald-500)" stroke-width="2" points="0,50 20,45 40,48 60,35 80,38 100,25 120,28 140,20 160,15 180,18 200,8"/>
+                            <polyline fill="url(#emeraldGrad)" stroke="none" points="0,50 20,45 40,48 60,35 80,38 100,25 120,28 140,20 160,15 180,18 200,8 200,60 0,60"/>
+                            <defs><linearGradient id="emeraldGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--emerald-500)" stop-opacity="0.3"/><stop offset="100%" stop-color="var(--emerald-500)" stop-opacity="0"/></linearGradient></defs>
+                        </svg>
+                    </div>
+                </div>
+                <div class="cg-analytics-card">
+                    <div class="cg-analytics-header">
+                        <span>Engagement Rate</span>
+                        <span class="cg-analytics-change positive">+3.2%</span>
+                    </div>
+                    <div class="cg-analytics-value">6.8%</div>
+                    <div class="cg-analytics-chart">
+                        <svg width="100%" height="60" viewBox="0 0 200 60" preserveAspectRatio="none">
+                            <polyline fill="none" stroke="#3B82F6" stroke-width="2" points="0,40 20,38 40,42 60,30 80,25 100,28 120,22 140,18 160,20 180,12 200,10"/>
+                            <polyline fill="url(#blueGrad)" stroke="none" points="0,40 20,38 40,42 60,30 80,25 100,28 120,22 140,18 160,20 180,12 200,10 200,60 0,60"/>
+                            <defs><linearGradient id="blueGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3B82F6" stop-opacity="0.3"/><stop offset="100%" stop-color="#3B82F6" stop-opacity="0"/></linearGradient></defs>
+                        </svg>
+                    </div>
+                </div>
+                <div class="cg-analytics-card">
+                    <div class="cg-analytics-header">
+                        <span>Content Published</span>
+                        <span class="cg-analytics-change positive">+18 this week</span>
+                    </div>
+                    <div class="cg-analytics-value">127</div>
+                    <div class="cg-analytics-chart">
+                        <div class="cg-bar-chart">
+                            <div class="cg-bar" style="height: 40%"></div>
+                            <div class="cg-bar" style="height: 60%"></div>
+                            <div class="cg-bar" style="height: 45%"></div>
+                            <div class="cg-bar" style="height: 80%"></div>
+                            <div class="cg-bar" style="height: 70%"></div>
+                            <div class="cg-bar" style="height: 90%"></div>
+                            <div class="cg-bar active" style="height: 75%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="cg-analytics-card">
+                    <div class="cg-analytics-header">
+                        <span>Revenue from Ads</span>
+                        <span class="cg-analytics-change positive">+31.8%</span>
+                    </div>
+                    <div class="cg-analytics-value">&pound;53,924</div>
+                    <div class="cg-analytics-chart">
+                        <svg width="100%" height="60" viewBox="0 0 200 60" preserveAspectRatio="none">
+                            <polyline fill="none" stroke="#A855F7" stroke-width="2" points="0,55 20,50 40,48 60,40 80,35 100,30 120,25 140,22 160,15 180,12 200,5"/>
+                            <polyline fill="url(#purpleGrad)" stroke="none" points="0,55 20,50 40,48 60,40 80,35 100,30 120,25 140,22 160,15 180,12 200,5 200,60 0,60"/>
+                            <defs><linearGradient id="purpleGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#A855F7" stop-opacity="0.3"/><stop offset="100%" stop-color="#A855F7" stop-opacity="0"/></linearGradient></defs>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Channel Breakdown -->
+            <div class="cg-channel-breakdown">
+                <h2>Channel Performance</h2>
+                <div class="cg-breakdown-table">
+                    <div class="cg-table-header">
+                        <span>Channel</span>
+                        <span>Posts</span>
+                        <span>Reach</span>
+                        <span>Engagement</span>
+                        <span>Clicks</span>
+                        <span>Trend</span>
+                    </div>
+                    <div class="cg-table-row">
+                        <span class="cg-table-channel"><span class="cg-dot" style="background: linear-gradient(45deg, #f09433, #dc2743);"></span>Instagram</span>
+                        <span>42</span>
+                        <span>312K</span>
+                        <span>8.4%</span>
+                        <span>12,847</span>
+                        <span class="cg-trend-up">+18%</span>
+                    </div>
+                    <div class="cg-table-row">
+                        <span class="cg-table-channel"><span class="cg-dot" style="background: #000;"></span>TikTok</span>
+                        <span>28</span>
+                        <span>284K</span>
+                        <span>12.1%</span>
+                        <span>8,392</span>
+                        <span class="cg-trend-up">+42%</span>
+                    </div>
+                    <div class="cg-table-row">
+                        <span class="cg-table-channel"><span class="cg-dot" style="background: #1877F2;"></span>Facebook</span>
+                        <span>35</span>
+                        <span>156K</span>
+                        <span>4.2%</span>
+                        <span>6,721</span>
+                        <span class="cg-trend-up">+8%</span>
+                    </div>
+                    <div class="cg-table-row">
+                        <span class="cg-table-channel"><span class="cg-dot" style="background: #0A66C2;"></span>LinkedIn</span>
+                        <span>18</span>
+                        <span>89K</span>
+                        <span>5.7%</span>
+                        <span>4,238</span>
+                        <span class="cg-trend-up">+22%</span>
+                    </div>
+                    <div class="cg-table-row">
+                        <span class="cg-table-channel"><span class="cg-dot" style="background: #000;"></span>X</span>
+                        <span>24</span>
+                        <span>67K</span>
+                        <span>3.1%</span>
+                        <span>2,847</span>
+                        <span class="cg-trend-down">-5%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Performing Content -->
+            <div class="cg-top-content">
+                <h2>Top Performing Content</h2>
+                <div class="cg-top-content-grid">
+                    <div class="cg-top-card">
+                        <div class="cg-top-rank">#1</div>
+                        <div class="cg-top-preview" style="background: linear-gradient(135deg, #667eea, #764ba2);"></div>
+                        <div class="cg-top-info">
+                            <h4>5 Tax Strategies Every Parent Should Know</h4>
+                            <div class="cg-top-metrics">
+                                <span>847K reach</span>
+                                <span>14.2% eng.</span>
+                                <span>Instagram Reel</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cg-top-card">
+                        <div class="cg-top-rank">#2</div>
+                        <div class="cg-top-preview" style="background: linear-gradient(135deg, #f093fb, #f5576c);"></div>
+                        <div class="cg-top-info">
+                            <h4>How I Saved &pound;12K on Childcare This Year</h4>
+                            <div class="cg-top-metrics">
+                                <span>623K reach</span>
+                                <span>11.8% eng.</span>
+                                <span>TikTok</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cg-top-card">
+                        <div class="cg-top-rank">#3</div>
+                        <div class="cg-top-preview" style="background: linear-gradient(135deg, #4facfe, #00f2fe);"></div>
+                        <div class="cg-top-info">
+                            <h4>The Hidden Childcare Benefit You're Missing</h4>
+                            <div class="cg-top-metrics">
+                                <span>412K reach</span>
+                                <span>9.4% eng.</span>
+                                <span>LinkedIn Post</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ============ PUBLISH SUCCESS MODAL ============ -->
+    <div class="cg-modal" id="publishModal" style="display:none;">
+        <div class="cg-modal-content">
+            <div class="cg-modal-success">
+                <div class="cg-success-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--emerald-500)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </div>
+                <h2>Content Published Successfully!</h2>
+                <p>Your content has been published to all selected channels. The AI ads engine is now optimizing your campaigns.</p>
+                <div class="cg-published-channels" id="publishedChannels">
+                    <!-- Dynamically populated -->
+                </div>
+                <button class="cg-btn cg-btn-primary" onclick="closeModal()">View in Calendar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ NEW CAMPAIGN MODAL ============ -->
+    <div class="cg-modal" id="campaignModal" style="display:none;">
+        <div class="cg-modal-content cg-modal-large">
+            <div class="cg-modal-header">
+                <h2>Create New Ad Campaign</h2>
+                <button class="cg-modal-close" onclick="closeCampaignModal()">&times;</button>
+            </div>
+            <div class="cg-campaign-form">
+                <div class="cg-form-group">
+                    <label>Campaign Name</label>
+                    <input type="text" class="cg-input" placeholder="e.g. Spring Tax Season Push">
+                </div>
+                <div class="cg-form-group">
+                    <label>Campaign Objective</label>
+                    <div class="cg-chip-select" id="campaignObjective">
+                        <button class="cg-chip" data-value="traffic">Website Traffic</button>
+                        <button class="cg-chip" data-value="conversions">Conversions</button>
+                        <button class="cg-chip" data-value="leads">Lead Generation</button>
+                        <button class="cg-chip" data-value="awareness">Brand Awareness</button>
+                    </div>
+                </div>
+                <div class="cg-form-row">
+                    <div class="cg-form-group">
+                        <label>Daily Budget</label>
+                        <div class="cg-input-prefix">
+                            <span>&pound;</span>
+                            <input type="number" class="cg-input" value="50" min="5">
+                        </div>
+                    </div>
+                    <div class="cg-form-group">
+                        <label>Duration</label>
+                        <select class="cg-select">
+                            <option>7 days</option>
+                            <option selected>14 days</option>
+                            <option>30 days</option>
+                            <option>Ongoing</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="cg-form-group">
+                    <label>Target Platforms</label>
+                    <div class="cg-chip-select multi" id="campaignPlatforms">
+                        <button class="cg-chip" data-value="google">Google Ads</button>
+                        <button class="cg-chip" data-value="meta">Meta Ads</button>
+                        <button class="cg-chip" data-value="linkedin">LinkedIn Ads</button>
+                        <button class="cg-chip" data-value="x">X Ads</button>
+                        <button class="cg-chip" data-value="tiktok">TikTok Ads</button>
+                    </div>
+                </div>
+                <div class="cg-form-group">
+                    <label>AI Strategy</label>
+                    <div class="cg-ai-strategy-card">
+                        <div class="cg-ai-badge">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                            AI Recommended
+                        </div>
+                        <p>Based on your historical data, I recommend a <strong>conversion-optimized campaign</strong> targeting parents aged 30-45 with household income &pound;80k+. I'll start with broad targeting and narrow down within 48 hours based on early performance signals. Expected ROAS: <strong>3.8x - 5.2x</strong>.</p>
+                    </div>
+                </div>
+                <div class="cg-modal-actions">
+                    <button class="cg-btn cg-btn-ghost" onclick="closeCampaignModal()">Cancel</button>
+                    <button class="cg-btn cg-btn-primary" onclick="launchCampaign()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                        Launch Campaign with AI
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="content-generator.js"></script>
+</body>
+</html>
