@@ -471,39 +471,107 @@ function generateContent() {
 }
 
 function generateContentPieces(brand, audience, qty, channels, tone, goal, types) {
+    // Get active client info for fully tailored content
+    const client = getActiveClient();
+    const industry = client ? (client.industry || brand) : brand;
+    const clientNotes = client ? (client.notes || '') : '';
+    const reference = document.getElementById('contentReference').value || '';
+
+    // Build dynamic hashtags based on brand/industry
+    const brandTag = '#' + brand.replace(/[^a-zA-Z0-9]/g, '');
+    const industryTag = '#' + industry.replace(/[^a-zA-Z0-9]/g, '');
+    const goalTags = {
+        awareness: '#BrandAwareness #GrowYourBrand',
+        engagement: '#Community #Engagement',
+        leads: '#LeadGeneration #GrowthHacking',
+        sales: '#ShopNow #Deals',
+        authority: '#ThoughtLeadership #Expert',
+        community: '#CommunityBuilding #Together'
+    };
+    const baseHashtags = brandTag + ' ' + industryTag + ' ' + (goalTags[goal] || '#Growth #Strategy');
+
+    // Fully dynamic content templates that use client info
     const contentTemplates = {
         post: [
-            { title: 'Value Bomb Post', text: 'Most {audience} don\'t realise they\'re leaving money on the table.\n\nHere are 3 things you can do TODAY:\n\n1. Review your current tax setup\n2. Check if you qualify for salary sacrifice\n3. Set up Tax-Free Childcare\n\nThe difference? Up to {savings} per year.\n\nSave this post and thank me later.', hashtags: '#Finance #Savings #ParentLife #MoneyTips' },
-            { title: 'Authority Post', text: 'I\'ve helped 500+ families save an average of {savings} per year.\n\nThe secret? It\'s not about earning more. It\'s about keeping more of what you earn.\n\nHere\'s what 95% of high earners get wrong about {topic}...', hashtags: '#ExpertAdvice #WealthBuilding #FamilyFinance' },
-            { title: 'Engagement Hook', text: 'Quick question for {audience}:\n\nDo you know your ACTUAL tax rate when you include lost benefits?\n\nFor most families earning {income}, it\'s not 40%. It\'s closer to 60%.\n\nDrop a "?" in the comments and I\'ll explain why.', hashtags: '#TaxTips #UKFinance #DidYouKnow' },
-            { title: 'Social Proof Post', text: '"We saved {savings} in our first year" - Sarah & Tom, London\n\nThey didn\'t change jobs. They didn\'t work harder. They just restructured how they receive their income.\n\nWant to know how? Link in bio.', hashtags: '#Testimonial #RealResults #FinancialFreedom' },
-            { title: 'Myth Buster Post', text: 'MYTH: "Salary sacrifice means I earn less"\n\nREALITY: You take home MORE money.\n\nHere\'s how the maths works:\n\nBefore: {income} gross → lose childcare benefits\nAfter: Sacrifice 1% → gain {savings} in benefits\n\nNet gain: Thousands per year.', hashtags: '#MythBusted #SmartMoney #ParentHacks' }
+            {
+                title: 'Value Bomb Post',
+                text: 'Most ' + audience + ' are making this mistake.\n\nHere are 3 things you can do TODAY to get better results with ' + industry + ':\n\n1. Audit what you\'re currently doing\n2. Identify the biggest gap in your strategy\n3. Take one focused action this week\n\nSmall changes = massive results over time.\n\nSave this post. Come back to it. Thank me later.',
+                hashtags: baseHashtags + ' #ValuePost #Tips'
+            },
+            {
+                title: 'Authority Post',
+                text: 'After working with hundreds of clients in ' + industry + ', here\'s what I\'ve learned:\n\nThe ones who succeed aren\'t the ones with the biggest budgets.\n\nThey\'re the ones who:\n- Stay consistent\n- Focus on their audience\n- Adapt quickly\n- Trust the process\n\nWhich one do you need to work on? Drop it below.',
+                hashtags: baseHashtags + ' #ExpertAdvice #' + industry.replace(/[^a-zA-Z0-9]/g, '') + 'Tips'
+            },
+            {
+                title: 'Engagement Hook',
+                text: 'Hot take for ' + audience + ':\n\nMost people in ' + industry + ' are overcomplicating things.\n\nThe truth? The simplest strategy executed consistently will beat a complex one every single time.\n\nAgree or disagree? Tell me why in the comments.',
+                hashtags: baseHashtags + ' #HotTake #LetsTalk'
+            },
+            {
+                title: 'Social Proof Post',
+                text: '"Working with ' + brand + ' completely transformed our approach."\n\nThat\'s what our clients tell us.\n\nNot because we have some secret formula. But because we focus on what actually works for ' + audience + '.\n\nResults speak louder than promises.\n\nLink in bio to see how we can help you too.',
+                hashtags: baseHashtags + ' #ClientResults #Testimonial #RealResults'
+            },
+            {
+                title: 'Myth Buster Post',
+                text: 'MYTH: "You need a huge budget to succeed in ' + industry + '"\n\nREALITY: Strategy beats budget every single time.\n\nHere\'s what matters more:\n- Understanding your audience deeply\n- Creating content that resonates\n- Being consistent (not perfect)\n- Testing and iterating\n\nStop waiting for "enough" budget. Start with what you have.',
+                hashtags: baseHashtags + ' #MythBusted #SmartStrategy'
+            }
         ],
         story: [
-            { title: 'Quick Tip Story', text: 'Swipe up to discover the #1 tax strategy for parents earning {income}+\n\n{savings} saved per year on average.', hashtags: '' },
-            { title: 'Poll Story', text: 'Do you know about Tax-Free Childcare?\n\nYes, I use it ✅\nNo, what is it? 🤔\n\nMost parents are missing out on £2,000/year per child.', hashtags: '' }
+            {
+                title: 'Quick Tip Story',
+                text: 'Quick tip for ' + audience + ':\n\nThe #1 thing that will move the needle for your ' + industry + ' strategy this week?\n\nFocus on ONE goal. Not five. ONE.\n\nSwipe up to learn our full framework.',
+                hashtags: ''
+            },
+            {
+                title: 'Poll Story',
+                text: 'Question for you:\n\nWhat\'s your biggest challenge with ' + industry + ' right now?\n\nA) Not enough time\nB) Not sure what works\nC) Need more resources\nD) All of the above\n\nVote and I\'ll share my best tip for whatever wins!',
+                hashtags: ''
+            }
         ],
         reel: [
-            { title: 'Hook Reel Script', text: '🎬 HOOK: "If you earn over {income}, you need to hear this"\n\n📍 SETUP: Show calculator, type in salary\n\n💡 REVEAL: "You\'re losing {savings} every single year"\n\n🎯 CTA: "Follow for more money-saving strategies"\n\nAudio: Trending sound\nDuration: 15-30s\nCaption: This changed everything for us...', hashtags: '#MoneyTok #FinanceTips #ParentHack #UKMoney' },
-            { title: 'Before/After Reel', text: '🎬 "POV: Before vs After using salary sacrifice"\n\nBEFORE:\n- Losing childcare benefits ❌\n- Paying 60% effective tax ❌\n- Stressed about childcare costs ❌\n\nAFTER:\n- Full benefits restored ✅\n- 40% tax rate ✅\n- {savings} saved per year ✅\n\nDuration: 10-15s fast cuts', hashtags: '#BeforeAndAfter #GlowUp #MoneyGlowUp' }
+            {
+                title: 'Hook Reel Script',
+                text: 'HOOK: "If you\'re a ' + audience.split(' ')[0] + ' in ' + industry + ', stop scrolling"\n\nSETUP: Quick cuts showing the problem your audience faces\n\nREVEAL: "Here\'s what the top 1% do differently..."\n\nVALUE: Share 1 actionable tip\n\nCTA: "Follow ' + brand + ' for more"\n\nAudio: Trending sound\nDuration: 15-30s\nCaption: This is the game changer nobody talks about...',
+                hashtags: baseHashtags + ' #Reels #' + industry.replace(/[^a-zA-Z0-9]/g, '') + ' #Tips'
+            },
+            {
+                title: 'Before/After Reel',
+                text: '"POV: Before vs After working with ' + brand + '"\n\nBEFORE:\n- Struggling to reach your audience\n- Inconsistent results\n- Wasting time on what doesn\'t work\n\nAFTER:\n- Clear strategy in place\n- Consistent growth\n- More results, less effort\n\nDuration: 10-15s fast cuts\nFormat: Split screen or transition reveal',
+                hashtags: baseHashtags + ' #BeforeAndAfter #Transformation'
+            }
         ],
         carousel: [
-            { title: 'Educational Carousel', text: 'Slide 1: "5 Ways to Save {savings} on Childcare This Year"\n\nSlide 2: "1. Tax-Free Childcare — Get 20% off childcare costs, up to £2,000/child/year"\n\nSlide 3: "2. Salary Sacrifice — Reduce taxable income below £100k threshold"\n\nSlide 4: "3. Income Splitting — Use partnerships to optimize household tax"\n\nSlide 5: "4. Employer Benefits — Check your workplace nursery scheme"\n\nSlide 6: "5. Junior ISAs — Tax-free investment for your child\'s future"\n\nSlide 7: "Save this carousel and start implementing TODAY 📌"\n\nDesign: Clean, bold typography on gradient backgrounds', hashtags: '#CarouselPost #FinanceEducation #ParentingTips #SaveMoney' }
+            {
+                title: 'Educational Carousel',
+                text: 'Slide 1: "5 ' + industry + ' Strategies That Actually Work in 2026"\n\nSlide 2: "1. Know Your Audience — Research deeply before creating anything. What keeps ' + audience + ' up at night?"\n\nSlide 3: "2. Content First — Lead with value, not sales. Give before you ask."\n\nSlide 4: "3. Platform Native — What works on Instagram won\'t work on LinkedIn. Tailor everything."\n\nSlide 5: "4. Data-Driven — Track what resonates. Double down on winners. Kill what doesn\'t work."\n\nSlide 6: "5. Consistency > Perfection — Showing up regularly beats being perfect occasionally."\n\nSlide 7: "Save this carousel and start implementing TODAY"\n\nDesign: Clean, bold typography on gradient backgrounds',
+                hashtags: baseHashtags + ' #CarouselPost #Strategy #' + industry.replace(/[^a-zA-Z0-9]/g, '')
+            }
         ],
         thread: [
-            { title: 'Twitter/X Thread', text: '🧵 THREAD: How UK parents earning {income}+ can save {savings}/year (most don\'t know this)\n\n1/ The UK tax system has a brutal cliff edge at £100,000.\n\nYou lose your Personal Allowance — £12,570 of tax-free income.\n\nEffective tax rate: 60%. Yes, really.\n\n2/ But there\'s a legal, HMRC-approved way to bring your income below £100k.\n\nIt\'s called salary sacrifice.\n\nYou redirect a small portion of salary into your pension. Your "adjusted net income" drops. Benefits unlock.\n\n3/ Here\'s what you get back:\n- Tax-Free Childcare: £2,000/child/year\n- 30 hours free childcare\n- Your personal allowance (£12,570)\n\nTotal value: up to {savings}/year.\n\n4/ The best part? Your pension grows faster too.\n\nYou\'re not losing money — you\'re redirecting it into your future, tax-free.\n\n5/ Want to calculate your exact savings? We built a free tool.\n\n[Link]\n\nIt takes 60 seconds. No email required.\n\nRetweet to help other parents. 🔄', hashtags: '' }
+            {
+                title: 'Twitter/X Thread',
+                text: 'THREAD: The ' + industry + ' playbook that ' + audience + ' need to know about\n\n1/ Most people in ' + industry + ' are doing the same thing everyone else is doing. That\'s why they get average results.\n\nHere\'s how to break out of the pack:\n\n2/ Step 1: Define your unique angle.\n\nWhat can YOU say about ' + industry + ' that nobody else is saying? Your experience, your perspective, your story.\n\nThat\'s your competitive advantage.\n\n3/ Step 2: Pick ONE platform and dominate it.\n\nDon\'t spread yourself thin across 7 platforms. Master one first, then expand.\n\n4/ Step 3: Create a content engine.\n\nOne long-form piece per week, repurposed into 5-10 shorter pieces across platforms.\n\nWork smarter, not harder.\n\n5/ Step 4: Engage more than you broadcast.\n\nComment on posts. Reply to DMs. Build real relationships.\n\nThe algorithm rewards genuine engagement.\n\n6/ If you found this valuable, follow ' + brand + ' for more insights on ' + industry + '.\n\nRepost to help someone else who needs to see this.',
+                hashtags: ''
+            }
         ],
         article: [
-            { title: 'Long-Form Article', text: '# The Complete Guide to Saving {savings} on UK Childcare Costs\n\n## Introduction\nIf you\'re a UK parent earning over {income}, you\'re probably paying far more tax than you need to — and missing out on thousands in childcare benefits.\n\nIn this comprehensive guide, we\'ll walk through every strategy available to high-earning parents...\n\n## Section 1: The £100k Tax Trap\n[Detailed explanation of the personal allowance cliff edge]\n\n## Section 2: Salary Sacrifice Explained\n[Step-by-step guide with examples]\n\n## Section 3: Tax-Free Childcare\n[Application process and maximizing benefits]\n\n## Conclusion\nBy implementing these strategies, families typically save between £8,000 and £25,000 per year.\n\nWord count target: 2,000-3,000 words\nSEO keywords: childcare costs UK, salary sacrifice childcare, tax-free childcare, high earner tax planning', hashtags: '' }
+            {
+                title: 'Long-Form Article',
+                text: '# The Ultimate ' + industry + ' Guide for ' + audience + ' in 2026\n\n## Introduction\nThe landscape of ' + industry + ' is changing fast. What worked last year might not work today. In this comprehensive guide, we\'ll cover everything ' + audience + ' need to know to stay ahead.\n\n## Section 1: The Current State of ' + industry + '\n[Analyze trends, challenges, and opportunities in the industry]\n\n## Section 2: Building Your Strategy\n[Step-by-step framework tailored to your audience]\n\n## Section 3: Execution Playbook\n[Practical tactics, tools, and timelines]\n\n## Section 4: Measuring Success\n[KPIs, metrics, and benchmarks that matter]\n\n## Conclusion\nThe best time to refine your ' + industry + ' strategy was yesterday. The second best time is today.\n\nWord count target: 2,000-3,000 words\nSEO keywords: ' + industry + ', ' + audience + ', strategy, guide, 2026',
+                hashtags: ''
+            }
         ],
         ad: [
-            { title: 'High-Converting Ad', text: '📢 AD CREATIVE\n\nHeadline: "Parents earning {income}+: You\'re losing {savings}/year"\n\nPrimary text: "The UK tax system penalises families earning over £100k. But there\'s a legal way to save up to {savings} every year on childcare costs. Our free calculator shows you exactly how much you could save in 60 seconds."\n\nCTA: Calculate My Savings\n\nTarget: Parents 28-45, HHI £100k+, UK\nPlacement: Feed, Stories, Reels\n\nVariant B Headline: "This 60-second calculator could save you {savings}"\nVariant C Headline: "Are you in the £100k tax trap?"', hashtags: '' }
+            {
+                title: 'High-Converting Ad',
+                text: 'AD CREATIVE\n\nHeadline: "' + audience + ': Here\'s what you\'re missing about ' + industry + '"\n\nPrimary text: "' + brand + ' helps ' + audience + ' get better results with ' + industry + '. Join hundreds of clients who\'ve transformed their approach. See how we can help you too."\n\nCTA: Learn More\n\nTarget: ' + audience + '\nPlacement: Feed, Stories, Reels\n\nVariant B Headline: "The ' + industry + ' strategy ' + audience + ' are switching to"\nVariant C Headline: "Stop guessing. Start growing with ' + brand + '"',
+                hashtags: ''
+            }
         ]
     };
-
-    const incomes = ['£100k', '£110k', '£120k', '£150k'];
-    const savingsAmounts = ['£12,000', '£15,000', '£18,000', '£20,000', '£25,000'];
-    const topics = ['childcare costs', 'tax planning', 'salary sacrifice', 'family finances'];
 
     const pieces = [];
     const channelNames = { instagram: 'Instagram', tiktok: 'TikTok', facebook: 'Facebook', linkedin: 'LinkedIn', twitter: 'X (Twitter)', youtube: 'YouTube', pinterest: 'Pinterest', email: 'Email' };
@@ -513,16 +581,6 @@ function generateContentPieces(brand, audience, qty, channels, tone, goal, types
         const channel = channels[i % channels.length];
         const templates = contentTemplates[type] || contentTemplates.post;
         const template = templates[i % templates.length];
-        const income = incomes[Math.floor(Math.random() * incomes.length)];
-        const savings = savingsAmounts[Math.floor(Math.random() * savingsAmounts.length)];
-        const topic = topics[Math.floor(Math.random() * topics.length)];
-
-        let text = template.text
-            .replace(/\{audience\}/g, audience || 'high-earning parents')
-            .replace(/\{income\}/g, income)
-            .replace(/\{savings\}/g, savings)
-            .replace(/\{topic\}/g, topic)
-            .replace(/\{brand\}/g, brand);
 
         pieces.push({
             id: 'content-' + (i + 1),
@@ -530,7 +588,7 @@ function generateContentPieces(brand, audience, qty, channels, tone, goal, types
             type: type,
             channel: channel,
             channelName: channelNames[channel] || channel,
-            text: text,
+            text: template.text,
             hashtags: template.hashtags,
             status: 'draft',
             score: Math.floor(Math.random() * 15) + 85
