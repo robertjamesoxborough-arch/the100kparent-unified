@@ -13,15 +13,40 @@
     <!-- ============ TOP NAV ============ -->
     <nav class="cg-topnav">
         <div class="cg-topnav-left">
-            <div class="cg-logo">
+            <div class="cg-logo" onclick="switchView('clients')" style="cursor:pointer;">
                 <div class="cg-logo-icon">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
                 </div>
                 <span class="cg-logo-text">ContentEngine<span class="cg-logo-ai">AI</span></span>
             </div>
+            <!-- Client Switcher -->
+            <div class="cg-client-switcher" id="clientSwitcher">
+                <button class="cg-client-switcher-btn" onclick="toggleClientDropdown()" id="clientSwitcherBtn">
+                    <span class="cg-client-dot" id="activeClientDot"></span>
+                    <span id="activeClientName">Select Client</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="cg-client-dropdown" id="clientDropdown" style="display:none;">
+                    <div class="cg-client-dropdown-header">
+                        <span>Your Clients</span>
+                        <button class="cg-btn cg-btn-ghost cg-btn-sm" onclick="switchView('clients'); toggleClientDropdown();">Manage</button>
+                    </div>
+                    <div class="cg-client-dropdown-list" id="clientDropdownList">
+                        <!-- Populated dynamically -->
+                    </div>
+                    <button class="cg-client-dropdown-add" onclick="openAddClientModal(); toggleClientDropdown();">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        Add New Client
+                    </button>
+                </div>
+            </div>
         </div>
         <div class="cg-topnav-center">
-            <button class="cg-nav-tab active" data-view="create" onclick="switchView('create')">
+            <button class="cg-nav-tab active" data-view="clients" onclick="switchView('clients')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                Clients
+            </button>
+            <button class="cg-nav-tab" data-view="create" onclick="switchView('create')">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
                 Create
             </button>
@@ -52,8 +77,78 @@
     <!-- ============ MAIN CONTENT ============ -->
     <main class="cg-main">
 
+        <!-- ======== CLIENTS VIEW ======== -->
+        <div class="cg-view active" id="view-clients">
+            <div class="cg-view-header">
+                <div>
+                    <h1>Your Clients</h1>
+                    <p>Manage all your clients from one dashboard. Switch between accounts instantly.</p>
+                </div>
+                <button class="cg-btn cg-btn-primary" onclick="openAddClientModal()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Add Client
+                </button>
+            </div>
+
+            <!-- Clients Overview Stats -->
+            <div class="cg-clients-stats">
+                <div class="cg-ads-stat-card">
+                    <div class="cg-ads-stat-icon" style="background: rgba(59, 130, 246, 0.1); color: #3B82F6;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    </div>
+                    <div class="cg-ads-stat-content">
+                        <span class="cg-ads-stat-label">Total Clients</span>
+                        <span class="cg-ads-stat-value" id="statTotalClients">0</span>
+                    </div>
+                </div>
+                <div class="cg-ads-stat-card">
+                    <div class="cg-ads-stat-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--emerald-500);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    </div>
+                    <div class="cg-ads-stat-content">
+                        <span class="cg-ads-stat-label">Content Created</span>
+                        <span class="cg-ads-stat-value" id="statTotalContent">0</span>
+                    </div>
+                </div>
+                <div class="cg-ads-stat-card">
+                    <div class="cg-ads-stat-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--gold-500);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    </div>
+                    <div class="cg-ads-stat-content">
+                        <span class="cg-ads-stat-label">Total Ad Spend</span>
+                        <span class="cg-ads-stat-value" id="statTotalSpend">&pound;0</span>
+                    </div>
+                </div>
+                <div class="cg-ads-stat-card">
+                    <div class="cg-ads-stat-icon" style="background: rgba(168, 85, 247, 0.1); color: #A855F7;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                    </div>
+                    <div class="cg-ads-stat-content">
+                        <span class="cg-ads-stat-label">Avg. ROAS</span>
+                        <span class="cg-ads-stat-value" id="statAvgRoas">0x</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Client Cards Grid -->
+            <div class="cg-clients-grid" id="clientsGrid">
+                <!-- Populated dynamically -->
+            </div>
+
+            <!-- Empty State -->
+            <div class="cg-clients-empty" id="clientsEmpty">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--gray-300)" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <h2>No clients yet</h2>
+                <p>Add your first client to start generating world-class content across all their channels.</p>
+                <button class="cg-btn cg-btn-primary" onclick="openAddClientModal()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Add Your First Client
+                </button>
+            </div>
+        </div>
+
         <!-- ======== CREATE VIEW ======== -->
-        <div class="cg-view active" id="view-create">
+        <div class="cg-view" id="view-create">
 
             <!-- Wizard Progress -->
             <div class="cg-wizard-progress">
@@ -919,6 +1014,84 @@
                     <!-- Dynamically populated -->
                 </div>
                 <button class="cg-btn cg-btn-primary" onclick="closeModal()">View in Calendar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ ADD CLIENT MODAL ============ -->
+    <div class="cg-modal" id="addClientModal" style="display:none;">
+        <div class="cg-modal-content cg-modal-large">
+            <div class="cg-modal-header">
+                <h2>Add New Client</h2>
+                <button class="cg-modal-close" onclick="closeAddClientModal()">&times;</button>
+            </div>
+            <div class="cg-campaign-form" id="addClientForm">
+                <div class="cg-form-row">
+                    <div class="cg-form-group">
+                        <label>Client / Brand Name</label>
+                        <input type="text" class="cg-input" id="newClientName" placeholder="e.g. Acme Fitness, Smith & Co">
+                    </div>
+                    <div class="cg-form-group">
+                        <label>Industry / Niche</label>
+                        <input type="text" class="cg-input" id="newClientIndustry" placeholder="e.g. E-commerce, SaaS, Coaching">
+                    </div>
+                </div>
+                <div class="cg-form-group">
+                    <label>Brand Color</label>
+                    <div class="cg-color-picker">
+                        <button class="cg-color-swatch active" data-color="#3B82F6" style="background:#3B82F6;" onclick="selectColor(this)"></button>
+                        <button class="cg-color-swatch" data-color="#10B981" style="background:#10B981;" onclick="selectColor(this)"></button>
+                        <button class="cg-color-swatch" data-color="#F59E0B" style="background:#F59E0B;" onclick="selectColor(this)"></button>
+                        <button class="cg-color-swatch" data-color="#EF4444" style="background:#EF4444;" onclick="selectColor(this)"></button>
+                        <button class="cg-color-swatch" data-color="#8B5CF6" style="background:#8B5CF6;" onclick="selectColor(this)"></button>
+                        <button class="cg-color-swatch" data-color="#EC4899" style="background:#EC4899;" onclick="selectColor(this)"></button>
+                        <button class="cg-color-swatch" data-color="#14B8A6" style="background:#14B8A6;" onclick="selectColor(this)"></button>
+                        <button class="cg-color-swatch" data-color="#F97316" style="background:#F97316;" onclick="selectColor(this)"></button>
+                    </div>
+                </div>
+                <div class="cg-form-group">
+                    <label>Target Audience</label>
+                    <textarea class="cg-textarea" id="newClientAudience" rows="2" placeholder="Describe who this client is trying to reach..."></textarea>
+                </div>
+                <div class="cg-form-group">
+                    <label>Brand Voice / Tone</label>
+                    <div class="cg-chip-select" id="newClientTone">
+                        <button class="cg-chip" data-value="professional" onclick="this.classList.toggle('active')">Professional</button>
+                        <button class="cg-chip" data-value="casual" onclick="this.classList.toggle('active')">Casual &amp; Friendly</button>
+                        <button class="cg-chip" data-value="bold" onclick="this.classList.toggle('active')">Bold &amp; Edgy</button>
+                        <button class="cg-chip" data-value="inspirational" onclick="this.classList.toggle('active')">Inspirational</button>
+                        <button class="cg-chip" data-value="educational" onclick="this.classList.toggle('active')">Educational</button>
+                        <button class="cg-chip" data-value="humorous" onclick="this.classList.toggle('active')">Humorous</button>
+                    </div>
+                </div>
+                <div class="cg-form-group">
+                    <label>Social Channels</label>
+                    <div class="cg-chip-select multi" id="newClientChannels">
+                        <button class="cg-chip" data-value="instagram" onclick="this.classList.toggle('active')">Instagram</button>
+                        <button class="cg-chip" data-value="tiktok" onclick="this.classList.toggle('active')">TikTok</button>
+                        <button class="cg-chip" data-value="facebook" onclick="this.classList.toggle('active')">Facebook</button>
+                        <button class="cg-chip" data-value="linkedin" onclick="this.classList.toggle('active')">LinkedIn</button>
+                        <button class="cg-chip" data-value="twitter" onclick="this.classList.toggle('active')">X (Twitter)</button>
+                        <button class="cg-chip" data-value="youtube" onclick="this.classList.toggle('active')">YouTube</button>
+                        <button class="cg-chip" data-value="pinterest" onclick="this.classList.toggle('active')">Pinterest</button>
+                        <button class="cg-chip" data-value="email" onclick="this.classList.toggle('active')">Email</button>
+                    </div>
+                </div>
+                <div class="cg-form-group">
+                    <label>Website URL <span class="cg-optional">(optional)</span></label>
+                    <input type="text" class="cg-input" id="newClientWebsite" placeholder="https://...">
+                </div>
+                <div class="cg-form-group">
+                    <label>Notes <span class="cg-optional">(optional)</span></label>
+                    <textarea class="cg-textarea" id="newClientNotes" rows="2" placeholder="Any additional details, brand guidelines, competitor references..."></textarea>
+                </div>
+                <div class="cg-modal-actions">
+                    <button class="cg-btn cg-btn-ghost" onclick="closeAddClientModal()">Cancel</button>
+                    <button class="cg-btn cg-btn-primary" onclick="saveNewClient()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        Add Client
+                    </button>
+                </div>
             </div>
         </div>
     </div>
