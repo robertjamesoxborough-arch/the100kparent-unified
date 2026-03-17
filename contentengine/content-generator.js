@@ -2143,7 +2143,7 @@ function renderSocialQueue() {
             <div class="social-post-text">${escapeHtml(post.content.substring(0, 280))}${post.content.length > 280 ? '...' : ''}</div>
             ${post.hashtags ? '<div class="content-hashtags" style="margin-bottom:0.5rem;">' + escapeHtml(post.hashtags) + '</div>' : ''}
             <div class="content-actions">
-                <button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText(${JSON.stringify(JSON.stringify(post.content))});showToast('Copied')">Copy</button>
+                <button class="btn btn-ghost btn-sm" onclick="copyScheduledPostContent('${post.id}')">Copy</button>
                 ${post.status === 'scheduled' ? '<button class="btn btn-ghost btn-sm" onclick="publishPost(\'' + post.id + '\')">Publish Now</button>' : ''}
                 ${post.status === 'draft' ? '<button class="btn btn-ghost btn-sm" onclick="schedulePost(\'' + post.id + '\')">Schedule</button>' : ''}
                 <button class="btn btn-ghost btn-sm btn-danger" onclick="deleteScheduledPost('${post.id}')">Delete</button>
@@ -2201,10 +2201,10 @@ function publishPost(id) {
 
     // Try real API publish for connected platforms
     const integrations = loadIntegrationStatus();
-    let published = false;
 
     post.platforms.forEach(platform => {
-        if (integrations[platform === 'facebook' || platform === 'instagram' ? 'meta' : platform]?.connected) {
+        const intKey = (platform === 'facebook' || platform === 'instagram') ? 'meta' : platform;
+        if (integrations[intKey]?.connected) {
             // Attempt real publish via API
             fetch('/api/social', {
                 method: 'POST',
@@ -2234,6 +2234,15 @@ function schedulePost(id) {
     saveScheduledPosts(posts);
     renderSocialQueue();
     showToast('Post scheduled');
+}
+
+function copyScheduledPostContent(id) {
+    const posts = loadScheduledPosts();
+    const post = posts.find(p => p.id === id);
+    if (post) {
+        navigator.clipboard.writeText(post.content + (post.hashtags ? '\n\n' + post.hashtags : ''));
+        showToast('Copied to clipboard');
+    }
 }
 
 function deleteScheduledPost(id) {
