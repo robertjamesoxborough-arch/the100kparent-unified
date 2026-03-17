@@ -943,6 +943,84 @@ body {
 /* ===== OMNICHANNEL ===== */
 .promos-list { display: flex; flex-direction: column; gap: 1rem; }
 
+/* ===== INTEGRATIONS SETTINGS ===== */
+.integrations-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+.integration-card { background: var(--bg-primary); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; transition: border-color 0.2s; }
+.integration-card.connected { border-color: var(--green-600); }
+.integration-card-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+.integration-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: white; }
+.integration-card-header h4 { margin: 0; font-size: 15px; }
+.integration-card-header .integration-status { font-size: 12px; color: var(--text-muted); }
+.integration-card-header .integration-status.connected { color: var(--green-600); font-weight: 600; }
+.integration-card p { font-size: 13px; color: var(--text-secondary); margin: 0 0 1rem; line-height: 1.5; }
+.integration-connect-form { display: none; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); }
+.integration-connect-form.open { display: block; }
+
+/* ===== SOCIAL SCHEDULER ===== */
+.social-status-bar { display: flex; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; }
+.social-status-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem; background: var(--bg-secondary); border-radius: 8px; font-size: 13px; }
+.social-status-dot { width: 8px; height: 8px; border-radius: 50%; }
+.social-status-dot.connected { background: var(--green-600); }
+.social-status-dot.disconnected { background: var(--text-muted); }
+.social-tabs, .email-int-tabs, .ecom-tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin-bottom: 1rem; }
+.social-tab, .email-int-tab, .ecom-tab { padding: 0.6rem 1.25rem; font-size: 14px; font-weight: 500; color: var(--text-secondary); background: none; border: none; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+.social-tab:hover, .email-int-tab:hover, .ecom-tab:hover { color: var(--text-primary); }
+.social-tab.active, .email-int-tab.active, .ecom-tab.active { color: var(--blue-600); border-bottom-color: var(--blue-600); }
+.social-queue { display: flex; flex-direction: column; gap: 0.75rem; }
+.social-post-card { background: var(--bg-primary); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; }
+.social-post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+.social-post-platforms { display: flex; gap: 0.35rem; }
+.social-post-platform { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+.social-post-date { font-size: 12px; color: var(--text-muted); }
+.social-post-text { font-size: 14px; line-height: 1.6; margin-bottom: 0.5rem; white-space: pre-wrap; }
+.social-post-status { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.3px; }
+.social-post-status.scheduled { background: #FEF3C7; color: #D97706; }
+.social-post-status.published { background: #D1FAE5; color: #059669; }
+.social-post-status.draft { background: var(--bg-secondary); color: var(--text-muted); }
+.social-post-status.failed { background: #FEE2E2; color: #DC2626; }
+.upload-zone-sm { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem; border: 2px dashed var(--border); border-radius: 8px; cursor: pointer; font-size: 13px; color: var(--text-muted); transition: border-color 0.2s; }
+.upload-zone-sm:hover { border-color: var(--blue-600); color: var(--blue-600); }
+
+/* ===== PAID ADS ===== */
+.ads-platform-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.25rem; }
+.platform-tab { display: flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-primary); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+.platform-tab:hover { border-color: var(--blue-600); }
+.platform-tab.active { background: var(--blue-600); color: white; border-color: var(--blue-600); }
+.platform-tab.active svg { fill: white; }
+.ads-overview { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.75rem; margin-bottom: 1.25rem; }
+.ads-stat { background: var(--bg-primary); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; }
+.ads-stat-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.ads-stat-value { font-size: 24px; font-weight: 700; margin: 0.25rem 0; }
+.ads-stat-change { font-size: 12px; }
+.ads-stat-change.positive { color: var(--green-600); }
+.ads-stat-change.negative { color: #DC2626; }
+.ads-campaigns { display: flex; flex-direction: column; gap: 0.75rem; }
+.ads-campaign-card { background: var(--bg-primary); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; }
+.ads-campaign-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+.ads-campaign-metrics { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 0.75rem; margin-top: 0.75rem; }
+.ads-metric { text-align: center; }
+.ads-metric-value { font-size: 16px; font-weight: 700; }
+.ads-metric-label { font-size: 11px; color: var(--text-muted); }
+
+/* ===== E-COMMERCE ===== */
+.ecom-status { display: flex; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; }
+.ecom-stat { padding: 0.75rem 1rem; background: var(--bg-secondary); border-radius: 8px; font-size: 13px; }
+.ecom-stat strong { font-size: 18px; display: block; margin-bottom: 0.25rem; }
+.ecom-products { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+.ecom-product-card { background: var(--bg-primary); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.ecom-product-img { width: 100%; height: 160px; object-fit: cover; background: var(--bg-secondary); }
+.ecom-product-body { padding: 1rem; }
+.ecom-product-body h4 { margin: 0 0 0.25rem; }
+.ecom-product-price { font-weight: 700; color: var(--blue-600); margin-bottom: 0.5rem; }
+.ecom-product-meta { font-size: 12px; color: var(--text-muted); }
+.ecom-order-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.ecom-order-row { display: grid; grid-template-columns: auto 1fr auto auto auto; gap: 1rem; align-items: center; padding: 0.75rem; background: var(--bg-primary); border: 1px solid var(--border); border-radius: 8px; font-size: 13px; }
+.ecom-order-id { font-weight: 600; }
+.ecom-order-status { padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+.ecom-order-status.paid { background: #D1FAE5; color: #059669; }
+.ecom-order-status.pending { background: #FEF3C7; color: #D97706; }
+.ecom-order-status.refunded { background: #FEE2E2; color: #DC2626; }
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
     .sidebar { transform: translateX(-100%); width: var(--sidebar-w); }
