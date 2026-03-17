@@ -311,7 +311,7 @@ function updateStats() {
 }
 
 // ============ VIEW SWITCHING ============
-const NO_CLIENT_REQUIRED = ['clients', 'library', 'dashboard', 'reports', 'integrations', 'social', 'emailint', 'ads', 'ecommerce'];
+const NO_CLIENT_REQUIRED = ['clients', 'library', 'dashboard', 'reports', 'integrations', 'social', 'emailint', 'ads', 'ecommerce', 'actionplan'];
 
 function switchView(view) {
     if (!NO_CLIENT_REQUIRED.includes(view) && !state.activeClientId) {
@@ -348,6 +348,9 @@ function switchView(view) {
     if (view === 'emailint') renderEmailIntView();
     if (view === 'ads') renderAds();
     if (view === 'ecommerce') renderEcomView();
+    if (view === 'onboarding') renderOnboarding();
+    if (view === 'audit') renderAuditView();
+    if (view === 'actionplan') renderActionPlan();
     if (view === 'create') {
         const client = getActiveClient();
         const subtitle = document.getElementById('createSubtitle');
@@ -2680,9 +2683,636 @@ function syncShopifyProducts() {
     renderEcom();
 }
 
-// ============ UPDATED VIEW SWITCHING ============
-// Extend switchView to handle new integration views
-const originalSwitchView = switchView;
+// ============ ONBOARDING ============
+const ONBOARDING_QUESTIONS = [
+    {
+        id: 'stage',
+        question: 'Where is this client with their marketing?',
+        type: 'radio',
+        options: [
+            { value: 'scratch', label: 'Starting from scratch', desc: 'No existing marketing — brand new or never done digital marketing before' },
+            { value: 'some', label: 'Some things in place', desc: 'Have a website and maybe 1-2 social accounts, but inconsistent or inactive' },
+            { value: 'established', label: 'Established but needs improvement', desc: 'Active on multiple channels but not getting desired results' },
+            { value: 'scaling', label: 'Ready to scale', desc: 'Good foundations, now need to grow and optimise' },
+        ],
+    },
+    {
+        id: 'website',
+        question: 'Do they have a website?',
+        type: 'radio',
+        options: [
+            { value: 'none', label: 'No website' },
+            { value: 'basic', label: 'Basic website (not optimised)' },
+            { value: 'good', label: 'Good website with SEO' },
+            { value: 'ecommerce', label: 'E-commerce site (Shopify, WooCommerce, etc.)' },
+        ],
+    },
+    {
+        id: 'social',
+        question: 'Which social media accounts do they have?',
+        type: 'checkbox',
+        options: [
+            { value: 'none', label: 'None' },
+            { value: 'instagram', label: 'Instagram' },
+            { value: 'facebook', label: 'Facebook' },
+            { value: 'tiktok', label: 'TikTok' },
+            { value: 'linkedin', label: 'LinkedIn' },
+            { value: 'twitter', label: 'X (Twitter)' },
+            { value: 'youtube', label: 'YouTube' },
+            { value: 'pinterest', label: 'Pinterest' },
+        ],
+    },
+    {
+        id: 'socialActivity',
+        question: 'How active are they on social media?',
+        type: 'radio',
+        options: [
+            { value: 'inactive', label: 'Not posting at all' },
+            { value: 'sporadic', label: 'Posts occasionally (less than once a week)' },
+            { value: 'weekly', label: 'Posts 1-3 times per week' },
+            { value: 'daily', label: 'Posts daily or near-daily' },
+        ],
+    },
+    {
+        id: 'email',
+        question: 'Do they have an email marketing setup?',
+        type: 'radio',
+        options: [
+            { value: 'none', label: 'No email marketing at all' },
+            { value: 'list', label: 'Have a list but don\'t email regularly' },
+            { value: 'basic', label: 'Send occasional emails' },
+            { value: 'active', label: 'Active email marketing with sequences' },
+        ],
+    },
+    {
+        id: 'paidAds',
+        question: 'Are they running any paid ads?',
+        type: 'checkbox',
+        options: [
+            { value: 'none', label: 'No paid ads' },
+            { value: 'meta', label: 'Meta (Facebook/Instagram) Ads' },
+            { value: 'google', label: 'Google Ads' },
+            { value: 'tiktok', label: 'TikTok Ads' },
+            { value: 'linkedin', label: 'LinkedIn Ads' },
+            { value: 'pinterest', label: 'Pinterest Ads' },
+        ],
+    },
+    {
+        id: 'seo',
+        question: 'What\'s their SEO situation?',
+        type: 'radio',
+        options: [
+            { value: 'none', label: 'No SEO work done' },
+            { value: 'basic', label: 'Basic — have titles and descriptions' },
+            { value: 'moderate', label: 'Moderate — some keyword research and content' },
+            { value: 'strong', label: 'Strong SEO with regular content and backlinks' },
+        ],
+    },
+    {
+        id: 'content',
+        question: 'What content do they currently produce?',
+        type: 'checkbox',
+        options: [
+            { value: 'none', label: 'No content' },
+            { value: 'blog', label: 'Blog posts' },
+            { value: 'video', label: 'Video content' },
+            { value: 'podcast', label: 'Podcast' },
+            { value: 'newsletter', label: 'Newsletter' },
+            { value: 'lead-magnets', label: 'Lead magnets / downloads' },
+        ],
+    },
+    {
+        id: 'budget',
+        question: 'What\'s their monthly marketing budget?',
+        type: 'radio',
+        options: [
+            { value: 'minimal', label: 'Under £500/month' },
+            { value: 'small', label: '£500 - £2,000/month' },
+            { value: 'medium', label: '£2,000 - £10,000/month' },
+            { value: 'large', label: '£10,000+/month' },
+        ],
+    },
+    {
+        id: 'goals',
+        question: 'What are their primary goals?',
+        type: 'checkbox',
+        options: [
+            { value: 'awareness', label: 'Brand awareness' },
+            { value: 'leads', label: 'Lead generation' },
+            { value: 'sales', label: 'Direct sales / revenue' },
+            { value: 'engagement', label: 'Community / engagement' },
+            { value: 'authority', label: 'Thought leadership' },
+            { value: 'retention', label: 'Customer retention' },
+        ],
+    },
+];
+
+function renderOnboarding() {
+    const container = document.getElementById('onboardingContent');
+    const client = getActiveClient();
+
+    if (!client) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><h2>Select a client</h2><p>Choose a client to complete their onboarding questionnaire.</p></div>';
+        return;
+    }
+
+    // Load existing answers
+    const answers = loadOnboardingAnswers(client.id);
+    const isComplete = Object.keys(answers).length >= ONBOARDING_QUESTIONS.length;
+
+    let html = `<div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;">
+        <div class="client-avatar" style="background:${client.color};width:40px;height:40px;">${client.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase()}</div>
+        <div><h2 style="margin:0;">${escapeHtml(client.name)}</h2><p style="margin:0;color:var(--text-muted);">${isComplete ? 'Onboarding complete' : 'Answer the questions below to assess this client'}</p></div>
+        ${isComplete ? '<button class="btn btn-ghost btn-sm" onclick="clearOnboarding(\'' + client.id + '\')">Reset</button>' : ''}
+    </div>`;
+
+    ONBOARDING_QUESTIONS.forEach((q, idx) => {
+        html += `<div class="card onboarding-question" style="margin-bottom:1rem;">
+            <h3 style="margin:0 0 0.75rem;font-size:15px;"><span class="onboarding-num">${idx + 1}</span> ${q.question}</h3>
+            <div class="onboarding-options">`;
+
+        q.options.forEach(opt => {
+            const isSelected = q.type === 'checkbox'
+                ? (answers[q.id] || []).includes(opt.value)
+                : answers[q.id] === opt.value;
+            const inputType = q.type === 'checkbox' ? 'checkbox' : 'radio';
+            html += `<label class="onboarding-option${isSelected ? ' selected' : ''}">
+                <input type="${inputType}" name="ob_${q.id}" value="${opt.value}" ${isSelected ? 'checked' : ''} onchange="saveOnboardingAnswer('${q.id}', '${opt.value}', '${q.type}')">
+                <div><strong>${opt.label}</strong>${opt.desc ? '<br><span class="onboarding-opt-desc">' + opt.desc + '</span>' : ''}</div>
+            </label>`;
+        });
+
+        html += '</div></div>';
+    });
+
+    html += `<div style="margin-top:1.5rem;display:flex;gap:0.75rem;">
+        <button class="btn btn-primary" onclick="switchView('audit')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/></svg> Run Audit Based on Answers</button>
+        <button class="btn btn-ghost" onclick="switchView('actionplan')">Go to Action Plan</button>
+    </div>`;
+
+    container.innerHTML = html;
+}
+
+function loadOnboardingAnswers(clientId) {
+    try { return JSON.parse(localStorage.getItem('ce_onboarding_' + clientId)) || {}; } catch (e) { return {}; }
+}
+
+function saveOnboardingAnswer(questionId, value, type) {
+    const client = getActiveClient();
+    if (!client) return;
+    const answers = loadOnboardingAnswers(client.id);
+
+    if (type === 'checkbox') {
+        if (!answers[questionId]) answers[questionId] = [];
+        if (answers[questionId].includes(value)) {
+            answers[questionId] = answers[questionId].filter(v => v !== value);
+        } else {
+            // Remove 'none' if selecting something else, or remove others if selecting 'none'
+            if (value === 'none') {
+                answers[questionId] = ['none'];
+            } else {
+                answers[questionId] = answers[questionId].filter(v => v !== 'none');
+                answers[questionId].push(value);
+            }
+        }
+    } else {
+        answers[questionId] = value;
+    }
+
+    localStorage.setItem('ce_onboarding_' + client.id, JSON.stringify(answers));
+    renderOnboarding(); // Re-render to update selected states
+}
+
+function clearOnboarding(clientId) {
+    if (!confirm('Reset onboarding answers for this client?')) return;
+    localStorage.removeItem('ce_onboarding_' + clientId);
+    renderOnboarding();
+    showToast('Onboarding reset');
+}
+
+// ============ MARKETING AUDIT ============
+function renderAuditView() {
+    const container = document.getElementById('auditContent');
+    const client = getActiveClient();
+
+    if (!client) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div><h2>Select a client</h2><p>Choose a client to run their marketing audit.</p></div>';
+        return;
+    }
+
+    const auditData = loadAuditData(client.id);
+    if (!auditData) {
+        container.innerHTML = `<div class="card" style="text-align:center;padding:3rem;">
+            <h2>No audit yet for ${escapeHtml(client.name)}</h2>
+            <p style="color:var(--text-secondary);margin:1rem 0;">Complete the onboarding questionnaire first, then run the audit.</p>
+            <div style="display:flex;gap:0.75rem;justify-content:center;">
+                <button class="btn btn-ghost" onclick="switchView('onboarding')">Go to Onboarding</button>
+                <button class="btn btn-primary" onclick="runAudit()">Run Audit Anyway</button>
+            </div>
+        </div>`;
+        return;
+    }
+
+    renderAuditResults(auditData);
+}
+
+function loadAuditData(clientId) {
+    try { return JSON.parse(localStorage.getItem('ce_audit_' + clientId)); } catch (e) { return null; }
+}
+
+function runAudit() {
+    const client = getActiveClient();
+    if (!client) { showToast('Select a client first'); return; }
+
+    const container = document.getElementById('auditContent');
+    container.innerHTML = '<div class="card" style="text-align:center;padding:3rem;"><div class="ai-loading"><div class="ai-spinner"></div><h3>Running full marketing audit...</h3><p style="color:var(--text-secondary);">Analysing all channels for ' + escapeHtml(client.name) + '</p></div></div>';
+
+    const answers = loadOnboardingAnswers(client.id);
+    const integrations = loadIntegrationStatus();
+    const contentCount = state.allContent.filter(c => c.clientId === client.id).length;
+    const campaigns = (JSON.parse(localStorage.getItem('ce_campaigns')) || []).filter(c => c.clientId === client.id).length;
+    const posts = loadScheduledPosts().filter(p => p.clientId === client.id).length;
+    const ads = loadLocalAds().filter(a => a.clientId === client.id).length;
+    const brandKit = localStorage.getItem('ce_brandkit_' + client.id);
+
+    setTimeout(() => {
+        const audit = {
+            timestamp: new Date().toISOString(),
+            clientId: client.id,
+            clientName: client.name,
+            sections: [],
+        };
+
+        // Website
+        const websiteStatus = answers.website || 'unknown';
+        audit.sections.push({
+            name: 'Website',
+            icon: '🌐',
+            score: websiteStatus === 'ecommerce' ? 90 : websiteStatus === 'good' ? 75 : websiteStatus === 'basic' ? 40 : websiteStatus === 'none' ? 0 : 20,
+            status: websiteStatus === 'none' ? 'critical' : websiteStatus === 'basic' ? 'warning' : 'good',
+            findings: websiteStatus === 'none'
+                ? ['No website exists — this is the #1 priority', 'Need domain, hosting, and a conversion-optimised site']
+                : websiteStatus === 'basic'
+                    ? ['Website exists but needs SEO optimisation', 'Check mobile responsiveness', 'Add clear CTAs and lead capture']
+                    : ['Website is in good shape', 'Continue optimising for conversions', 'Regular content updates recommended'],
+            actions: websiteStatus === 'none'
+                ? ['Set up domain and hosting', 'Build a conversion-focused website', 'Install analytics tracking']
+                : ['Audit page speed (target under 3s)', 'Review mobile experience', 'Ensure all pages have meta tags'],
+        });
+
+        // Social Media
+        const socialChannels = answers.social || [];
+        const socialActivity = answers.socialActivity || 'unknown';
+        const socialScore = socialChannels.includes('none') || socialChannels.length === 0 ? 0
+            : socialActivity === 'daily' ? 85 : socialActivity === 'weekly' ? 60 : socialActivity === 'sporadic' ? 30 : 10;
+        audit.sections.push({
+            name: 'Social Media',
+            icon: '📱',
+            score: socialScore,
+            status: socialScore > 60 ? 'good' : socialScore > 30 ? 'warning' : 'critical',
+            findings: socialScore === 0
+                ? ['No social media presence', 'Missing huge organic reach opportunity']
+                : [
+                    `Active on ${socialChannels.filter(c => c !== 'none').length} platform(s): ${socialChannels.filter(c => c !== 'none').join(', ')}`,
+                    `Posting frequency: ${socialActivity}`,
+                    posts > 0 ? `${posts} posts scheduled in ContentEngine` : 'No posts scheduled yet',
+                    contentCount > 0 ? `${contentCount} content pieces generated` : 'No content generated yet',
+                ],
+            actions: socialScore === 0
+                ? ['Create accounts on 2-3 key platforms for this audience', 'Set up brand profiles with consistent branding', 'Create a content calendar']
+                : socialScore < 60
+                    ? ['Increase posting frequency to at least 3x/week', 'Create a content calendar and batch content', 'Engage with followers daily']
+                    : ['Optimise posting times using analytics', 'Test new content formats', 'Run engagement campaigns'],
+        });
+
+        // Email Marketing
+        const emailStatus = answers.email || 'unknown';
+        const emailScore = emailStatus === 'active' ? 85 : emailStatus === 'basic' ? 50 : emailStatus === 'list' ? 25 : 0;
+        audit.sections.push({
+            name: 'Email Marketing',
+            icon: '✉️',
+            score: emailScore,
+            status: emailScore > 60 ? 'good' : emailScore > 20 ? 'warning' : 'critical',
+            findings: emailScore === 0
+                ? ['No email marketing in place', 'Email has the highest ROI of any channel (£36 for every £1 spent)']
+                : [`Email status: ${emailStatus}`, integrations.mailchimp?.connected || integrations.klaviyo?.connected || integrations.sendgrid?.connected ? 'Email platform connected' : 'No email platform connected in integrations'],
+            actions: emailScore === 0
+                ? ['Choose an email platform (Mailchimp for starting out, Klaviyo for e-commerce)', 'Create a lead magnet to grow the list', 'Set up a welcome sequence (3-5 emails)']
+                : emailScore < 60
+                    ? ['Set up automated welcome sequence', 'Create a weekly newsletter cadence', 'Segment your list by interest/behaviour']
+                    : ['A/B test subject lines', 'Implement advanced segmentation', 'Set up abandoned cart / win-back flows'],
+        });
+
+        // Paid Advertising
+        const paidAds = answers.paidAds || [];
+        const paidScore = paidAds.includes('none') || paidAds.length === 0 ? 0 : paidAds.length >= 2 ? 70 : 40;
+        audit.sections.push({
+            name: 'Paid Advertising',
+            icon: '💰',
+            score: paidScore,
+            status: paidScore > 60 ? 'good' : paidScore > 20 ? 'warning' : 'neutral',
+            findings: paidScore === 0
+                ? ['No paid advertising running', 'Not necessarily bad — depends on budget and stage']
+                : [`Running ads on: ${paidAds.filter(a => a !== 'none').join(', ')}`, ads > 0 ? `${ads} ad campaigns in ContentEngine` : 'No ads created in the platform yet'],
+            actions: paidScore === 0
+                ? ['Consider if paid ads align with current goals and budget', 'If yes: start with one platform where the audience is', 'Set up tracking pixels before spending']
+                : ['Review ad performance weekly', 'Test different audiences and creatives', 'Ensure landing pages match ad messaging'],
+        });
+
+        // SEO
+        const seoStatus = answers.seo || 'unknown';
+        const seoScore = seoStatus === 'strong' ? 85 : seoStatus === 'moderate' ? 60 : seoStatus === 'basic' ? 30 : 0;
+        audit.sections.push({
+            name: 'SEO',
+            icon: '🔍',
+            score: seoScore,
+            status: seoScore > 60 ? 'good' : seoScore > 20 ? 'warning' : 'critical',
+            findings: seoScore === 0
+                ? ['No SEO work done', 'Missing long-term organic traffic opportunity']
+                : [`SEO level: ${seoStatus}`, 'Use the SEO Tools module to generate meta tags and content briefs'],
+            actions: seoScore === 0
+                ? ['Do keyword research for the industry', 'Optimise existing pages with title tags and meta descriptions', 'Start a blog with keyword-targeted content']
+                : seoScore < 60
+                    ? ['Create a content calendar targeting key search terms', 'Build internal linking structure', 'Get listed on Google Business Profile']
+                    : ['Target long-tail keywords', 'Build backlinks through guest posting', 'Monitor rankings monthly'],
+        });
+
+        // Content Strategy
+        const contentTypes = answers.content || [];
+        const contentScore = contentTypes.includes('none') || contentTypes.length === 0 ? 0 : contentTypes.length >= 3 ? 80 : contentTypes.length >= 1 ? 50 : 0;
+        audit.sections.push({
+            name: 'Content Strategy',
+            icon: '📝',
+            score: contentScore,
+            status: contentScore > 60 ? 'good' : contentScore > 20 ? 'warning' : 'critical',
+            findings: contentScore === 0
+                ? ['No content being produced', 'Content is the fuel for every other channel']
+                : [`Producing: ${contentTypes.filter(c => c !== 'none').join(', ')}`, contentCount > 0 ? `${contentCount} pieces in the content library` : 'Library is empty — start generating'],
+            actions: contentScore === 0
+                ? ['Start with one content type the audience consumes', 'Use the Content Wizard to batch-create content', 'Repurpose each piece across channels']
+                : ['Diversify content types', 'Create a repurposing workflow', 'Use Copy Lab for different angles'],
+        });
+
+        // Brand Kit
+        const hasKit = !!brandKit;
+        audit.sections.push({
+            name: 'Brand Consistency',
+            icon: '🎨',
+            score: hasKit ? 70 : (client.tone?.length > 0 ? 40 : 10),
+            status: hasKit ? 'good' : 'warning',
+            findings: hasKit
+                ? ['Brand kit configured', 'Voice guidelines in place']
+                : ['No brand kit saved', 'Inconsistent branding risks confusing the audience'],
+            actions: hasKit
+                ? ['Review brand kit quarterly', 'Ensure all content matches the guidelines']
+                : ['Fill out the Brand Kit for this client', 'Define brand voice, colours, and key messages', 'Create a hashtag bank'],
+        });
+
+        // Save audit
+        localStorage.setItem('ce_audit_' + client.id, JSON.stringify(audit));
+        renderAuditResults(audit);
+    }, 1500);
+}
+
+function renderAuditResults(audit) {
+    const container = document.getElementById('auditContent');
+    const overallScore = Math.round(audit.sections.reduce((sum, s) => sum + s.score, 0) / audit.sections.length);
+    const scoreColor = overallScore >= 70 ? 'var(--green-600)' : overallScore >= 40 ? '#D97706' : '#DC2626';
+
+    let html = `<div class="audit-header card" style="text-align:center;margin-bottom:1.5rem;">
+        <h2 style="margin:0;">Marketing Audit: ${escapeHtml(audit.clientName)}</h2>
+        <p style="color:var(--text-muted);margin:0.5rem 0;">Last run: ${new Date(audit.timestamp).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+        <div class="audit-overall-score" style="font-size:64px;font-weight:800;color:${scoreColor};margin:1rem 0;">${overallScore}<span style="font-size:24px;color:var(--text-muted);">/100</span></div>
+        <p style="color:var(--text-secondary);">${overallScore >= 70 ? 'Good foundation — focus on optimisation' : overallScore >= 40 ? 'Some gaps to fill — follow the action plan' : 'Significant work needed — start with the critical items below'}</p>
+    </div>`;
+
+    audit.sections.forEach(section => {
+        const barColor = section.score >= 70 ? 'var(--green-600)' : section.score >= 40 ? '#D97706' : '#DC2626';
+        const statusBadge = section.status === 'critical' ? '<span class="audit-badge critical">Needs Attention</span>'
+            : section.status === 'warning' ? '<span class="audit-badge warning">Room to Improve</span>'
+            : section.status === 'neutral' ? '<span class="audit-badge neutral">Optional</span>'
+            : '<span class="audit-badge good">Good</span>';
+
+        html += `<div class="card audit-section" style="margin-bottom:1rem;">
+            <div class="audit-section-header">
+                <div style="display:flex;align-items:center;gap:0.75rem;">
+                    <span style="font-size:24px;">${section.icon}</span>
+                    <div><h3 style="margin:0;">${section.name}</h3>${statusBadge}</div>
+                </div>
+                <div class="audit-section-score"><span style="font-size:28px;font-weight:700;color:${barColor};">${section.score}</span><span style="color:var(--text-muted);">/100</span></div>
+            </div>
+            <div class="bar-track" style="margin:1rem 0;height:8px;"><div class="bar-fill" style="width:${section.score}%;background:${barColor};"></div></div>
+            <div class="audit-findings">
+                <h4 style="font-size:13px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 0.5rem;">Findings</h4>
+                ${section.findings.map(f => '<div class="audit-finding">' + escapeHtml(f) + '</div>').join('')}
+            </div>
+            <div class="audit-actions" style="margin-top:1rem;">
+                <h4 style="font-size:13px;color:var(--blue-600);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 0.5rem;">Recommended Actions</h4>
+                ${section.actions.map((a, i) => '<div class="audit-action-item"><span class="audit-action-num">' + (i + 1) + '</span>' + escapeHtml(a) + '</div>').join('')}
+            </div>
+        </div>`;
+    });
+
+    html += `<div style="margin-top:1rem;display:flex;gap:0.75rem;">
+        <button class="btn btn-primary" onclick="generateActionPlanFromAudit()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Generate Step-by-Step Action Plan</button>
+        <button class="btn btn-ghost" onclick="runAudit()">Re-run Audit</button>
+    </div>`;
+
+    container.innerHTML = html;
+}
+
+// ============ ACTION PLAN ============
+function renderActionPlan() {
+    const container = document.getElementById('actionPlanContent');
+    const filter = document.getElementById('actionClientFilter');
+
+    // Update client filter
+    const currentVal = filter.value;
+    filter.innerHTML = '<option value="all">All Clients</option>' +
+        state.clients.map(c => '<option value="' + c.id + '">' + escapeHtml(c.name) + '</option>').join('');
+    filter.value = currentVal || 'all';
+
+    // Load plans
+    let clients = state.clients;
+    if (filter.value !== 'all') clients = clients.filter(c => c.id === filter.value);
+
+    if (clients.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div><h2>No clients</h2><p>Add clients and complete their onboarding to generate action plans.</p></div>';
+        return;
+    }
+
+    let html = '';
+    clients.forEach(client => {
+        const plan = loadActionPlan(client.id);
+        if (!plan || plan.tasks.length === 0) {
+            html += `<div class="card" style="margin-bottom:1rem;">
+                <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem;">
+                    <div class="client-avatar" style="background:${client.color};width:32px;height:32px;font-size:12px;">${client.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase()}</div>
+                    <h3 style="margin:0;">${escapeHtml(client.name)}</h3>
+                </div>
+                <p style="color:var(--text-muted);">No action plan yet. Run an audit or click Generate Plan.</p>
+            </div>`;
+            return;
+        }
+
+        const completedCount = plan.tasks.filter(t => t.done).length;
+        const totalCount = plan.tasks.length;
+        const pct = Math.round((completedCount / totalCount) * 100);
+
+        html += `<div class="card action-plan-card" style="margin-bottom:1.5rem;">
+            <div class="action-plan-header">
+                <div style="display:flex;align-items:center;gap:0.75rem;">
+                    <div class="client-avatar" style="background:${client.color};width:36px;height:36px;font-size:13px;">${client.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase()}</div>
+                    <div>
+                        <h3 style="margin:0;">${escapeHtml(client.name)}</h3>
+                        <span style="font-size:13px;color:var(--text-muted);">${completedCount}/${totalCount} tasks complete (${pct}%)</span>
+                    </div>
+                </div>
+                <button class="btn btn-ghost btn-sm" onclick="generateActionPlanForClient('${client.id}')">Regenerate</button>
+            </div>
+            <div class="bar-track" style="margin:1rem 0;height:8px;"><div class="bar-fill" style="width:${pct}%;background:var(--green-600);"></div></div>
+            <div class="action-tasks">
+                ${plan.tasks.map((task, idx) => `<div class="action-task${task.done ? ' done' : ''}${task.priority === 'high' ? ' high-priority' : ''}">
+                    <label class="action-task-check">
+                        <input type="checkbox" ${task.done ? 'checked' : ''} onchange="toggleActionTask('${client.id}', ${idx})">
+                    </label>
+                    <div class="action-task-body">
+                        <div class="action-task-title">${escapeHtml(task.title)}</div>
+                        <div class="action-task-desc">${escapeHtml(task.description)}</div>
+                        <div class="action-task-meta">
+                            <span class="action-task-priority ${task.priority}">${task.priority}</span>
+                            <span class="action-task-category">${escapeHtml(task.category)}</span>
+                            ${task.timeEstimate ? '<span class="action-task-time">' + escapeHtml(task.timeEstimate) + '</span>' : ''}
+                        </div>
+                    </div>
+                </div>`).join('')}
+            </div>
+        </div>`;
+    });
+
+    container.innerHTML = html;
+}
+
+function loadActionPlan(clientId) {
+    try { return JSON.parse(localStorage.getItem('ce_actionplan_' + clientId)); } catch (e) { return null; }
+}
+
+function toggleActionTask(clientId, taskIdx) {
+    const plan = loadActionPlan(clientId);
+    if (!plan || !plan.tasks[taskIdx]) return;
+    plan.tasks[taskIdx].done = !plan.tasks[taskIdx].done;
+    // Move completed tasks to the end
+    plan.tasks.sort((a, b) => (a.done ? 1 : 0) - (b.done ? 1 : 0));
+    localStorage.setItem('ce_actionplan_' + clientId, JSON.stringify(plan));
+    renderActionPlan();
+}
+
+function generateActionPlan() {
+    // Generate for all clients or filtered
+    const filter = document.getElementById('actionClientFilter');
+    let clients = state.clients;
+    if (filter.value !== 'all') clients = clients.filter(c => c.id === filter.value);
+    clients.forEach(c => generateActionPlanForClient(c.id));
+    showToast('Action plans generated');
+}
+
+function generateActionPlanFromAudit() {
+    const client = getActiveClient();
+    if (!client) return;
+    generateActionPlanForClient(client.id);
+    switchView('actionplan');
+    showToast('Action plan generated from audit');
+}
+
+function generateActionPlanForClient(clientId) {
+    const client = state.clients.find(c => c.id === clientId);
+    if (!client) return;
+
+    const answers = loadOnboardingAnswers(clientId);
+    const audit = loadAuditData(clientId);
+    const integrations = loadIntegrationStatus();
+    const contentCount = state.allContent.filter(c => c.clientId === clientId).length;
+    const brandKit = localStorage.getItem('ce_brandkit_' + clientId);
+
+    const tasks = [];
+
+    // Priority 1: Critical gaps from audit/onboarding
+    if (answers.stage === 'scratch' || !answers.stage) {
+        tasks.push({ title: 'Complete onboarding questionnaire', description: 'Go to Onboarding and answer all questions so we can assess this client properly.', category: 'Setup', priority: 'high', timeEstimate: '5 min', done: Object.keys(answers).length >= ONBOARDING_QUESTIONS.length });
+    }
+
+    if (!brandKit) {
+        tasks.push({ title: 'Set up Brand Kit', description: 'Define brand voice, colours, words to use/avoid, and hashtag bank in the Brand Kit module.', category: 'Branding', priority: 'high', timeEstimate: '15 min', done: false });
+    }
+
+    if (answers.website === 'none') {
+        tasks.push({ title: 'Get a website set up', description: 'This is the #1 priority. Set up domain, hosting, and a conversion-focused site. Consider Shopify for e-commerce or WordPress for services.', category: 'Website', priority: 'high', timeEstimate: '1-2 weeks', done: false });
+    } else if (answers.website === 'basic') {
+        tasks.push({ title: 'Optimise the website', description: 'Run SEO audit from SEO Tools. Improve page speed, add meta tags, ensure mobile responsive, add clear CTAs.', category: 'Website', priority: 'high', timeEstimate: '2-3 days', done: false });
+    }
+
+    // Social media
+    const social = answers.social || [];
+    if (social.includes('none') || social.length === 0) {
+        tasks.push({ title: 'Create social media accounts', description: 'Set up profiles on 2-3 platforms where the target audience spends time. Use consistent branding from the Brand Kit.', category: 'Social Media', priority: 'high', timeEstimate: '1 hour', done: false });
+    }
+    if (answers.socialActivity === 'inactive' || answers.socialActivity === 'sporadic') {
+        tasks.push({ title: 'Create a content calendar', description: 'Use the Content Wizard to generate a batch of content, then schedule it via Social Scheduler. Aim for 3+ posts per week.', category: 'Social Media', priority: 'high', timeEstimate: '30 min', done: false });
+    }
+
+    // Email marketing
+    if (answers.email === 'none') {
+        tasks.push({ title: 'Set up email marketing', description: 'Choose a platform (Mailchimp is free to start). Connect it in Integrations. Create a lead magnet and sign-up form on the website.', category: 'Email', priority: 'high', timeEstimate: '2-3 hours', done: false });
+        tasks.push({ title: 'Create a welcome email sequence', description: 'Use the Email Builder to generate a welcome sequence. Then push it to your email platform.', category: 'Email', priority: 'medium', timeEstimate: '30 min', done: false });
+    } else if (answers.email === 'list') {
+        tasks.push({ title: 'Set up automated email sequences', description: 'Your list exists but needs nurturing. Use Email Builder to create welcome + nurture sequences.', category: 'Email', priority: 'high', timeEstimate: '1 hour', done: false });
+    }
+
+    // Content
+    if (contentCount === 0) {
+        tasks.push({ title: 'Generate first batch of content', description: 'Use the Content Wizard to create 10-20 pieces of content. This gives you 2-4 weeks of social media posts.', category: 'Content', priority: 'high', timeEstimate: '20 min', done: false });
+    }
+
+    // SEO
+    if (answers.seo === 'none' || !answers.seo) {
+        tasks.push({ title: 'Do basic SEO setup', description: 'Use SEO Tools > Meta Tags for key pages. Create a Content Brief for one target keyword. Run the Page Audit.', category: 'SEO', priority: 'medium', timeEstimate: '1 hour', done: false });
+    }
+
+    // Paid ads - only if they have budget
+    if (answers.budget !== 'minimal' && (answers.paidAds?.includes('none') || !answers.paidAds?.length)) {
+        tasks.push({ title: 'Consider paid advertising strategy', description: 'With budget available, consider starting with one ad platform. Use Paid Ads module to create a test campaign. Start small (£10-20/day).', category: 'Paid Ads', priority: 'medium', timeEstimate: '1 hour', done: false });
+    }
+
+    // Integrations
+    const connectedCount = Object.values(integrations).filter(i => i.connected).length;
+    if (connectedCount === 0) {
+        tasks.push({ title: 'Connect marketing platforms', description: 'Go to Integrations and connect at least your email platform and social media accounts for unified management.', category: 'Setup', priority: 'medium', timeEstimate: '15 min', done: false });
+    }
+
+    // Regular maintenance tasks
+    tasks.push({ title: 'Schedule next week\'s content', description: 'Open Social Scheduler and schedule posts for the upcoming week. Use content from the library or generate new.', category: 'Weekly Task', priority: 'medium', timeEstimate: '20 min', done: false });
+    tasks.push({ title: 'Review analytics and adjust', description: 'Check Reports and platform analytics. What\'s working? Double down. What isn\'t? Adjust or stop.', category: 'Weekly Task', priority: 'low', timeEstimate: '15 min', done: false });
+
+    // Preserve done state from existing plan
+    const existingPlan = loadActionPlan(clientId);
+    if (existingPlan) {
+        tasks.forEach(task => {
+            const existing = existingPlan.tasks.find(t => t.title === task.title);
+            if (existing?.done) task.done = true;
+        });
+    }
+
+    // Sort: high priority first, done last
+    tasks.sort((a, b) => {
+        if (a.done !== b.done) return a.done ? 1 : -1;
+        const p = { high: 0, medium: 1, low: 2 };
+        return (p[a.priority] || 1) - (p[b.priority] || 1);
+    });
+
+    const plan = { generatedAt: new Date().toISOString(), tasks };
+    localStorage.setItem('ce_actionplan_' + clientId, JSON.stringify(plan));
+    renderActionPlan();
+}
 
 // ============ INIT ============
 document.addEventListener('DOMContentLoaded', function() {
