@@ -868,6 +868,81 @@ body {
 .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--text-primary); color: white; padding: 8px 18px; border-radius: var(--radius); font-size: 13px; font-weight: 500; box-shadow: var(--shadow-lg); opacity: 0; transition: all 0.3s ease; z-index: 600; pointer-events: none; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+/* ===== DASHBOARD ===== */
+.dash-recent-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border); }
+.dash-recent-item:last-child { border-bottom: none; }
+.dash-recent-title { flex: 1; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dash-recent-date { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+
+/* ===== CAMPAIGNS ===== */
+.campaigns-list { display: flex; flex-direction: column; gap: 1rem; }
+.campaign-card { position: relative; }
+.campaign-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem; }
+.campaign-header h3 { margin: 0; }
+.campaign-objective { color: var(--text-secondary); font-size: 14px; margin: 0.5rem 0; }
+.campaign-meta { display: flex; gap: 1rem; font-size: 13px; color: var(--text-muted); margin: 0.5rem 0; flex-wrap: wrap; }
+.campaign-dates { font-weight: 500; }
+.campaign-budget { color: var(--green-600); font-weight: 600; }
+
+/* ===== COPY LAB ===== */
+.framework-desc { font-size: 13px; color: var(--text-secondary); margin: -0.5rem 0 1rem; padding: 0.75rem; background: var(--bg-secondary); border-radius: 8px; }
+.framework-output { display: flex; flex-direction: column; gap: 1rem; }
+.framework-section { padding: 1rem; background: var(--bg-secondary); border-radius: 8px; }
+.framework-section h4 { margin: 0 0 0.5rem; color: var(--blue-600); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+.framework-section p { margin: 0; line-height: 1.6; }
+.copylab-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+.copylab-header h3 { margin: 0; }
+.headlines-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.headline-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: var(--bg-secondary); border-radius: 8px; }
+.headline-num { font-weight: 700; color: var(--blue-600); min-width: 24px; text-align: center; }
+
+/* ===== EMAIL BUILDER ===== */
+.email-card { position: relative; }
+.email-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+.email-num { font-weight: 700; color: var(--blue-600); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+.email-subject { font-weight: 600; margin-bottom: 0.75rem; padding: 0.5rem 0.75rem; background: var(--bg-secondary); border-radius: 6px; }
+.email-body { white-space: pre-wrap; font-family: inherit; font-size: 14px; line-height: 1.6; margin: 0; background: transparent; color: var(--text-primary); }
+
+/* ===== SEO TOOLS ===== */
+.seo-result { margin-bottom: 1rem; }
+.seo-preview-title { font-size: 18px; color: #1a0dab; font-weight: 500; cursor: pointer; }
+.seo-preview-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
+.brief-section { margin-bottom: 1.25rem; }
+.brief-section h4 { margin: 0 0 0.5rem; color: var(--blue-600); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+.brief-section p { margin: 0; }
+.brief-outline { margin: 0.5rem 0; padding-left: 1.5rem; }
+.brief-outline li { margin-bottom: 0.5rem; line-height: 1.5; }
+.audit-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.audit-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0.75rem; background: var(--bg-secondary); border-radius: 6px; cursor: pointer; font-size: 14px; }
+.audit-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--blue-600); }
+.audit-cat { font-size: 11px; font-weight: 600; color: var(--blue-600); background: var(--blue-50, #eff6ff); padding: 2px 6px; border-radius: 4px; white-space: nowrap; }
+
+/* ===== FUNNELS ===== */
+.funnel-stage { position: relative; }
+.funnel-goal { color: var(--text-secondary); font-size: 14px; margin: 0.5rem 0 1rem; }
+.funnel-content { display: flex; flex-direction: column; gap: 0.5rem; }
+.funnel-item { padding: 0.75rem; background: var(--bg-secondary); border-radius: 6px; font-size: 14px; line-height: 1.5; }
+.funnel-item strong { color: var(--text-primary); }
+
+/* ===== BRAND KIT ===== */
+/* Uses standard form components */
+
+/* ===== REPORTS ===== */
+.bar-row { display: flex; align-items: center; gap: 0.75rem; padding: 0.4rem 0; }
+.bar-label { font-size: 13px; min-width: 80px; text-align: right; color: var(--text-secondary); white-space: nowrap; }
+.bar-track { flex: 1; height: 24px; background: var(--bg-secondary); border-radius: 6px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 6px; transition: width 0.5s ease; min-width: 2px; }
+.bar-value { font-size: 13px; font-weight: 600; min-width: 30px; }
+.reports-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+
+/* ===== PRODUCTS ===== */
+.products-list { display: flex; flex-direction: column; gap: 1rem; }
+.product-copy { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+.product-copy h4 { margin: 0 0 0.5rem; font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* ===== OMNICHANNEL ===== */
+.promos-list { display: flex; flex-direction: column; gap: 1rem; }
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
     .sidebar { transform: translateX(-100%); width: var(--sidebar-w); }

@@ -6,7 +6,7 @@
 
 // ============ STATE ============
 const state = {
-    currentView: 'clients',
+    currentView: 'dashboard',
     activeClientId: null,
     clients: [],
     wizard: {
@@ -311,8 +311,10 @@ function updateStats() {
 }
 
 // ============ VIEW SWITCHING ============
+const NO_CLIENT_REQUIRED = ['clients', 'library', 'dashboard', 'reports'];
+
 function switchView(view) {
-    if (view !== 'clients' && view !== 'library' && !state.activeClientId) {
+    if (!NO_CLIENT_REQUIRED.includes(view) && !state.activeClientId) {
         if (state.clients.length > 0) {
             showToast('Please select a client first');
             view = 'clients';
@@ -323,7 +325,7 @@ function switchView(view) {
     }
 
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.sidebar-item').forEach(t => t.classList.remove('active'));
 
     const viewEl = document.getElementById('view-' + view);
     if (viewEl) viewEl.classList.add('active');
@@ -332,9 +334,15 @@ function switchView(view) {
 
     state.currentView = view;
 
+    if (view === 'dashboard') renderDashboard();
     if (view === 'calendar') renderCalendar();
     if (view === 'clients') { renderClientsGrid(); updateStats(); }
     if (view === 'library') renderLibrary();
+    if (view === 'campaigns') renderCampaigns();
+    if (view === 'brandkit') renderBrandKit();
+    if (view === 'reports') renderReports();
+    if (view === 'products') renderProducts();
+    if (view === 'omnichannel') renderPromos();
     if (view === 'create') {
         const client = getActiveClient();
         const subtitle = document.getElementById('createSubtitle');
@@ -1120,6 +1128,805 @@ function escapeHtml(str) {
     return div.innerHTML;
 }
 
+// ============ DASHBOARD ============
+function renderDashboard() {
+    const statsBar = document.getElementById('dashStats');
+    const recent = document.getElementById('dashRecent');
+    const clientCount = state.clients.length;
+    const contentCount = state.allContent.length;
+    const scheduled = state.allContent.filter(c => c.scheduledDate).length;
+    const thisWeek = state.allContent.filter(c => {
+        const d = new Date(c.savedAt || c.createdAt);
+        const now = new Date();
+        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        return d >= weekAgo;
+    }).length;
+
+    statsBar.innerHTML = `
+        <div class="stat-card"><span class="stat-num">${clientCount}</span><span class="stat-label">Clients</span></div>
+        <div class="stat-card"><span class="stat-num">${contentCount}</span><span class="stat-label">Total Content</span></div>
+        <div class="stat-card"><span class="stat-num">${scheduled}</span><span class="stat-label">Scheduled</span></div>
+        <div class="stat-card"><span class="stat-num">${thisWeek}</span><span class="stat-label">This Week</span></div>
+    `;
+
+    const recentContent = [...state.allContent].reverse().slice(0, 5);
+    if (recentContent.length === 0) {
+        recent.innerHTML = '<p style="color:var(--text-muted);padding:1rem 0;">No content yet. Create your first piece!</p>';
+    } else {
+        recent.innerHTML = recentContent.map(c => {
+            const date = new Date(c.savedAt || c.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+            return `<div class="dash-recent-item">
+                <span class="content-channel" style="background:${CHANNEL_COLORS[c.channel] || '#333'};font-size:11px;">${c.channelName}</span>
+                <span class="dash-recent-title">${escapeHtml(c.title)}</span>
+                <span class="dash-recent-date">${date}</span>
+            </div>`;
+        }).join('');
+    }
+}
+
+// ============ CAMPAIGNS ============
+function loadCampaigns() {
+    try {
+        const data = localStorage.getItem('ce_campaigns');
+        return data ? JSON.parse(data) : [];
+    } catch (e) { return []; }
+}
+function saveCampaigns(campaigns) {
+    localStorage.setItem('ce_campaigns', JSON.stringify(campaigns));
+}
+
+function renderCampaigns() {
+    const campaigns = loadCampaigns().filter(c => !state.activeClientId || c.clientId === state.activeClientId);
+    const list = document.getElementById('campaignsList');
+    const empty = document.getElementById('campaignsEmpty');
+
+    if (campaigns.length === 0) {
+        list.style.display = 'none';
+        empty.style.display = 'flex';
+        return;
+    }
+    list.style.display = 'flex';
+    empty.style.display = 'none';
+
+    list.innerHTML = campaigns.map(camp => {
+        const channels = (camp.channels || []).map(ch => '<span class="client-tag">' + (CHANNEL_NAMES[ch] || ch) + '</span>').join('');
+        const dateRange = camp.startDate && camp.endDate
+            ? new Date(camp.startDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + ' — ' + new Date(camp.endDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+            : 'No dates set';
+        return `<div class="card campaign-card">
+            <div class="campaign-header">
+                <h3>${escapeHtml(camp.name)}</h3>
+                <div class="campaign-actions">
+                    <button class="btn btn-ghost btn-sm" onclick="deleteCampaign('${camp.id}')">Delete</button>
+                </div>
+            </div>
+            ${camp.objective ? '<p class="campaign-objective">' + escapeHtml(camp.objective) + '</p>' : ''}
+            <div class="campaign-meta">
+                <span class="campaign-dates">${dateRange}</span>
+                ${camp.budget ? '<span class="campaign-budget">' + escapeHtml(camp.budget) + '</span>' : ''}
+            </div>
+            <div class="client-channels">${channels}</div>
+        </div>`;
+    }).join('');
+}
+
+function openCampaignModal() {
+    const modal = document.getElementById('campaignModal');
+    document.getElementById('campName').value = '';
+    document.getElementById('campObjective').value = '';
+    document.getElementById('campStart').value = '';
+    document.getElementById('campEnd').value = '';
+    document.getElementById('campBudget').value = '';
+    document.getElementById('campAudience').value = '';
+    document.getElementById('campMessages').value = '';
+    document.getElementById('campDeliverables').value = '';
+    document.querySelectorAll('#campChannels .chip').forEach(c => c.classList.remove('active'));
+    modal.classList.add('open');
+}
+
+function closeCampaignModal() {
+    document.getElementById('campaignModal').classList.remove('open');
+}
+
+function saveCampaign() {
+    const name = document.getElementById('campName').value.trim();
+    if (!name) { showToast('Please enter a campaign name'); return; }
+    const campaigns = loadCampaigns();
+    campaigns.push({
+        id: 'camp_' + Date.now(),
+        clientId: state.activeClientId,
+        name,
+        objective: document.getElementById('campObjective').value.trim(),
+        startDate: document.getElementById('campStart').value,
+        endDate: document.getElementById('campEnd').value,
+        budget: document.getElementById('campBudget').value.trim(),
+        audience: document.getElementById('campAudience').value.trim(),
+        messages: document.getElementById('campMessages').value.trim(),
+        deliverables: document.getElementById('campDeliverables').value.trim(),
+        channels: Array.from(document.querySelectorAll('#campChannels .chip.active')).map(c => c.dataset.value),
+        createdAt: new Date().toISOString(),
+    });
+    saveCampaigns(campaigns);
+    closeCampaignModal();
+    renderCampaigns();
+    showToast('Campaign created');
+}
+
+function deleteCampaign(id) {
+    if (!confirm('Delete this campaign?')) return;
+    const campaigns = loadCampaigns().filter(c => c.id !== id);
+    saveCampaigns(campaigns);
+    renderCampaigns();
+    showToast('Campaign deleted');
+}
+
+// ============ COPY LAB ============
+const FRAMEWORK_DATA = {
+    aida: {
+        name: 'AIDA',
+        desc: 'Attention → Interest → Desire → Action. The classic direct-response framework.',
+        generate: (product, audience, benefit) => `<div class="framework-output">
+            <div class="framework-section"><h4>Attention</h4><p>Stop scrolling, ${audience}. There's a better way to handle ${product}.</p></div>
+            <div class="framework-section"><h4>Interest</h4><p>Most people struggle with getting results from ${product}. The problem isn't effort — it's approach. ${benefit ? benefit : 'The right strategy changes everything.'}</p></div>
+            <div class="framework-section"><h4>Desire</h4><p>Imagine having ${product} that actually delivers. No more wasted time. No more guesswork. Just results that speak for themselves. ${benefit ? 'Specifically: ' + benefit + '.' : ''}</p></div>
+            <div class="framework-section"><h4>Action</h4><p>Ready to make it happen? Get started with ${product} today. Click below to learn more.</p></div>
+        </div>`
+    },
+    pas: {
+        name: 'PAS',
+        desc: 'Problem → Agitate → Solution. Lead with the pain, then offer the fix.',
+        generate: (product, audience, benefit) => `<div class="framework-output">
+            <div class="framework-section"><h4>Problem</h4><p>${audience} are tired of ${product} that doesn't deliver. You've tried everything, and nothing sticks.</p></div>
+            <div class="framework-section"><h4>Agitate</h4><p>Every day without a solution, you're falling behind. Your competitors are already there. The gap is widening and the frustration is building.</p></div>
+            <div class="framework-section"><h4>Solution</h4><p>${product} changes the game. ${benefit ? benefit + '.' : 'Finally, a solution that actually works.'} No complexity, no learning curve — just results.</p></div>
+        </div>`
+    },
+    bab: {
+        name: 'BAB',
+        desc: 'Before → After → Bridge. Paint the transformation.',
+        generate: (product, audience, benefit) => `<div class="framework-output">
+            <div class="framework-section"><h4>Before</h4><p>You're spending hours on ${product} with mediocre results. ${audience} deserve better, but the tools and strategies available feel overcomplicated and underwhelming.</p></div>
+            <div class="framework-section"><h4>After</h4><p>Now imagine: ${benefit ? benefit : 'results that actually match your effort'}. More time back in your day. Confidence in your approach. The kind of results that make people ask, "How did you do that?"</p></div>
+            <div class="framework-section"><h4>Bridge</h4><p>${product} is how you get from here to there. It's the missing piece that connects where you are to where you want to be.</p></div>
+        </div>`
+    },
+    fab: {
+        name: 'FAB',
+        desc: 'Features → Advantages → Benefits. Sell the outcome, not the spec.',
+        generate: (product, audience, benefit) => `<div class="framework-output">
+            <div class="framework-section"><h4>Features</h4><p>${product} comes with everything ${audience} need: a streamlined workflow, intelligent automation, and real-time insights.</p></div>
+            <div class="framework-section"><h4>Advantages</h4><p>Unlike alternatives, ${product} is built specifically for ${audience}. It's faster, simpler, and more effective than what you're currently using.</p></div>
+            <div class="framework-section"><h4>Benefits</h4><p>${benefit ? benefit : 'Save time, reduce stress, and get better results'}. That's what ${product} delivers — not in theory, but in practice, from day one.</p></div>
+        </div>`
+    },
+    '4ps': {
+        name: '4Ps',
+        desc: 'Promise → Picture → Proof → Push. Make a bold claim and back it up.',
+        generate: (product, audience, benefit) => `<div class="framework-output">
+            <div class="framework-section"><h4>Promise</h4><p>${product} will transform how ${audience} work. ${benefit ? benefit + '.' : 'Better results, less effort.'}</p></div>
+            <div class="framework-section"><h4>Picture</h4><p>Imagine waking up knowing your ${product} strategy is handled. No stress. No scrambling. Just a clear path to growth, every single day.</p></div>
+            <div class="framework-section"><h4>Proof</h4><p>Thousands of ${audience} have already made the switch. The results? Faster workflows, higher engagement, and measurable growth.</p></div>
+            <div class="framework-section"><h4>Push</h4><p>Don't wait. Every day without ${product} is a day of missed opportunity. Start now and see the difference this week.</p></div>
+        </div>`
+    },
+    headlines: {
+        name: 'Headlines',
+        desc: 'Generate 10 high-impact headlines using proven formulas.',
+        generate: (product, audience, benefit) => {
+            const b = benefit || 'get better results';
+            const headlines = [
+                `How ${audience} Can ${b} With ${product}`,
+                `The Secret to ${product} That Nobody Talks About`,
+                `Why ${audience} Are Switching to ${product}`,
+                `${product}: The Only Guide You'll Ever Need`,
+                `Stop Wasting Time on ${product} That Doesn't Work`,
+                `How to ${b} in 30 Days or Less`,
+                `${audience}: Here's What You're Missing About ${product}`,
+                `The #1 Mistake ${audience} Make With ${product}`,
+                `${product} Made Simple: A Step-by-Step Guide for ${audience}`,
+                `What If ${product} Could Actually ${b}?`,
+            ];
+            return '<div class="framework-output headlines-list">' +
+                headlines.map((h, i) => `<div class="headline-item"><span class="headline-num">${i + 1}</span><span>${escapeHtml(h)}</span><button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText('${escapeHtml(h).replace(/'/g, "\\'")}');showToast('Copied')">Copy</button></div>`).join('') +
+                '</div>';
+        }
+    },
+    hooks: {
+        name: 'Hooks',
+        desc: 'Scroll-stopping hooks for social media and video content.',
+        generate: (product, audience, benefit) => {
+            const hooks = [
+                `"If you're ${audience.toLowerCase() || 'in this industry'}, stop scrolling."`,
+                `"Nobody talks about this side of ${product}..."`,
+                `"I wish someone told me this about ${product} sooner."`,
+                `"The biggest lie ${audience} are told about ${product}."`,
+                `"This changed everything for me with ${product}."`,
+                `"POV: You just discovered the secret to ${benefit || product}."`,
+                `"Why is nobody talking about this?"`,
+                `"${audience}, you need to hear this."`,
+            ];
+            return '<div class="framework-output headlines-list">' +
+                hooks.map((h, i) => `<div class="headline-item"><span class="headline-num">${i + 1}</span><span>${escapeHtml(h)}</span><button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText(${JSON.stringify(h)});showToast('Copied')">Copy</button></div>`).join('') +
+                '</div>';
+        }
+    },
+};
+
+function generateCopyLab() {
+    const framework = document.querySelector('#frameworkSelect .chip.active')?.dataset.value || 'aida';
+    const product = document.getElementById('clProduct').value.trim() || 'your product';
+    const audience = document.getElementById('clAudience').value.trim() || 'your audience';
+    const benefit = document.getElementById('clBenefit').value.trim();
+    const output = document.getElementById('copylabOutput');
+
+    const fw = FRAMEWORK_DATA[framework];
+    if (!fw) return;
+
+    output.innerHTML = '<div class="card" style="margin-top:1rem;"><div class="ai-loading"><div class="ai-spinner"></div><h3>Generating copy...</h3></div></div>';
+
+    setTimeout(() => {
+        output.innerHTML = '<div class="card" style="margin-top:1rem;">' +
+            '<div class="copylab-header"><h3>' + fw.name + ' Copy</h3><button class="btn btn-ghost btn-sm" onclick="copyCopyLabOutput()">Copy All</button></div>' +
+            fw.generate(product, audience, benefit) +
+            '</div>';
+    }, 800);
+}
+
+function copyCopyLabOutput() {
+    const output = document.getElementById('copylabOutput');
+    const text = output.innerText;
+    navigator.clipboard.writeText(text).then(() => showToast('Copied')).catch(() => showToast('Failed to copy'));
+}
+
+// ============ EMAIL BUILDER ============
+const EMAIL_SEQUENCES = {
+    welcome: {
+        name: 'Welcome Sequence',
+        emails: (brand, product, audience) => [
+            { subject: `Welcome to ${brand} — Here's what to expect`, body: `Hi there,\n\nWelcome to ${brand}! We're thrilled to have you.\n\nOver the next few days, we'll share everything you need to get the most from ${product}.\n\nHere's what's coming:\n• Day 1 (today): Your welcome guide\n• Day 3: Getting started tips\n• Day 5: Your first quick win\n• Day 7: Meet the community\n\nReply to this email if you have any questions — we read every one.\n\nBest,\nThe ${brand} Team` },
+            { subject: `Getting started with ${product} — 3 things to do first`, body: `Hi,\n\nNow that you're set up with ${brand}, here are 3 things to do first:\n\n1. Complete your profile — it takes 2 minutes\n2. Explore the dashboard — your hub for everything\n3. Set your first goal — start small, build momentum\n\nMost ${audience} see results within the first week when they follow these steps.\n\nLet's go!\n\n— ${brand}` },
+            { subject: `Your first quick win with ${brand}`, body: `Hi,\n\nHere's a challenge: try ${product} for just 15 minutes today.\n\nWe've found that ${audience} who engage in the first week are 3x more likely to achieve their goals.\n\nStart here: [Link to getting started]\n\nYou've got this.\n\n— ${brand}` },
+        ]
+    },
+    nurture: {
+        name: 'Nurture Sequence',
+        emails: (brand, product, audience) => [
+            { subject: `The #1 mistake ${audience} make`, body: `Hi,\n\nWe see it all the time: ${audience} jump straight into ${product} without a strategy.\n\nThe result? Wasted time and frustration.\n\nHere's what works instead:\n\n1. Define your goal (one specific outcome)\n2. Set a realistic timeline\n3. Focus on consistency over perfection\n\nSimple, right? But it makes all the difference.\n\n— ${brand}` },
+            { subject: `What top ${audience} do differently`, body: `Hi,\n\nWe studied our most successful ${audience} to find common patterns.\n\nHere's what stood out:\n• They focus on ONE thing at a time\n• They measure progress weekly\n• They ask for help early\n• They iterate instead of perfecting\n\nWhich one will you focus on this week?\n\n— ${brand}` },
+            { subject: `A resource we think you'll love`, body: `Hi,\n\nWe put together a guide specifically for ${audience} who want to get more from ${product}.\n\nInside you'll find:\n• Step-by-step walkthroughs\n• Real examples from the community\n• Templates you can use today\n\nDownload it here: [Link]\n\nLet us know what you think.\n\n— ${brand}` },
+        ]
+    },
+    sales: {
+        name: 'Sales Sequence',
+        emails: (brand, product, audience) => [
+            { subject: `${product} — built for ${audience} like you`, body: `Hi,\n\nIf you've been looking for a better way to handle ${product}, this is it.\n\n${brand} was built specifically for ${audience} who want:\n• Better results with less effort\n• A clear, simple workflow\n• Support when you need it\n\nSee how it works: [Link]\n\n— ${brand}` },
+            { subject: `Don't just take our word for it`, body: `Hi,\n\nHere's what ${audience} are saying about ${product}:\n\n"${brand} completely changed our approach. We're getting 3x the results in half the time." — Sarah K.\n\n"I wish I'd found ${brand} sooner." — James M.\n\nReady to see it for yourself?\n\nStart your trial: [Link]\n\n— ${brand}` },
+            { subject: `Last chance: Special offer for ${audience}`, body: `Hi,\n\nWe're offering ${audience} an exclusive deal on ${product} — but only until the end of this week.\n\nWhat you get:\n• Full access to ${product}\n• Priority support\n• 30-day money-back guarantee\n\nThis offer won't be around forever.\n\nClaim it now: [Link]\n\n— ${brand}` },
+        ]
+    },
+    launch: {
+        name: 'Product Launch Sequence',
+        emails: (brand, product, audience) => [
+            { subject: `Something new is coming from ${brand}`, body: `Hi,\n\nWe've been working on something special — and we can't wait to share it with you.\n\nOn [Launch Date], we're unveiling ${product}.\n\nBuilt for ${audience}. Designed to solve the problems you've told us about.\n\nStay tuned. More details dropping soon.\n\n— ${brand}` },
+            { subject: `It's here: Introducing ${product}`, body: `Hi,\n\nThe day is here. ${product} is officially live.\n\nWhat makes it different:\n• Designed from the ground up for ${audience}\n• Solves the #1 problem you told us about\n• Simple to use, powerful in results\n\nBe among the first to try it: [Link]\n\n— ${brand}` },
+            { subject: `${product} launch special — 48 hours only`, body: `Hi,\n\nTo celebrate the launch of ${product}, we're offering an exclusive launch price for the next 48 hours.\n\nEarly adopters get:\n• Special launch pricing\n• Founding member status\n• Direct access to our team\n\nDon't miss out: [Link]\n\n— ${brand}` },
+        ]
+    },
+    winback: {
+        name: 'Win-Back Sequence',
+        emails: (brand, product, audience) => [
+            { subject: `We miss you at ${brand}`, body: `Hi,\n\nIt's been a while since we last saw you, and we wanted to check in.\n\n${product} has been getting some major updates since you were last active:\n• [New feature 1]\n• [New feature 2]\n• [Improvement]\n\nCome take another look: [Link]\n\n— ${brand}` },
+            { subject: `A special offer, just for you`, body: `Hi,\n\nWe'd love to have you back. That's why we're offering you an exclusive return offer:\n\n• [Discount or special access]\n• No strings attached\n• Valid for the next 7 days\n\nClaim your offer: [Link]\n\nWe hope to see you again.\n\n— ${brand}` },
+        ]
+    },
+    subjectlines: {
+        name: 'Subject Lines',
+        emails: (brand, product, audience) => {
+            const lines = [
+                `${audience}, you need to see this`,
+                `The ${product} secret nobody talks about`,
+                `Quick question about your ${product} strategy`,
+                `We noticed something about your account`,
+                `${product}: What's working in 2026`,
+                `A gift from ${brand} (open to claim)`,
+                `re: Your ${product} results`,
+                `This changed everything for ${audience}`,
+                `Don't open this email (just kidding)`,
+                `${brand} + you = better ${product}`,
+            ];
+            return lines.map(l => ({ subject: l, body: '' }));
+        }
+    },
+};
+
+function generateEmailSequence() {
+    const emailType = document.querySelector('#emailTypeSelect .chip.active')?.dataset.value || 'welcome';
+    const brand = document.getElementById('emBrand').value.trim() || 'Your Brand';
+    const product = document.getElementById('emProduct').value.trim() || 'your product';
+    const audience = document.getElementById('emAudience').value.trim() || 'your audience';
+    const output = document.getElementById('emailOutput');
+
+    const seq = EMAIL_SEQUENCES[emailType];
+    if (!seq) return;
+
+    output.innerHTML = '<div class="card" style="margin-top:1rem;"><div class="ai-loading"><div class="ai-spinner"></div><h3>Building email sequence...</h3></div></div>';
+
+    setTimeout(() => {
+        const emails = seq.emails(brand, product, audience);
+        const isSubjectOnly = emailType === 'subjectlines';
+
+        if (isSubjectOnly) {
+            output.innerHTML = '<div class="card" style="margin-top:1rem;"><h3 style="margin-bottom:1rem;">Subject Line Ideas</h3><div class="headlines-list">' +
+                emails.map((e, i) => `<div class="headline-item"><span class="headline-num">${i + 1}</span><span>${escapeHtml(e.subject)}</span><button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText(${JSON.stringify(e.subject)});showToast('Copied')">Copy</button></div>`).join('') +
+                '</div></div>';
+        } else {
+            output.innerHTML = '<div style="margin-top:1rem;">' +
+                emails.map((e, i) => `<div class="card email-card" style="margin-bottom:1rem;">
+                    <div class="email-header"><span class="email-num">Email ${i + 1}</span><button class="btn btn-ghost btn-sm" onclick="copyEmailCard(this)">Copy</button></div>
+                    <div class="email-subject"><strong>Subject:</strong> ${escapeHtml(e.subject)}</div>
+                    <pre class="email-body">${escapeHtml(e.body)}</pre>
+                </div>`).join('') +
+                '</div>';
+        }
+    }, 1000);
+}
+
+function copyEmailCard(btn) {
+    const card = btn.closest('.email-card');
+    const text = card.innerText;
+    navigator.clipboard.writeText(text).then(() => showToast('Copied')).catch(() => showToast('Failed to copy'));
+}
+
+// ============ SEO TOOLS ============
+function generateSEO() {
+    const tool = document.querySelector('#seoToolSelect .chip.active')?.dataset.value || 'meta';
+    const topic = document.getElementById('seoTopic').value.trim() || 'your topic';
+    const keyword = document.getElementById('seoKeyword').value.trim() || topic;
+    const secondary = document.getElementById('seoSecondary').value.trim();
+    const output = document.getElementById('seoOutput');
+
+    output.innerHTML = '<div class="card" style="margin-top:1rem;"><div class="ai-loading"><div class="ai-spinner"></div><h3>Generating SEO output...</h3></div></div>';
+
+    setTimeout(() => {
+        if (tool === 'meta') {
+            const titleTag = keyword.charAt(0).toUpperCase() + keyword.slice(1) + ' — Ultimate Guide (2026)';
+            const desc = `Discover everything about ${keyword}. Our comprehensive guide covers tips, strategies, and expert advice for ${topic}. Updated for 2026.`;
+            output.innerHTML = `<div class="card" style="margin-top:1rem;">
+                <h3 style="margin-bottom:1rem;">Meta Tags</h3>
+                <div class="seo-result">
+                    <label class="form-label">Title Tag (${titleTag.length}/60 chars)</label>
+                    <div class="seo-preview-title">${escapeHtml(titleTag)}</div>
+                </div>
+                <div class="seo-result">
+                    <label class="form-label">Meta Description (${desc.length}/160 chars)</label>
+                    <div class="seo-preview-desc">${escapeHtml(desc)}</div>
+                </div>
+                <div class="seo-result">
+                    <label class="form-label">Open Graph Title</label>
+                    <div class="seo-preview-desc">${escapeHtml(titleTag)}</div>
+                </div>
+                <div class="seo-result">
+                    <label class="form-label">URL Slug</label>
+                    <div class="seo-preview-desc">/${keyword.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}</div>
+                </div>
+                <button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText('Title: ${escapeHtml(titleTag)}\\nDescription: ${escapeHtml(desc)}');showToast('Copied')">Copy All</button>
+            </div>`;
+        } else if (tool === 'brief') {
+            const secondaryKws = secondary ? secondary.split(',').map(s => s.trim()).filter(Boolean) : ['related topic 1', 'related topic 2'];
+            output.innerHTML = `<div class="card" style="margin-top:1rem;">
+                <h3 style="margin-bottom:1rem;">Content Brief: ${escapeHtml(topic)}</h3>
+                <div class="brief-section"><h4>Target Keyword</h4><p>${escapeHtml(keyword)}</p></div>
+                <div class="brief-section"><h4>Secondary Keywords</h4><p>${secondaryKws.map(k => escapeHtml(k)).join(', ')}</p></div>
+                <div class="brief-section"><h4>Suggested Word Count</h4><p>2,000 — 3,000 words</p></div>
+                <div class="brief-section"><h4>Suggested Outline</h4>
+                    <ol class="brief-outline">
+                        <li>Introduction — What is ${escapeHtml(keyword)}?</li>
+                        <li>Why ${escapeHtml(keyword)} matters in 2026</li>
+                        <li>How to get started with ${escapeHtml(keyword)}</li>
+                        <li>Top strategies and best practices</li>
+                        <li>Common mistakes to avoid</li>
+                        <li>Tools and resources</li>
+                        <li>FAQ section (target featured snippets)</li>
+                        <li>Conclusion and next steps</li>
+                    </ol>
+                </div>
+                <div class="brief-section"><h4>Internal Linking Suggestions</h4><p>Link to related guides, product pages, and case studies on your site.</p></div>
+                <div class="brief-section"><h4>Content Type</h4><p>Comprehensive guide / pillar content</p></div>
+            </div>`;
+        } else if (tool === 'audit') {
+            const checks = [
+                { label: 'Title tag includes target keyword', cat: 'On-Page' },
+                { label: 'Meta description is compelling and under 160 characters', cat: 'On-Page' },
+                { label: 'URL is clean and keyword-rich', cat: 'On-Page' },
+                { label: 'H1 tag includes primary keyword', cat: 'On-Page' },
+                { label: 'Content uses H2/H3 subheadings properly', cat: 'Structure' },
+                { label: 'Images have descriptive alt text', cat: 'Media' },
+                { label: 'Internal links to related content', cat: 'Links' },
+                { label: 'External links to authoritative sources', cat: 'Links' },
+                { label: 'Page loads in under 3 seconds', cat: 'Performance' },
+                { label: 'Mobile-responsive design', cat: 'Performance' },
+                { label: 'Schema markup implemented', cat: 'Technical' },
+                { label: 'No broken links or 404 errors', cat: 'Technical' },
+                { label: 'Content is original and comprehensive', cat: 'Content' },
+                { label: 'FAQ section for featured snippets', cat: 'Content' },
+                { label: 'Call-to-action is clear', cat: 'Conversion' },
+            ];
+            output.innerHTML = `<div class="card" style="margin-top:1rem;">
+                <h3 style="margin-bottom:1rem;">Page Audit Checklist: ${escapeHtml(topic)}</h3>
+                <div class="audit-list">
+                    ${checks.map(c => `<label class="audit-item"><input type="checkbox"><span class="audit-cat">${c.cat}</span><span>${c.label}</span></label>`).join('')}
+                </div>
+            </div>`;
+        }
+    }, 800);
+}
+
+// ============ FUNNELS ============
+function generateFunnel() {
+    const product = document.getElementById('funnelProduct').value.trim() || 'your product';
+    const audience = document.getElementById('funnelAudience').value.trim() || 'your audience';
+    const output = document.getElementById('funnelOutput');
+
+    output.innerHTML = '<div class="card" style="margin-top:1rem;"><div class="ai-loading"><div class="ai-spinner"></div><h3>Building funnel...</h3></div></div>';
+
+    setTimeout(() => {
+        output.innerHTML = `<div style="margin-top:1rem;">
+            <div class="card funnel-stage" style="margin-bottom:1rem;border-left:4px solid #3B82F6;">
+                <h3 style="color:#3B82F6;">TOFU — Top of Funnel (Awareness)</h3>
+                <p class="funnel-goal">Goal: Make ${escapeHtml(audience)} aware of the problem and your brand.</p>
+                <div class="funnel-content">
+                    <div class="funnel-item"><strong>Blog Post:</strong> "The Ultimate Guide to ${escapeHtml(product)} for ${escapeHtml(audience)}"</div>
+                    <div class="funnel-item"><strong>Social Post:</strong> Share stats, tips, and thought-provoking questions about ${escapeHtml(product)}</div>
+                    <div class="funnel-item"><strong>Video:</strong> "3 Things ${escapeHtml(audience)} Should Know About ${escapeHtml(product)}"</div>
+                    <div class="funnel-item"><strong>Infographic:</strong> Visual breakdown of the problem your product solves</div>
+                </div>
+            </div>
+            <div class="card funnel-stage" style="margin-bottom:1rem;border-left:4px solid #F59E0B;">
+                <h3 style="color:#F59E0B;">MOFU — Middle of Funnel (Consideration)</h3>
+                <p class="funnel-goal">Goal: Build trust and demonstrate expertise with ${escapeHtml(audience)}.</p>
+                <div class="funnel-content">
+                    <div class="funnel-item"><strong>Case Study:</strong> "How [Client] Used ${escapeHtml(product)} to Achieve [Result]"</div>
+                    <div class="funnel-item"><strong>Lead Magnet:</strong> Free guide or checklist related to ${escapeHtml(product)}</div>
+                    <div class="funnel-item"><strong>Email Sequence:</strong> 5-part nurture series educating about ${escapeHtml(product)}</div>
+                    <div class="funnel-item"><strong>Webinar:</strong> "Live Q&A: Everything ${escapeHtml(audience)} Need to Know"</div>
+                </div>
+            </div>
+            <div class="card funnel-stage" style="border-left:4px solid #10B981;">
+                <h3 style="color:#10B981;">BOFU — Bottom of Funnel (Decision)</h3>
+                <p class="funnel-goal">Goal: Convert ${escapeHtml(audience)} into customers.</p>
+                <div class="funnel-content">
+                    <div class="funnel-item"><strong>Sales Page:</strong> Feature-benefit comparison with clear CTA for ${escapeHtml(product)}</div>
+                    <div class="funnel-item"><strong>Testimonials:</strong> Social proof from existing ${escapeHtml(audience)} clients</div>
+                    <div class="funnel-item"><strong>Limited Offer:</strong> Time-sensitive deal or bonus to drive action</div>
+                    <div class="funnel-item"><strong>FAQ Page:</strong> Address objections and remove buying friction</div>
+                </div>
+            </div>
+        </div>`;
+    }, 1000);
+}
+
+// ============ BRAND KIT ============
+function renderBrandKit() {
+    const client = getActiveClient();
+    const content = document.getElementById('brandkitContent');
+    const empty = document.getElementById('brandkitEmpty');
+
+    if (!client) {
+        content.style.display = 'none';
+        empty.style.display = 'flex';
+        return;
+    }
+    content.style.display = 'block';
+    empty.style.display = 'none';
+
+    // Load brand kit data
+    const key = 'ce_brandkit_' + client.id;
+    let kit;
+    try { kit = JSON.parse(localStorage.getItem(key)) || {}; } catch (e) { kit = {}; }
+
+    content.innerHTML = `
+        <div class="card" style="margin-bottom:1rem;">
+            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;">
+                <div class="client-avatar" style="background:${client.color};width:48px;height:48px;font-size:18px;">${client.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase()}</div>
+                <div><h2 style="margin:0;">${escapeHtml(client.name)}</h2><p style="margin:0;color:var(--text-muted);">Brand Kit</p></div>
+            </div>
+            <div class="form-group"><label class="form-label">Brand Voice</label><textarea class="form-textarea" id="bkVoice" rows="2" placeholder="e.g. Professional but approachable, never salesy">${escapeHtml(kit.voice || '')}</textarea></div>
+            <div class="form-group"><label class="form-label">Key Messages</label><textarea class="form-textarea" id="bkMessages" rows="2" placeholder="Core brand messages and value propositions">${escapeHtml(kit.messages || '')}</textarea></div>
+            <div class="form-group"><label class="form-label">Words to Use</label><input type="text" class="form-input" id="bkWordsUse" placeholder="e.g. empower, simplify, transform" value="${escapeHtml(kit.wordsUse || '')}"></div>
+            <div class="form-group"><label class="form-label">Words to Avoid</label><input type="text" class="form-input" id="bkWordsAvoid" placeholder="e.g. cheap, basic, just" value="${escapeHtml(kit.wordsAvoid || '')}"></div>
+            <div class="form-group"><label class="form-label">Brand Colours</label><input type="text" class="form-input" id="bkColours" placeholder="e.g. #2563EB, #F59E0B" value="${escapeHtml(kit.colours || '')}"></div>
+            <div class="form-group"><label class="form-label">Typography</label><input type="text" class="form-input" id="bkFonts" placeholder="e.g. Inter for headings, System for body" value="${escapeHtml(kit.fonts || '')}"></div>
+            <div class="form-group"><label class="form-label">Hashtag Bank</label><textarea class="form-textarea" id="bkHashtags" rows="2" placeholder="e.g. #BrandName #Industry #Campaign">${escapeHtml(kit.hashtags || '')}</textarea></div>
+            <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="bkNotes" rows="2" placeholder="Any other brand guidelines...">${escapeHtml(kit.notes || '')}</textarea></div>
+            <button class="btn btn-primary" onclick="saveBrandKit()">Save Brand Kit</button>
+        </div>
+    `;
+}
+
+function saveBrandKit() {
+    const client = getActiveClient();
+    if (!client) return;
+    const kit = {
+        voice: document.getElementById('bkVoice').value,
+        messages: document.getElementById('bkMessages').value,
+        wordsUse: document.getElementById('bkWordsUse').value,
+        wordsAvoid: document.getElementById('bkWordsAvoid').value,
+        colours: document.getElementById('bkColours').value,
+        fonts: document.getElementById('bkFonts').value,
+        hashtags: document.getElementById('bkHashtags').value,
+        notes: document.getElementById('bkNotes').value,
+        updatedAt: new Date().toISOString(),
+    };
+    localStorage.setItem('ce_brandkit_' + client.id, JSON.stringify(kit));
+    showToast('Brand kit saved');
+}
+
+// ============ REPORTS ============
+function renderReports() {
+    const container = document.getElementById('reportsContent');
+    const contentByChannel = {};
+    const contentByType = {};
+    const contentByClient = {};
+
+    state.allContent.forEach(c => {
+        const ch = c.channelName || 'Unknown';
+        contentByChannel[ch] = (contentByChannel[ch] || 0) + 1;
+        contentByType[c.type || 'Unknown'] = (contentByType[c.type || 'Unknown'] || 0) + 1;
+        const cl = c.clientName || 'Unknown';
+        contentByClient[cl] = (contentByClient[cl] || 0) + 1;
+    });
+
+    if (state.allContent.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg></div><h2>No data yet</h2><p>Create content to see reports and analytics.</p></div>';
+        return;
+    }
+
+    function barChart(data, colorFn) {
+        const max = Math.max(...Object.values(data), 1);
+        return Object.entries(data).map(([label, count]) => {
+            const pct = Math.round((count / max) * 100);
+            const color = colorFn ? colorFn(label) : 'var(--blue-600)';
+            return `<div class="bar-row"><span class="bar-label">${escapeHtml(label)}</span><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${color};"></div></div><span class="bar-value">${count}</span></div>`;
+        }).join('');
+    }
+
+    container.innerHTML = `
+        <div class="stats-bar">
+            <div class="stat-card"><span class="stat-num">${state.allContent.length}</span><span class="stat-label">Total Content</span></div>
+            <div class="stat-card"><span class="stat-num">${Object.keys(contentByChannel).length}</span><span class="stat-label">Channels Used</span></div>
+            <div class="stat-card"><span class="stat-num">${state.clients.length}</span><span class="stat-label">Clients</span></div>
+            <div class="stat-card"><span class="stat-num">${state.allContent.filter(c => c.scheduledDate).length}</span><span class="stat-label">Scheduled</span></div>
+        </div>
+        <div class="reports-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem;">
+            <div class="card"><h3 class="card-title">Content by Channel</h3>${barChart(contentByChannel, label => {
+                const key = Object.entries(CHANNEL_NAMES).find(([k, v]) => v === label);
+                return key ? (CHANNEL_COLORS[key[0]] || 'var(--blue-600)') : 'var(--blue-600)';
+            })}</div>
+            <div class="card"><h3 class="card-title">Content by Type</h3>${barChart(contentByType)}</div>
+            <div class="card"><h3 class="card-title">Content by Client</h3>${barChart(contentByClient, label => {
+                const client = state.clients.find(c => c.name === label);
+                return client ? client.color : 'var(--blue-600)';
+            })}</div>
+        </div>
+    `;
+}
+
+// ============ PRODUCTS ============
+function loadProducts() {
+    try { return JSON.parse(localStorage.getItem('ce_products')) || []; } catch (e) { return []; }
+}
+function saveProductsData(products) {
+    localStorage.setItem('ce_products', JSON.stringify(products));
+}
+
+function renderProducts() {
+    const products = loadProducts().filter(p => !state.activeClientId || p.clientId === state.activeClientId);
+    const list = document.getElementById('productsList');
+    const empty = document.getElementById('productsEmpty');
+
+    if (products.length === 0) {
+        list.style.display = 'none';
+        empty.style.display = 'flex';
+        return;
+    }
+    list.style.display = 'flex';
+    empty.style.display = 'none';
+
+    list.innerHTML = products.map(prod => {
+        const channels = (prod.channels || []).map(ch => '<span class="client-tag">' + escapeHtml(ch) + '</span>').join('');
+        return `<div class="card product-card" style="margin-bottom:1rem;">
+            <div class="campaign-header">
+                <h3>${escapeHtml(prod.name)}</h3>
+                <div class="campaign-actions">
+                    <button class="btn btn-ghost btn-sm" onclick="deleteProduct('${prod.id}')">Delete</button>
+                </div>
+            </div>
+            <div class="campaign-meta">
+                ${prod.category ? '<span>' + escapeHtml(prod.category) + '</span>' : ''}
+                ${prod.price ? '<span>' + escapeHtml(prod.price) + '</span>' : ''}
+                ${prod.sku ? '<span>SKU: ' + escapeHtml(prod.sku) + '</span>' : ''}
+            </div>
+            ${channels ? '<div class="client-channels" style="margin:.5rem 0;">' + channels + '</div>' : ''}
+            ${prod.generatedCopy ? '<div class="product-copy"><h4>Generated Description</h4><pre class="email-body">' + escapeHtml(prod.generatedCopy) + '</pre><button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText(' + JSON.stringify(JSON.stringify(prod.generatedCopy)) + ');showToast(\'Copied\')">Copy</button></div>' : ''}
+        </div>`;
+    }).join('');
+}
+
+function openProductModal() {
+    const modal = document.getElementById('productModal');
+    document.getElementById('prodName').value = '';
+    document.getElementById('prodCategory').value = '';
+    document.getElementById('prodPrice').value = '';
+    document.getElementById('prodSKU').value = '';
+    document.getElementById('prodFeatures').value = '';
+    document.querySelectorAll('#prodChannels .chip').forEach(c => c.classList.remove('active'));
+    modal.classList.add('open');
+}
+
+function closeProductModal() {
+    document.getElementById('productModal').classList.remove('open');
+}
+
+function saveProduct() {
+    const name = document.getElementById('prodName').value.trim();
+    if (!name) { showToast('Please enter a product name'); return; }
+
+    const features = document.getElementById('prodFeatures').value.trim().split('\n').filter(Boolean);
+    const channels = Array.from(document.querySelectorAll('#prodChannels .chip.active')).map(c => c.dataset.value);
+    const price = document.getElementById('prodPrice').value.trim();
+
+    // Generate product description
+    const featureList = features.length > 0 ? features.join(', ') : 'premium quality';
+    const generatedCopy = `${name}\n\n` +
+        `${price ? price + ' | ' : ''}Discover the ${name} — designed for those who demand the best.\n\n` +
+        `Key Features:\n${features.length > 0 ? features.map(f => '• ' + f).join('\n') : '• Premium quality\n• Built to last\n• Exceptional value'}\n\n` +
+        `Why choose ${name}?\nBecause you deserve a product that works as hard as you do. ${name} combines ${featureList} into one seamless package.\n\n` +
+        `Order now and experience the difference.`;
+
+    const products = loadProducts();
+    products.push({
+        id: 'prod_' + Date.now(),
+        clientId: state.activeClientId,
+        name,
+        category: document.getElementById('prodCategory').value.trim(),
+        price,
+        sku: document.getElementById('prodSKU').value.trim(),
+        features,
+        channels,
+        generatedCopy,
+        createdAt: new Date().toISOString(),
+    });
+    saveProductsData(products);
+    closeProductModal();
+    renderProducts();
+    showToast('Product saved with generated copy');
+}
+
+function deleteProduct(id) {
+    if (!confirm('Delete this product?')) return;
+    const products = loadProducts().filter(p => p.id !== id);
+    saveProductsData(products);
+    renderProducts();
+    showToast('Product deleted');
+}
+
+// ============ OMNICHANNEL ============
+function loadPromos() {
+    try { return JSON.parse(localStorage.getItem('ce_promos')) || []; } catch (e) { return []; }
+}
+function savePromosData(promos) {
+    localStorage.setItem('ce_promos', JSON.stringify(promos));
+}
+
+function renderPromos() {
+    const promos = loadPromos().filter(p => !state.activeClientId || p.clientId === state.activeClientId);
+    const list = document.getElementById('promosList');
+    const empty = document.getElementById('promosEmpty');
+
+    if (promos.length === 0) {
+        list.style.display = 'none';
+        empty.style.display = 'flex';
+        return;
+    }
+    list.style.display = 'flex';
+    empty.style.display = 'none';
+
+    list.innerHTML = promos.map(promo => {
+        const channels = (promo.channels || []).map(ch => '<span class="client-tag">' + escapeHtml(ch) + '</span>').join('');
+        const dateRange = promo.startDate && promo.endDate
+            ? new Date(promo.startDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + ' — ' + new Date(promo.endDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+            : '';
+        return `<div class="card promo-card" style="margin-bottom:1rem;">
+            <div class="campaign-header">
+                <h3>${escapeHtml(promo.name)}</h3>
+                <div class="campaign-actions">
+                    <button class="btn btn-ghost btn-sm" onclick="deletePromo('${promo.id}')">Delete</button>
+                </div>
+            </div>
+            <div class="campaign-meta">
+                <span class="content-type">${escapeHtml(promo.type || 'Sale')}</span>
+                ${promo.discount ? '<span><strong>' + escapeHtml(promo.discount) + '</strong></span>' : ''}
+                ${dateRange ? '<span>' + dateRange + '</span>' : ''}
+            </div>
+            ${channels ? '<div class="client-channels" style="margin:.5rem 0;">' + channels + '</div>' : ''}
+            ${promo.generatedCopy ? '<div class="product-copy"><h4>Generated Promo Copy</h4><pre class="email-body">' + escapeHtml(promo.generatedCopy) + '</pre><button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText(' + JSON.stringify(JSON.stringify(promo.generatedCopy)) + ');showToast(\'Copied\')">Copy</button></div>' : ''}
+        </div>`;
+    }).join('');
+}
+
+function openPromoModal() {
+    const modal = document.getElementById('promoModal');
+    document.getElementById('promoName').value = '';
+    document.getElementById('promoStart').value = '';
+    document.getElementById('promoEnd').value = '';
+    document.getElementById('promoDiscount').value = '';
+    document.querySelectorAll('#promoType .chip').forEach((c, i) => c.classList.toggle('active', i === 0));
+    document.querySelectorAll('#promoChannels .chip').forEach(c => c.classList.remove('active'));
+    modal.classList.add('open');
+}
+
+function closePromoModal() {
+    document.getElementById('promoModal').classList.remove('open');
+}
+
+function savePromo() {
+    const name = document.getElementById('promoName').value.trim();
+    if (!name) { showToast('Please enter a promotion name'); return; }
+
+    const type = document.querySelector('#promoType .chip.active')?.dataset.value || 'sale';
+    const discount = document.getElementById('promoDiscount').value.trim();
+    const channels = Array.from(document.querySelectorAll('#promoChannels .chip.active')).map(c => c.dataset.value);
+    const client = getActiveClient();
+    const brand = client ? client.name : 'Your Brand';
+
+    // Generate promo copy per channel
+    const copyParts = [];
+    if (channels.includes('email')) {
+        copyParts.push(`EMAIL:\nSubject: ${name} — ${discount || 'Special Offer'} from ${brand}\n\nHi there,\n\n${name} is here! ${discount ? 'Get ' + discount + ' on everything.' : 'Don\'t miss out on our biggest offer yet.'}\n\nShop now: [Link]\n\n— ${brand}`);
+    }
+    if (channels.includes('instagram') || channels.includes('facebook') || channels.includes('tiktok')) {
+        copyParts.push(`SOCIAL POST:\n${discount ? discount + ' ' : ''}${name} is LIVE! ${discount ? 'Use the link in bio to shop now.' : 'Head to our page to learn more.'}\n\n#${brand.replace(/\s/g, '')} #${type} #${name.replace(/\s/g, '')}`);
+    }
+    if (channels.includes('website')) {
+        copyParts.push(`WEBSITE BANNER:\nHeadline: ${name}\nSubheadline: ${discount || 'Limited Time Offer'}\nCTA: Shop Now`);
+    }
+    if (channels.includes('sms')) {
+        copyParts.push(`SMS:\n${brand}: ${name} is live! ${discount || 'Special offer'} — shop now at [link]. Reply STOP to opt out.`);
+    }
+    if (channels.includes('instore')) {
+        copyParts.push(`IN-STORE SIGNAGE:\nHeadline: ${name}\n${discount || 'Special Offer'}\nValid: [Start Date] — [End Date]`);
+    }
+    if (copyParts.length === 0) {
+        copyParts.push(`${name}\n${discount ? discount + ' — ' : ''}${brand}\n\nDon't miss this ${type} event!`);
+    }
+
+    const promos = loadPromos();
+    promos.push({
+        id: 'promo_' + Date.now(),
+        clientId: state.activeClientId,
+        name,
+        type,
+        discount,
+        startDate: document.getElementById('promoStart').value,
+        endDate: document.getElementById('promoEnd').value,
+        channels,
+        generatedCopy: copyParts.join('\n\n---\n\n'),
+        createdAt: new Date().toISOString(),
+    });
+    savePromosData(promos);
+    closePromoModal();
+    renderPromos();
+    showToast('Promotion saved with generated copy');
+}
+
+function deletePromo(id) {
+    if (!confirm('Delete this promotion?')) return;
+    const promos = loadPromos().filter(p => p.id !== id);
+    savePromosData(promos);
+    renderPromos();
+    showToast('Promotion deleted');
+}
+
 // ============ INIT ============
 document.addEventListener('DOMContentLoaded', function() {
     loadData();
@@ -1127,6 +1934,7 @@ document.addEventListener('DOMContentLoaded', function() {
     renderClientDropdown();
     updateClientSwitcher();
     updateStats();
+    renderDashboard();
 
     // Close dropdown on outside click
     document.addEventListener('click', function(e) {
