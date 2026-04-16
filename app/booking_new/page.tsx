@@ -250,14 +250,16 @@ export default function BookingPage() {
               15-minute video call · All times in your local timezone · £60
             </p>
           </div>
-          <iframe
-            src={`${CALENDLY_URL}?name=${encodeURIComponent(data.name)}&email=${encodeURIComponent(data.email)}&hide_gdpr_banner=1`}
-            width="100%"
-            height="680"
-            style={{ border: 'none', display: 'block' }}
-            title="Book your 100k Parent PFA session"
-            loading="lazy"
-          />
+          <div style={{ position: 'relative', width: '100%', maxWidth: '100%', overflow: 'hidden' }}>
+            <iframe
+              src={`${CALENDLY_URL}?name=${encodeURIComponent(data.name)}&email=${encodeURIComponent(data.email)}&hide_gdpr_banner=1`}
+              width="100%"
+              height="660"
+              style={{ border: 'none', display: 'block', minHeight: '500px' }}
+              title="Book your 100k Parent PFA session"
+              loading="lazy"
+            />
+          </div>
         </div>
 
         {/* Trust */}

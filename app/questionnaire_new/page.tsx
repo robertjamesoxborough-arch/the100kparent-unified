@@ -473,7 +473,7 @@ function QuestionnaireContent() {
 
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',
                 gap: '10px',
                 marginBottom: '28px',
               }}>

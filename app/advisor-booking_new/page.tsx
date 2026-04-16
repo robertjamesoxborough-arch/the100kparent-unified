@@ -91,7 +91,7 @@ export default function AdvisorBookingPage() {
             Your PFA reviews your questionnaire answers before the call so every minute counts.
           </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '48px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))', gap: '20px', marginBottom: '48px' }}>
             {[
               { icon: '🔍', title: 'Tax gap analysis', body: 'Your advisor calculates the exact gap between what you\'re paying now and the legal minimum.' },
               { icon: '💡', title: 'Savings breakdown', body: 'Line-by-line identification of Personal Allowance recovery, pension strategy, and childcare wins.' },
@@ -117,7 +117,7 @@ export default function AdvisorBookingPage() {
             borderRadius: '16px',
             padding: '44px 40px',
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
             gap: '36px',
             alignItems: 'center',
           }}>
@@ -193,7 +193,7 @@ export default function AdvisorBookingPage() {
           <p style={{ color: '#64748B', textAlign: 'center', fontSize: '16px', marginBottom: '48px' }}>
             Every session is with a DipPFS-qualified PFA specialising in high-income family finance.
           </p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '24px' }}>
             {advisors.map((advisor) => (
               <div key={advisor.name} style={{
                 backgroundColor: '#F8FAFC',

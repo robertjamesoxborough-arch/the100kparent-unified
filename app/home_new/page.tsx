@@ -107,12 +107,12 @@ export default function HomePage() {
             Different income levels create different tax problems. We have something specific for each one.
           </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '28px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '28px' }}>
             {/* Card 1 — Guides */}
             <div style={{
               backgroundColor: '#FFFFFF',
               borderRadius: '14px',
-              padding: '40px 32px',
+              padding: 'clamp(24px, 5vw, 40px) clamp(16px, 4vw, 32px)',
               boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
               borderTop: `4px solid ${PRIMARY}`,
             }}>
@@ -159,7 +159,7 @@ export default function HomePage() {
             <div style={{
               backgroundColor: '#FFFFFF',
               borderRadius: '14px',
-              padding: '40px 32px',
+              padding: 'clamp(24px, 5vw, 40px) clamp(16px, 4vw, 32px)',
               boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
               borderTop: `4px solid ${PRIMARY}`,
             }}>
@@ -188,7 +188,7 @@ export default function HomePage() {
             <div style={{
               backgroundColor: '#FFFFFF',
               borderRadius: '14px',
-              padding: '40px 32px',
+              padding: 'clamp(24px, 5vw, 40px) clamp(16px, 4vw, 32px)',
               boxShadow: `0 0 0 2px ${PRIMARY}, 0 4px 20px rgba(16,185,129,0.15)`,
               borderTop: `4px solid ${PRIMARY}`,
               position: 'relative',
@@ -258,13 +258,13 @@ export default function HomePage() {
           <h2 style={{ fontSize: 'clamp(22px, 3vw, 36px)', fontWeight: 800, textAlign: 'center', marginBottom: '52px', color: SECONDARY }}>
             Three steps. Fifteen minutes. Real savings.
           </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '28px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '28px' }}>
             {[
               { step: '01', title: 'Tell us your situation', body: 'Answer two quick questions about your income. We\'ll point you to the right option — a PFA session or one of our guides.' },
               { step: '02', 'title': 'Tell us your situation', body: 'A short questionnaire so your Personal Finance Advisor can prepare your personalised analysis before the call.' },
               { step: '03', title: '15 minutes. Life-changing savings.', body: 'A focused 15-minute video call with your PFA. You leave with a specific action plan — average identified saving: £15k–£30k/yr.' },
             ].map(({ step, title, body }) => (
-              <div key={step} style={{ backgroundColor: '#F8FAFC', borderRadius: '12px', padding: '32px 26px', borderLeft: `4px solid ${PRIMARY}` }}>
+              <div key={step} style={{ backgroundColor: '#F8FAFC', borderRadius: '12px', padding: 'clamp(20px, 4vw, 32px) clamp(16px, 3vw, 26px)', borderLeft: `4px solid ${PRIMARY}` }}>
                 <span style={{ fontSize: '12px', fontWeight: 700, color: PRIMARY, letterSpacing: '0.1em' }}>STEP {step}</span>
                 <h3 style={{ fontSize: '18px', fontWeight: 700, margin: '10px 0 10px', color: SECONDARY }}>{title}</h3>
                 <p style={{ color: '#64748B', lineHeight: 1.65, margin: 0, fontSize: '15px' }}>{body}</p>
@@ -280,7 +280,7 @@ export default function HomePage() {
           <h2 style={{ color: '#FFFFFF', fontSize: 'clamp(22px, 3vw, 34px)', fontWeight: 800, marginBottom: '48px' }}>
             The numbers speak for themselves
           </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '24px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '16px' }}>
             {[
               { stat: '£60', label: 'Flat fee, no surprises' },
               { stat: '15 min', label: 'Focused PFA session' },

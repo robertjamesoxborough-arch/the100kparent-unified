@@ -140,7 +140,7 @@ function GuidesContent() {
 
       {/* What these guides are — and aren't */}
       <div style={{ backgroundColor: '#F0FDF4', borderBottom: '1px solid #BBF7D0', padding: '16px 24px' }}>
-        <div style={{ maxWidth: '720px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
+        <div style={{ maxWidth: '720px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '12px' }}>
           <div>
             <p style={{ fontWeight: 700, color: SECONDARY, fontSize: '13px', margin: '0 0 4px' }}>✓ What our guides are</p>
             <p style={{ color: '#64748B', fontSize: '13px', margin: 0 }}>Plain-English educational information about tax rules. General explanations of strategies and how they typically work.</p>
@@ -158,7 +158,7 @@ function GuidesContent() {
           maxWidth: '1000px',
           margin: '0 auto',
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
           gap: '24px',
           alignItems: 'start',
         }}>
