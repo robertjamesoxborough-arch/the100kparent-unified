@@ -1,3 +1,19 @@
 {
-  "cleanUrls": true
+  "rewrites": [
+    { "source": "/checkout", "destination": "/checkout.html" },
+    { "source": "/dashboard", "destination": "/dashboard.html" },
+    { "source": "/module-0", "destination": "/module-0.html" },
+    { "source": "/module-1", "destination": "/module-1.html" },
+    { "source": "/module-2", "destination": "/module-2.html" },
+    { "source": "/module-3", "destination": "/module-3.html" },
+    { "source": "/module-4", "destination": "/module-4.html" },
+    { "source": "/module-5", "destination": "/module-5.html" },
+    { "source": "/module-6", "destination": "/module-6.html" },
+    { "source": "/module-7", "destination": "/module-7.html" },
+    { "source": "/module-8", "destination": "/module-8.html" },
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/refund", "destination": "/refund.html" },
+    { "source": "/success", "destination": "/success.html" },
+    { "source": "/terms-old", "destination": "/terms.html" }
+  ]
 }
