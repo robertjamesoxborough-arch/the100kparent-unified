@@ -1,4 +1,6 @@
 {
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
   "rewrites": [
     { "source": "/checkout", "destination": "/checkout.html" },
     { "source": "/dashboard", "destination": "/dashboard.html" },
