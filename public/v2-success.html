@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Report is Ready | The 100k Parent</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #F7FAFC; color: #2D3748; min-height: 100vh; }
+
+        .nav { background: white; border-bottom: 1px solid #E2E8F0; padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; }
+        .nav-logo { font-size: 1.25rem; font-weight: 800; color: #2E5C8A; text-decoration: none; }
+        .nav-back { font-size: 0.875rem; color: #4A90E2; text-decoration: none; font-weight: 600; }
+
+        .container { max-width: 700px; margin: 0 auto; padding: 3rem 1.5rem; }
+
+        .success-icon { width: 80px; height: 80px; background: #10B981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 2.5rem; }
+
+        h1 { text-align: center; font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .subtitle { text-align: center; color: #718096; font-size: 1.0625rem; margin-bottom: 2.5rem; }
+
+        .card { background: white; border-radius: 20px; padding: 2rem; box-shadow: 0 4px 24px rgba(0,0,0,0.08); margin-bottom: 1.5rem; }
+
+        .card-header { display: flex; align-items: center; gap: 1rem; padding-bottom: 1.5rem; border-bottom: 2px solid #E2E8F0; margin-bottom: 1.5rem; }
+        .card-icon { width: 50px; height: 50px; background: #4A90E2; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
+        .card-title { font-weight: 800; font-size: 1.125rem; }
+        .card-sub { color: #718096; font-size: 0.875rem; margin-top: 2px; }
+
+        .saving-row { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid #F7FAFC; }
+        .saving-row:last-of-type { border-bottom: none; }
+        .saving-label { font-weight: 600; font-size: 0.9375rem; }
+        .saving-desc { font-size: 0.8125rem; color: #A0AEC0; margin-top: 2px; }
+        .saving-amount { font-weight: 800; color: #10B981; font-size: 1.25rem; white-space: nowrap; }
+        .saving-amount.zero { color: #CBD5E0; }
+
+        .total-box { background: linear-gradient(135deg, #4A90E2, #2E5C8A); border-radius: 16px; padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; color: white; }
+        .total-label { font-weight: 700; font-size: 1rem; opacity: 0.9; }
+        .total-range { font-size: 0.8125rem; opacity: 0.7; margin-top: 4px; }
+        .total-amount { font-size: 2.5rem; font-weight: 800; }
+
+        .download-btn { display: block; width: 100%; background: #10B981; color: white; border: none; border-radius: 14px; padding: 1.125rem; font-size: 1.125rem; font-weight: 700; cursor: pointer; text-align: center; margin: 1.5rem 0 0.75rem; transition: all 0.2s; font-family: 'Inter', sans-serif; }
+        .download-btn:hover { background: #059669; transform: translateY(-1px); }
+        .download-btn:disabled { background: #A0AEC0; transform: none; cursor: not-allowed; }
+
+        .download-note { text-align: center; font-size: 0.8125rem; color: #A0AEC0; margin-bottom: 1.5rem; }
+
+        .tier-badge { display: inline-block; padding: 0.25rem 0.875rem; border-radius: 20px; font-size: 0.8125rem; font-weight: 700; margin-bottom: 1rem; }
+        .tier-badge.essential { background: #E8F4F8; color: #2E5C8A; }
+        .tier-badge.complete { background: #4A90E2; color: white; }
+
+        .advisor-box { background: #F0EDFF; border-radius: 14px; padding: 1.5rem; margin-top: 1rem; }
+        .advisor-box h3 { color: #7B68EE; margin-bottom: 0.5rem; font-size: 1rem; }
+        .advisor-box p { color: #4A5568; font-size: 0.9375rem; line-height: 1.6; }
+        .advisor-btn { display: inline-block; background: #7B68EE; color: white; padding: 0.75rem 1.5rem; border-radius: 10px; text-decoration: none; font-weight: 700; margin-top: 1rem; font-size: 0.9375rem; }
+
+        .no-results { text-align: center; padding: 3rem; }
+        .no-results p { color: #718096; margin-bottom: 1.5rem; }
+        .no-results a { background: #4A90E2; color: white; padding: 0.875rem 2rem; border-radius: 12px; text-decoration: none; font-weight: 700; }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 1.625rem; }
+            .total-amount { font-size: 2rem; }
+            .container { padding: 2rem 1.25rem; }
+        }
+
+        /* Loading state */
+        .loading { text-align: center; padding: 4rem; }
+        .spinner { width: 40px; height: 40px; border: 4px solid #E2E8F0; border-top-color: #4A90E2; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<nav class="nav">
+    <a href="v2.html" class="nav-logo">The 100k Parent</a>
+    <a href="v2.html#calculator" class="nav-back">← Back to Calculator</a>
+</nav>
+
+<div class="container" id="mainContent">
+    <div class="loading" id="loadingState">
+        <div class="spinner"></div>
+        <p style="color: #718096;">Preparing your report...</p>
+    </div>
+</div>
+
+<script>
+    // Read URL params
+    const params = new URLSearchParams(window.location.search);
+    const tier = params.get('tier') || 'essential';
+    const tierLabel = tier === 'complete' ? 'Complete Guide' : 'Essential Report';
+    const tierPrice = tier === 'complete' ? '£49' : '£19';
+
+    // Read calculator results from localStorage
+    const stored = localStorage.getItem('100kp_results');
+    const r = stored ? JSON.parse(stored) : null;
+
+    const main = document.getElementById('mainContent');
+
+    if (!r) {
+        // No results — send them back to calculator
+        main.innerHTML = `
+            <div class="no-results">
+                <div class="success-icon" style="background: #F59E0B;">⚠️</div>
+                <h1>No calculator results found</h1>
+                <p>Please complete the savings calculator first so we can personalise your report.</p>
+                <a href="v2.html#calculator">Go to Calculator</a>
+            </div>`;
+    } else {
+        const avg = Math.round((r.minSaving + r.maxSaving) / 2);
+
+        main.innerHTML = `
+            <div class="success-icon">🎉</div>
+            <h1>Your report is ready</h1>
+            <p class="subtitle">Your personalised childcare savings report based on your family details</p>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">📄</div>
+                    <div>
+                        <div class="tier-badge ${tier}">${tierLabel} — ${tierPrice}</div>
+                        <div class="card-title">Your Childcare Savings Report</div>
+                        <div class="card-sub">The 100k Parent &bull; 2025/26 &bull; Personalised for your family</div>
+                    </div>
+                </div>
+
+                <div class="saving-row">
+                    <div>
+                        <div class="saving-label">Tax-Free Childcare</div>
+                        <div class="saving-desc">20% government top-up on eligible costs</div>
+                    </div>
+                    <div class="saving-amount ${r.tfc === 0 ? 'zero' : ''}">£${Math.round(r.tfc).toLocaleString()}</div>
+                </div>
+
+                <div class="saving-row">
+                    <div>
+                        <div class="saving-label">Salary Sacrifice</div>
+                        <div class="saving-desc">Income Tax + National Insurance savings</div>
+                    </div>
+                    <div class="saving-amount ${r.salary === 0 ? 'zero' : ''}">£${Math.round(r.salary).toLocaleString()}</div>
+                </div>
+
+                <div class="saving-row">
+                    <div>
+                        <div class="saving-label">Income Splitting</div>
+                        <div class="saving-desc">Optimising income across tax bands</div>
+                    </div>
+                    <div class="saving-amount ${r.splitting === 0 ? 'zero' : ''}">£${Math.round(r.splitting).toLocaleString()}</div>
+                </div>
+
+                <div class="saving-row">
+                    <div>
+                        <div class="saving-label">30 Hours Free Childcare</div>
+                        <div class="saving-desc">Government-funded nursery hours</div>
+                    </div>
+                    <div class="saving-amount ${r.thirtyHours === 0 ? 'zero' : ''}">£${Math.round(r.thirtyHours).toLocaleString()}</div>
+                </div>
+
+                <div class="total-box">
+                    <div>
+                        <div class="total-label">Your estimated annual saving</div>
+                        <div class="total-range">Range: £${Math.round(r.minSaving).toLocaleString()} — £${Math.round(r.maxSaving).toLocaleString()}</div>
+                    </div>
+                    <div class="total-amount">£${avg.toLocaleString()}</div>
+                </div>
+
+                <button class="download-btn" id="downloadBtn" onclick="downloadPDF()">
+                    ⬇️ Download Your PDF Report
+                </button>
+                <p class="download-note">Opens print dialog — save as PDF. No email required.</p>
+
+                ${tier === 'complete' ? `
+                <div class="advisor-box">
+                    <h3>📞 Your 30-Minute Advisor Call</h3>
+                    <p>As a Complete Guide customer, you have a free call with our childcare savings advisor included. They will review your situation and help you implement the strategies.</p>
+                    <a href="#" class="advisor-btn">Book Your Call</a>
+                </div>` : ''}
+            </div>
+
+            <div style="text-align: center; margin-top: 1rem;">
+                <a href="v2.html#calculator" style="color: #4A90E2; font-size: 0.875rem; text-decoration: none; font-weight: 600;">← Recalculate with different figures</a>
+            </div>`;
+
+        // Auto-trigger PDF download after short delay
+        setTimeout(() => generatePDF(r, tier), 1200);
+    }
+
+    function downloadPDF() {
+        const stored = localStorage.getItem('100kp_results');
+        if (stored) generatePDF(JSON.parse(stored), tier);
+    }
+
+    function generatePDF(r, tier) {
+        const btn = document.getElementById('downloadBtn');
+        if (btn) { btn.textContent = 'Preparing PDF...'; btn.disabled = true; }
+
+        const avg = Math.round((r.minSaving + r.maxSaving) / 2);
+        const date = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+        const tierLabel = tier === 'complete' ? 'Complete Guide' : 'Essential Report';
+
+        const html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Your Childcare Savings Report - The 100k Parent</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; color: #2D3748; font-size: 14px; line-height: 1.6; background: white; }
+  .cover { background: linear-gradient(135deg, #E8F4F8 0%, #F0EDFF 100%); padding: 60px 50px; min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; page-break-after: always; }
+  .cover-logo { font-size: 22px; font-weight: 800; color: #2E5C8A; }
+  .cover-badge { display: inline-block; background: #4A90E2; color: white; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-bottom: 24px; }
+  .cover-title { font-size: 44px; font-weight: 800; line-height: 1.1; margin-bottom: 16px; }
+  .cover-subtitle { font-size: 18px; color: #718096; margin-bottom: 40px; }
+  .cover-box { background: white; border-radius: 20px; padding: 32px 40px; display: inline-block; box-shadow: 0 4px 24px rgba(74,144,226,0.15); margin-bottom: 24px; }
+  .cover-saving-label { font-size: 12px; font-weight: 600; color: #718096; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+  .cover-saving-amount { font-size: 60px; font-weight: 800; color: #10B981; line-height: 1; }
+  .cover-range { background: #E8F4F8; border-radius: 12px; padding: 14px 20px; margin-top: 12px; font-size: 13px; color: #2E5C8A; }
+  .cover-meta { font-size: 12px; color: #A0AEC0; }
+  .page { padding: 50px; page-break-after: always; }
+  .page:last-child { page-break-after: avoid; }
+  .page-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px; border-bottom: 2px solid #E8F4F8; margin-bottom: 28px; }
+  .page-logo { font-size: 15px; font-weight: 800; color: #2E5C8A; }
+  .page-num { font-size: 12px; color: #A0AEC0; }
+  h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+  h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .intro { color: #718096; margin-bottom: 24px; font-size: 14px; }
+  .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 28px; }
+  .profile-item { background: #F7FAFC; border-radius: 10px; padding: 14px 18px; }
+  .profile-label { font-size: 11px; font-weight: 600; color: #A0AEC0; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .profile-value { font-size: 15px; font-weight: 700; }
+  .saving-row { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; border-radius: 10px; margin-bottom: 10px; background: #F7FAFC; }
+  .saving-row.highlight { background: #E8F4F8; border: 2px solid #4A90E2; }
+  .saving-desc { font-size: 12px; color: #718096; margin-top: 3px; }
+  .saving-amount { font-size: 22px; font-weight: 800; color: #10B981; }
+  .saving-amount.zero { color: #CBD5E0; }
+  .total-box { background: linear-gradient(135deg, #4A90E2, #2E5C8A); border-radius: 14px; padding: 24px 28px; color: white; display: flex; justify-content: space-between; align-items: center; margin: 20px 0; }
+  .total-label { font-size: 14px; font-weight: 600; opacity: 0.9; }
+  .total-range { font-size: 12px; opacity: 0.7; margin-top: 4px; }
+  .total-amount { font-size: 40px; font-weight: 800; }
+  .calc-box { background: #F0EDFF; border-radius: 10px; padding: 18px 22px; margin-bottom: 14px; }
+  .calc-box h3 { color: #7B68EE; margin-bottom: 8px; }
+  .calc-box p { font-size: 13px; color: #4A5568; line-height: 1.6; }
+  .step-item { display: flex; gap: 18px; margin-bottom: 18px; align-items: flex-start; }
+  .step-num { width: 34px; height: 34px; background: #4A90E2; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; flex-shrink: 0; }
+  .step-text h3 { margin-bottom: 3px; }
+  .step-text p { font-size: 13px; color: #718096; }
+  .disclaimer { background: #FFF9F0; border-left: 4px solid #F59E0B; padding: 14px 18px; border-radius: 0 8px 8px 0; margin-top: 20px; font-size: 12px; color: #718096; }
+  .eligibility-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0; }
+  .elig-item { border-radius: 10px; padding: 14px 18px; display: flex; align-items: center; gap: 10px; }
+  .elig-item.yes { background: #D1FAE5; }
+  .elig-item.no { background: #FEE2E2; }
+  .elig-text { font-size: 13px; font-weight: 600; }
+  .footer { text-align: center; padding: 32px 50px; background: #F7FAFC; border-top: 2px solid #E2E8F0; }
+  .footer-logo { font-size: 18px; font-weight: 800; color: #2E5C8A; margin-bottom: 6px; }
+  .footer p { font-size: 12px; color: #A0AEC0; }
+  @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div><div class="cover-logo">The 100k Parent</div></div>
+  <div>
+    <div class="cover-badge">${tierLabel}</div>
+    <h1 class="cover-title">Your Childcare<br>Savings Report</h1>
+    <p class="cover-subtitle">Personalised for your family</p>
+    <div class="cover-box">
+      <div class="cover-saving-label">Your estimated annual saving</div>
+      <div class="cover-saving-amount">£${avg.toLocaleString()}</div>
+      <div style="font-size:13px;color:#718096;margin-top:8px;">across all HMRC-compliant strategies</div>
+    </div>
+    <div class="cover-range">Potential saving range: <strong>£${Math.round(r.minSaving).toLocaleString()}</strong> &mdash; <strong>£${Math.round(r.maxSaving).toLocaleString()}</strong> per year</div>
+  </div>
+  <div class="cover-meta"><p>Prepared for your family &bull; ${date}</p><p>The 100k Parent | the100kparent.com</p></div>
+</div>
+
+<div class="page">
+  <div class="page-header"><div class="page-logo">The 100k Parent</div><div class="page-num">Page 2</div></div>
+  <h2>Your Family Profile</h2>
+  <p class="intro">Based on the information you provided.</p>
+  <div class="profile-grid">
+    <div class="profile-item"><div class="profile-label">Your Annual Income</div><div class="profile-value">£${r.income1.toLocaleString()}</div></div>
+    <div class="profile-item"><div class="profile-label">Partner's Income</div><div class="profile-value">${r.income2 > 0 ? '£' + r.income2.toLocaleString() : 'Single income'}</div></div>
+    <div class="profile-item"><div class="profile-label">Number of Children</div><div class="profile-value">${r.numChildren} ${r.numChildren === 1 ? 'child' : 'children'}</div></div>
+    <div class="profile-item"><div class="profile-label">Monthly Childcare</div><div class="profile-value">£${r.monthlyChildcare.toLocaleString()}/month</div></div>
+    <div class="profile-item"><div class="profile-label">Annual Childcare Spend</div><div class="profile-value">£${(r.monthlyChildcare * 12).toLocaleString()}/year</div></div>
+    <div class="profile-item"><div class="profile-label">Employment Type</div><div class="profile-value" style="text-transform:capitalize">${r.employment.replace('-', ' ')}</div></div>
+  </div>
+  <h2 style="margin-top:8px;">Eligibility Summary</h2>
+  <div class="eligibility-grid">
+    <div class="elig-item ${!r.over100k ? 'yes' : 'no'}"><span style="font-size:18px">${!r.over100k ? '✅' : '❌'}</span><span class="elig-text">Tax-Free Childcare</span></div>
+    <div class="elig-item ${r.has30Hours ? 'yes' : 'no'}"><span style="font-size:18px">${r.has30Hours ? '✅' : '❌'}</span><span class="elig-text">30 Hours Free Childcare</span></div>
+    <div class="elig-item ${r.employment !== 'self-employed' ? 'yes' : 'no'}"><span style="font-size:18px">${r.employment !== 'self-employed' ? '✅' : '❌'}</span><span class="elig-text">Salary Sacrifice</span></div>
+    <div class="elig-item ${r.income2 > 0 ? 'yes' : 'no'}"><span style="font-size:18px">${r.income2 > 0 ? '✅' : '❌'}</span><span class="elig-text">Income Splitting</span></div>
+  </div>
+</div>
+
+<div class="page">
+  <div class="page-header"><div class="page-logo">The 100k Parent</div><div class="page-num">Page 3</div></div>
+  <h2>Your Savings Breakdown</h2>
+  <p class="intro">How your estimated saving of £${avg.toLocaleString()} per year is made up.</p>
+  <div class="saving-row highlight">
+    <div><h3>Tax-Free Childcare</h3><div class="saving-desc">20% government top-up on eligible childcare costs (max £2,000 per child)</div></div>
+    <div class="saving-amount ${r.tfc === 0 ? 'zero' : ''}">£${Math.round(r.tfc).toLocaleString()}</div>
+  </div>
+  <div class="saving-row">
+    <div><h3>Salary Sacrifice</h3><div class="saving-desc">Income tax and National Insurance savings via pension contributions</div></div>
+    <div class="saving-amount ${r.salary === 0 ? 'zero' : ''}">£${Math.round(r.salary).toLocaleString()}</div>
+  </div>
+  <div class="saving-row">
+    <div><h3>Income Splitting</h3><div class="saving-desc">Optimising income distribution between partners across tax bands</div></div>
+    <div class="saving-amount ${r.splitting === 0 ? 'zero' : ''}">£${Math.round(r.splitting).toLocaleString()}</div>
+  </div>
+  <div class="saving-row">
+    <div><h3>30 Hours Free Childcare</h3><div class="saving-desc">Government-funded hours for eligible children aged 9 months to 4 years</div></div>
+    <div class="saving-amount ${r.thirtyHours === 0 ? 'zero' : ''}">£${Math.round(r.thirtyHours).toLocaleString()}</div>
+  </div>
+  <div class="total-box">
+    <div><div class="total-label">Your estimated total annual saving</div><div class="total-range">Range: £${Math.round(r.minSaving).toLocaleString()} — £${Math.round(r.maxSaving).toLocaleString()}</div></div>
+    <div class="total-amount">£${avg.toLocaleString()}</div>
+  </div>
+  <div class="disclaimer"><strong>Important:</strong> These figures are estimates based on information provided and standard HMRC rules as of 2026. Your actual savings may differ. We recommend speaking with a qualified financial adviser before making changes.</div>
+</div>
+
+<div class="page">
+  <div class="page-header"><div class="page-logo">The 100k Parent</div><div class="page-num">Page 4</div></div>
+  <h2>How Your Saving Is Calculated</h2>
+  <p class="intro">A transparent explanation of the methodology behind each figure.</p>
+  <div class="calc-box"><h3>Tax-Free Childcare (TFC)</h3><p>The government adds 20p for every 80p you pay into a Tax-Free Childcare account, up to £2,000 per child per year. Both partners must earn at least £2,379/year and neither can earn over £100,000. We calculate: annual childcare spend × 20% = TFC saving, capped at £2,000 per child.</p></div>
+  <div class="calc-box"><h3>Salary Sacrifice</h3><p>By paying into your pension via salary sacrifice, you reduce your gross salary, saving Income Tax and National Insurance. For higher-rate taxpayers (income over £50,270), the combined saving is approximately 42p per £1 sacrificed. We apply a conservative sacrifice amount of 30% of annual childcare costs, capped at £5,000 per year.</p></div>
+  <div class="calc-box"><h3>Income Splitting</h3><p>Where one partner earns above the higher-rate threshold (£50,270) and the other earns below it, there may be opportunities to redistribute income to reduce the overall household tax bill. We apply a conservative estimate of £3,000 per year where this applies.</p></div>
+  <div class="calc-box"><h3>30 Hours Free Childcare</h3><p>Eligible working parents of children aged 9 months to 4 years can claim up to 30 hours of free childcare per week for 38 weeks per year. We calculate the value at the average UK nursery rate of £15/hour × 1,140 hours per eligible child per year.</p></div>
+</div>
+
+<div class="page">
+  <div class="page-header"><div class="page-logo">The 100k Parent</div><div class="page-num">Page 5</div></div>
+  <h2>Your Next Steps</h2>
+  <p class="intro">What to do to start saving as soon as possible.</p>
+  <div class="step-item"><div class="step-num">1</div><div class="step-text"><h3>Apply for Tax-Free Childcare</h3><p>Visit childcarechoices.gov.uk and apply through the Government Gateway. Takes around 20 minutes. You can start using your account immediately once approved.</p></div></div>
+  <div class="step-item"><div class="step-num">2</div><div class="step-text"><h3>Set Up Salary Sacrifice</h3><p>Contact your HR or payroll department and ask about salary sacrifice pension arrangements. Most employers already offer this — it just needs activating. Check your payslip the following month to confirm the saving.</p></div></div>
+  <div class="step-item"><div class="step-num">3</div><div class="step-text"><h3>Apply for 30 Hours Free Childcare (if eligible)</h3><p>Apply via GOV.UK at least 3 months before your child's eligibility date. You will receive an 11-digit code to give to your childcare provider. Reconfirm eligibility every 3 months.</p></div></div>
+  <div class="step-item"><div class="step-num">4</div><div class="step-text"><h3>Review Your Income Structure</h3><p>If either partner earns above £100,000, consider extra pension contributions to reduce your adjusted net income below the threshold. This alone could unlock Tax-Free Childcare and 30 hours worth up to £17,000+ per year.</p></div></div>
+  ${tier === 'complete' ? `<div class="step-item"><div class="step-num">5</div><div class="step-text"><h3>Book Your Advisor Call</h3><p>As a Complete Guide customer you have a free 30-minute call with our recommended financial adviser. They will review your specific situation and provide personalised recommendations. Check your confirmation email for your booking link.</p></div></div>` : ''}
+  <div class="disclaimer"><strong>Disclaimer:</strong> This report is for informational purposes only and does not constitute financial advice. The 100k Parent is not FCA regulated. Always consult a qualified financial adviser before making changes to your financial arrangements. Figures are based on 2025/26 tax year rules.</div>
+</div>
+
+<div class="footer">
+  <div class="footer-logo">The 100k Parent</div>
+  <p>Helping UK families earning over £100k save on childcare</p>
+  <p style="margin-top:6px;">© 2026 The 100k Parent | the100kparent.com</p>
+</div>
+
+</body>
+</html>`;
+
+        const win = window.open('', '_blank');
+        if (win) {
+            win.document.write(html);
+            win.document.close();
+            win.focus();
+            setTimeout(() => {
+                win.print();
+                const btn = document.getElementById('downloadBtn');
+                if (btn) { btn.textContent = '⬇️ Download Again'; btn.disabled = false; }
+            }, 800);
+        }
+    }
+</script>
+</body>
+</html>

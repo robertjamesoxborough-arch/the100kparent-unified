@@ -1387,3 +1387,71 @@ html, body {
         font-size: 2.5rem;
     }
 }
+
+/* ── RECOMMENDED PLAN PAYWALL ── */
+.paywall-recommended {
+    margin-bottom: 1.25rem;
+}
+
+.paywall-recommended-badge {
+    display: inline-block;
+    background: #10B981;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.875rem;
+    border-radius: 20px;
+    margin-bottom: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.paywall-recommended-plan {
+    border: 2px solid #4A90E2;
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    background: var(--primary-light);
+    text-align: left;
+}
+
+.paywall-recommended-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.paywall-reason {
+    font-size: 0.8125rem;
+    color: var(--text-light);
+    margin-top: 0.25rem;
+    line-height: 1.5;
+}
+
+.paywall-plan-features {
+    margin-bottom: 1.25rem;
+}
+
+.paywall-plan-features p {
+    font-size: 0.875rem;
+    color: var(--text);
+    padding: 0.25rem 0;
+}
+
+.paywall-upgrade {
+    font-size: 0.8125rem;
+    color: var(--text-light);
+    text-align: center;
+    margin-top: 0.875rem;
+}
+
+.paywall-upgrade a {
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.paywall-upgrade a:hover {
+    text-decoration: underline;
+}

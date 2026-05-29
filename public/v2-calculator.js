@@ -126,6 +126,9 @@ class V2Calculator {
             thirtyHours, minSaving, maxSaving
         };
 
+        // Save to localStorage so success page can read them
+        localStorage.setItem('100kp_results', JSON.stringify(this.lastResults));
+
         this.displayResults(minSaving, maxSaving, over100k, has30Hours);
     }
 
@@ -201,9 +204,21 @@ class V2Calculator {
     }
 
     showPaywall(minSaving, maxSaving) {
-        // Remove existing paywall if any
         const existing = document.getElementById('paywallGate');
         if (existing) existing.remove();
+
+        // Determine plan based on income — over £90k gets Complete
+        const income1 = parseFloat(this.inputs.income1.value) || 0;
+        const income2 = this.secondIncomeYes.checked ? (parseFloat(this.inputs.income2.value) || 0) : 0;
+        const highestIncome = Math.max(income1, income2);
+        const isComplete = highestIncome >= 90000;
+
+        const tier = isComplete ? 'complete' : 'essential';
+        const price = isComplete ? '£49' : '£19';
+        const planName = isComplete ? 'Complete Guide' : 'Essential Report';
+        const reasonText = isComplete
+            ? 'Based on your income level, we recommend the Complete Guide which includes a 30-minute call with a financial advisor to maximise your saving.'
+            : 'Based on your income level, we recommend the Essential Report with your full personalised savings breakdown and PDF.';
 
         const gate = document.createElement('div');
         gate.id = 'paywallGate';
@@ -218,31 +233,31 @@ class V2Calculator {
                 <div class="paywall-content">
                     <div class="paywall-lock">🔒</div>
                     <h3 class="paywall-title">Your full breakdown is ready</h3>
-                    <p class="paywall-subtitle">You could save between <strong>£${Math.round(minSaving).toLocaleString()}</strong> and <strong>£${Math.round(maxSaving).toLocaleString()}</strong> per year. Get your personalised report to see exactly how.</p>
-                    <div class="paywall-plans">
-                        <div class="paywall-plan">
-                            <div class="paywall-plan-name">Essential Report</div>
-                            <div class="paywall-plan-price">£19</div>
+                    <p class="paywall-subtitle">You could save between <strong>£${Math.round(minSaving).toLocaleString()}</strong> and <strong>£${Math.round(maxSaving).toLocaleString()}</strong> per year.</p>
+
+                    <div class="paywall-recommended">
+                        <div class="paywall-recommended-badge">Recommended for you</div>
+                        <div class="paywall-recommended-plan">
+                            <div class="paywall-recommended-top">
+                                <div>
+                                    <div class="paywall-plan-name">${planName}</div>
+                                    <p class="paywall-reason">${reasonText}</p>
+                                </div>
+                                <div class="paywall-plan-price">${price}</div>
+                            </div>
                             <div class="paywall-plan-features">
-                                <p>✓ Full saving breakdown</p>
+                                <p>✓ Full personalised savings breakdown</p>
                                 <p>✓ Step-by-step action plan</p>
-                                <p>✓ PDF download</p>
+                                <p>✓ Instant PDF download</p>
+                                ${isComplete ? '<p>✓ 30-minute financial advisor call</p>' : ''}
+                                ${isComplete ? '<p>✓ Advanced income strategies</p>' : ''}
                             </div>
-                            <a href="#pricing" class="paywall-plan-btn secondary">Get Essential</a>
+                            <a href="v2-success.html?tier=${tier}" class="paywall-plan-btn primary">Get My Report — ${price}</a>
                         </div>
-                        <div class="paywall-plan featured">
-                            <div class="paywall-popular">Most Popular</div>
-                            <div class="paywall-plan-name">Complete Guide</div>
-                            <div class="paywall-plan-price">£49</div>
-                            <div class="paywall-plan-features">
-                                <p>✓ Everything in Essential</p>
-                                <p>✓ 30-min advisor call</p>
-                                <p>✓ Advanced strategies</p>
-                            </div>
-                            <a href="#pricing" class="paywall-plan-btn primary">Get Complete</a>
-                        </div>
+                        ${isComplete ? '' : `<p class="paywall-upgrade">Need more? <a href="v2-success.html?tier=complete">Complete Guide with advisor call — £49</a></p>`}
                     </div>
-                    <p class="paywall-guarantee">🛡️ 30-day money-back guarantee</p>
+
+                    <p class="paywall-guarantee">🛡️ 30-day money-back guarantee &nbsp;·&nbsp; No subscription</p>
                 </div>
             </div>
         `;
