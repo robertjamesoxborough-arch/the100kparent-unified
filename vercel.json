@@ -2,6 +2,7 @@
   "framework": "nextjs",
   "buildCommand": "npm run build",
   "rewrites": [
+    { "source": "/v2", "destination": "/v2.html" },
     { "source": "/checkout", "destination": "/checkout.html" },
     { "source": "/dashboard", "destination": "/dashboard.html" },
     { "source": "/module-0", "destination": "/module-0.html" },
