@@ -994,12 +994,12 @@ body {
 
 .blur-amount {
     font-weight: 700;
-    color: transparent;
-    background: #CBD5E0;
-    border-radius: 4px;
-    user-select: none;
-    letter-spacing: 2px;
     font-size: 1rem;
+    color: #2D3748;
+    filter: blur(5px);
+    user-select: none;
+    pointer-events: none;
+    transition: filter 0.2s;
 }
 
 .paywall-content {

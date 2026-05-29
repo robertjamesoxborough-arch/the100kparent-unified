@@ -198,12 +198,12 @@ class V2Calculator {
         document.getElementById('eligibilityWarning').style.display = (!has30Hours && !over100k) ? 'block' : 'none';
 
         // Show paywall gate
-        this.showPaywall(minSaving, maxSaving);
+        this.showPaywall(minSaving, maxSaving, tfc, salary, splitting, thirtyHours);
 
         this.resultsPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
-    showPaywall(minSaving, maxSaving) {
+    showPaywall(minSaving, maxSaving, tfc, salary, splitting, thirtyHours) {
         const existing = document.getElementById('paywallGate');
         if (existing) existing.remove();
 
@@ -225,10 +225,10 @@ class V2Calculator {
         gate.innerHTML = `
             <div class="paywall-gate">
                 <div class="paywall-blur-preview">
-                    <div class="paywall-blur-row"><span>Tax-Free Childcare saving</span><span class="blur-amount">£████</span></div>
-                    <div class="paywall-blur-row"><span>Salary sacrifice saving</span><span class="blur-amount">£████</span></div>
-                    <div class="paywall-blur-row"><span>Income splitting saving</span><span class="blur-amount">£████</span></div>
-                    <div class="paywall-blur-row"><span>30 hours childcare value</span><span class="blur-amount">£████</span></div>
+                    <div class="paywall-blur-row"><span>Tax-Free Childcare saving</span><span class="blur-amount">£${Math.round(tfc).toLocaleString()}</span></div>
+                    <div class="paywall-blur-row"><span>Salary sacrifice saving</span><span class="blur-amount">£${Math.round(salary).toLocaleString()}</span></div>
+                    <div class="paywall-blur-row"><span>Income splitting saving</span><span class="blur-amount">£${Math.round(splitting).toLocaleString()}</span></div>
+                    <div class="paywall-blur-row"><span>30 hours childcare value</span><span class="blur-amount">£${Math.round(thirtyHours).toLocaleString()}</span></div>
                 </div>
                 <div class="paywall-content">
                     <div class="paywall-lock">🔒</div>

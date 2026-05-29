@@ -43,6 +43,7 @@
         .download-btn { display: block; width: 100%; background: #10B981; color: white; border: none; border-radius: 14px; padding: 1.125rem; font-size: 1.125rem; font-weight: 700; cursor: pointer; text-align: center; margin: 1.5rem 0 0.75rem; transition: all 0.2s; font-family: 'Inter', sans-serif; }
         .download-btn:hover { background: #059669; transform: translateY(-1px); }
         .download-btn:disabled { background: #A0AEC0; transform: none; cursor: not-allowed; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16,185,129,0.4); } 50% { transform: scale(1.02); box-shadow: 0 0 0 8px rgba(16,185,129,0); } }
 
         .download-note { text-align: center; font-size: 0.8125rem; color: #A0AEC0; margin-bottom: 1.5rem; }
 
@@ -69,6 +70,117 @@
         .loading { text-align: center; padding: 4rem; }
         .spinner { width: 40px; height: 40px; border: 4px solid #E2E8F0; border-top-color: #4A90E2; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── PROGRESS BAR ── */
+        .pdf-progress-wrap {
+            background: #F7FAFC;
+            border: 2px solid #E2E8F0;
+            border-radius: 14px;
+            padding: 1.5rem;
+            margin: 1.5rem 0 0.75rem;
+            display: none;
+        }
+        .pdf-progress-wrap.visible { display: block; }
+        .pdf-progress-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        .pdf-progress-text { font-size: 0.9375rem; font-weight: 600; color: #2D3748; }
+        .pdf-progress-pct { font-size: 0.875rem; font-weight: 700; color: #4A90E2; }
+        .pdf-progress-bar {
+            height: 10px;
+            background: #E2E8F0;
+            border-radius: 99px;
+            overflow: hidden;
+        }
+        .pdf-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4A90E2, #10B981);
+            border-radius: 99px;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+        .pdf-progress-step {
+            font-size: 0.8125rem;
+            color: #718096;
+            margin-top: 0.625rem;
+            min-height: 1.2em;
+        }
+
+        /* ── POPUP WARNING ── */
+        .popup-warning {
+            background: #FEF3C7;
+            border: 2px solid #F59E0B;
+            border-radius: 14px;
+            padding: 1.25rem 1.5rem;
+            margin: 1rem 0;
+            display: none;
+        }
+        .popup-warning.visible { display: block; }
+        .popup-warning-title {
+            font-weight: 700;
+            font-size: 0.9375rem;
+            color: #92400E;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .popup-warning p {
+            font-size: 0.875rem;
+            color: #78350F;
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
+        }
+        .popup-warning p:last-child { margin-bottom: 0; }
+        .popup-warning strong { color: #92400E; }
+
+        /* ── BLOCKED FALLBACK ── */
+        .blocked-fallback {
+            background: #FEE2E2;
+            border: 2px solid #EF4444;
+            border-radius: 14px;
+            padding: 1.25rem 1.5rem;
+            margin: 1rem 0;
+            display: none;
+        }
+        .blocked-fallback.visible { display: block; }
+        .blocked-fallback-title {
+            font-weight: 700;
+            font-size: 0.9375rem;
+            color: #991B1B;
+            margin-bottom: 0.5rem;
+        }
+        .blocked-fallback p {
+            font-size: 0.875rem;
+            color: #7F1D1D;
+            line-height: 1.6;
+            margin-bottom: 0.75rem;
+        }
+        .blocked-fallback ol {
+            margin-left: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+        .blocked-fallback li {
+            font-size: 0.875rem;
+            color: #7F1D1D;
+            margin-bottom: 0.375rem;
+        }
+        .retry-btn {
+            background: #EF4444;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.9375rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: background 0.2s;
+        }
+        .retry-btn:hover { background: #DC2626; }
     </style>
 </head>
 <body>
@@ -168,13 +280,44 @@
                 <button class="download-btn" id="downloadBtn" onclick="downloadPDF()">
                     ⬇️ Download Your PDF Report
                 </button>
-                <p class="download-note">Opens print dialog — save as PDF. No email required.</p>
+
+                <!-- Popup warning — shown before PDF opens -->
+                <div class="popup-warning" id="popupWarning">
+                    <div class="popup-warning-title">⚠️ Allow the pop-up to download your report</div>
+                    <p>Your PDF opens in a new tab. Your browser may block it — look for a <strong>pop-up blocked</strong> notification in your address bar and click <strong>Allow</strong>.</p>
+                    <p>On mobile, tap <strong>Allow</strong> if prompted, or use the button below if nothing opens.</p>
+                </div>
+
+                <!-- Progress bar -->
+                <div class="pdf-progress-wrap" id="progressWrap">
+                    <div class="pdf-progress-label">
+                        <span class="pdf-progress-text" id="progressText">Preparing your report...</span>
+                        <span class="pdf-progress-pct" id="progressPct">0%</span>
+                    </div>
+                    <div class="pdf-progress-bar">
+                        <div class="pdf-progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="pdf-progress-step" id="progressStep">Loading your data...</div>
+                </div>
+
+                <!-- Blocked fallback -->
+                <div class="blocked-fallback" id="blockedFallback">
+                    <div class="blocked-fallback-title">🚫 Pop-up blocked — here's how to fix it</div>
+                    <p>Your browser blocked the PDF from opening. To allow it:</p>
+                    <ol>
+                        <li>Look at the top of your browser for a <strong>pop-up blocked</strong> icon</li>
+                        <li>Click it and select <strong>Always allow pop-ups from this site</strong></li>
+                        <li>Then click the button below to try again</li>
+                    </ol>
+                    <p>Or on iPhone/Safari: Settings → Safari → Block Pop-ups → turn off</p>
+                    <button class="retry-btn" onclick="retryPDF()">Try Again</button>
+                </div>
 
                 ${tier === 'complete' ? `
                 <div class="advisor-box">
                     <h3>📞 Your 30-Minute Advisor Call</h3>
                     <p>As a Complete Guide customer, you have a free call with our childcare savings advisor included. They will review your situation and help you implement the strategies.</p>
-                    <a href="#" class="advisor-btn">Book Your Call</a>
+                    <a href="https://calendly.com/the100kparent" target="_blank" class="advisor-btn">Book Your Call</a>
                 </div>` : ''}
             </div>
 
@@ -183,18 +326,77 @@
             </div>`;
 
         // Auto-trigger PDF download after short delay
-        setTimeout(() => generatePDF(r, tier), 1200);
+        // Auto-trigger handled by startPDFGeneration above
     }
 
     function downloadPDF() {
         const stored = localStorage.getItem('100kp_results');
-        if (stored) generatePDF(JSON.parse(stored), tier);
+        if (!stored) return;
+
+        // window.open MUST be called synchronously from user click — not inside setTimeout
+        // Open the window immediately, then write content to it
+        const win = window.open('', '_blank');
+
+        if (!win || win.closed || typeof win.closed === 'undefined') {
+            document.getElementById('blockedFallback').classList.add('visible');
+            document.getElementById('popupWarning').classList.remove('visible');
+            return;
+        }
+
+        // Now animate the progress bar while we build the HTML
+        const r = JSON.parse(stored);
+        showProgressBar();
+
+        // Build HTML and write it after progress completes
+        setTimeout(() => setProgress(20, 'Building your family profile...'), 100);
+        setTimeout(() => setProgress(40, 'Calculating your savings...'), 300);
+        setTimeout(() => setProgress(60, 'Writing your action plan...'), 600);
+        setTimeout(() => setProgress(80, 'Applying formatting...'), 900);
+        setTimeout(() => {
+            setProgress(100, 'Done! Opening your report...');
+            const html = generatePDFHTML(r, tier);
+            win.document.write(html);
+            win.document.close();
+            win.focus();
+            setTimeout(() => {
+                win.print();
+                document.getElementById('downloadBtn').textContent = '⬇️ Download Again';
+                document.getElementById('downloadBtn').disabled = false;
+                document.getElementById('popupWarning').classList.remove('visible');
+            }, 600);
+        }, 1200);
     }
 
-    function generatePDF(r, tier) {
-        const btn = document.getElementById('downloadBtn');
-        if (btn) { btn.textContent = 'Preparing PDF...'; btn.disabled = true; }
+    function retryPDF() {
+        document.getElementById('blockedFallback').classList.remove('visible');
+        downloadPDF();
+    }
 
+    function showProgressBar() {
+        const btn = document.getElementById('downloadBtn');
+        btn.disabled = true;
+        btn.textContent = 'Preparing PDF...';
+        document.getElementById('popupWarning').classList.add('visible');
+        document.getElementById('progressWrap').classList.add('visible');
+        setProgress(0, 'Loading your data...');
+    }
+
+    function setProgress(pct, step) {
+        document.getElementById('progressFill').style.width = pct + '%';
+        document.getElementById('progressPct').textContent = pct + '%';
+        document.getElementById('progressStep').textContent = step;
+    }
+
+    // Auto-trigger on page load — must still be user-initiated for popup to work
+    // So instead we show a prominent download button and prompt rather than auto-opening
+    setTimeout(() => {
+        const btn = document.getElementById('downloadBtn');
+        if (btn) {
+            btn.style.animation = 'pulse 1.5s ease-in-out 2';
+        }
+    }, 800);
+
+    function generatePDFHTML(r, tier) {
         const avg = Math.round((r.minSaving + r.maxSaving) / 2);
         const date = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
         const tierLabel = tier === 'complete' ? 'Complete Guide' : 'Essential Report';
@@ -354,18 +556,7 @@
 
 </body>
 </html>`;
-
-        const win = window.open('', '_blank');
-        if (win) {
-            win.document.write(html);
-            win.document.close();
-            win.focus();
-            setTimeout(() => {
-                win.print();
-                const btn = document.getElementById('downloadBtn');
-                if (btn) { btn.textContent = '⬇️ Download Again'; btn.disabled = false; }
-            }, 800);
-        }
+        return html;
     }
 </script>
 </body>
