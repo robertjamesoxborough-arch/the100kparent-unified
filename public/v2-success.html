@@ -73,41 +73,68 @@
 
         /* ── PROGRESS BAR ── */
         .pdf-progress-wrap {
-            background: #F7FAFC;
+            background: white;
             border: 2px solid #E2E8F0;
-            border-radius: 14px;
-            padding: 1.5rem;
+            border-radius: 16px;
+            padding: 1.75rem;
             margin: 1.5rem 0 0.75rem;
             display: none;
+            box-shadow: 0 4px 20px rgba(74,144,226,0.1);
         }
         .pdf-progress-wrap.visible { display: block; }
         .pdf-progress-label {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 0.75rem;
+            margin-bottom: 1rem;
         }
-        .pdf-progress-text { font-size: 0.9375rem; font-weight: 600; color: #2D3748; }
-        .pdf-progress-pct { font-size: 0.875rem; font-weight: 700; color: #4A90E2; }
+        .pdf-progress-text {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #2D3748;
+        }
+        .pdf-progress-pct {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #4A90E2;
+            min-width: 3rem;
+            text-align: right;
+        }
         .pdf-progress-bar {
-            height: 10px;
-            background: #E2E8F0;
+            height: 12px;
+            background: #EDF2F7;
             border-radius: 99px;
             overflow: hidden;
+            margin-bottom: 0.875rem;
         }
         .pdf-progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #4A90E2, #10B981);
+            background: linear-gradient(90deg, #4A90E2, #7B68EE);
             border-radius: 99px;
             width: 0%;
-            transition: width 0.4s ease;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .pdf-progress-step {
-            font-size: 0.8125rem;
+            font-size: 0.875rem;
             color: #718096;
-            margin-top: 0.625rem;
-            min-height: 1.2em;
+            min-height: 1.4em;
+            transition: opacity 0.3s;
         }
+        .pdf-progress-steps-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.875rem;
+            gap: 0.25rem;
+        }
+        .pdf-step-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #E2E8F0;
+            transition: background 0.3s;
+            flex-shrink: 0;
+        }
+        .pdf-step-dot.done { background: #4A90E2; }
 
         /* ── POPUP WARNING ── */
         .popup-warning {
@@ -291,13 +318,21 @@
                 <!-- Progress bar -->
                 <div class="pdf-progress-wrap" id="progressWrap">
                     <div class="pdf-progress-label">
-                        <span class="pdf-progress-text" id="progressText">Preparing your report...</span>
+                        <span class="pdf-progress-text" id="progressText">Preparing your report</span>
                         <span class="pdf-progress-pct" id="progressPct">0%</span>
                     </div>
                     <div class="pdf-progress-bar">
                         <div class="pdf-progress-fill" id="progressFill"></div>
                     </div>
-                    <div class="pdf-progress-step" id="progressStep">Loading your data...</div>
+                    <div class="pdf-progress-step" id="progressStep">Starting...</div>
+                    <div class="pdf-progress-steps-row">
+                        <div class="pdf-step-dot" id="dot0"></div>
+                        <div class="pdf-step-dot" id="dot1"></div>
+                        <div class="pdf-step-dot" id="dot2"></div>
+                        <div class="pdf-step-dot" id="dot3"></div>
+                        <div class="pdf-step-dot" id="dot4"></div>
+                        <div class="pdf-step-dot" id="dot5"></div>
+                    </div>
                 </div>
 
                 <!-- Blocked fallback -->
@@ -333,8 +368,12 @@
         const stored = localStorage.getItem('100kp_results');
         if (!stored) return;
 
-        // window.open MUST be called synchronously from user click — not inside setTimeout
-        // Open the window immediately, then write content to it
+        const r = JSON.parse(stored);
+
+        // Build HTML immediately — don't delay
+        const html = generatePDFHTML(r, tier);
+
+        // Open window and write content synchronously — browsers close blank tabs if left too long
         const win = window.open('', '_blank');
 
         if (!win || win.closed || typeof win.closed === 'undefined') {
@@ -343,28 +382,37 @@
             return;
         }
 
-        // Now animate the progress bar while we build the HTML
-        const r = JSON.parse(stored);
+        // Write content immediately so the tab stays alive
+        win.document.write(html);
+        win.document.close();
+
+        // Show progress on THIS page while the PDF tab loads
         showProgressBar();
 
-        // Build HTML and write it after progress completes
-        setTimeout(() => setProgress(20, 'Building your family profile...'), 100);
-        setTimeout(() => setProgress(40, 'Calculating your savings...'), 300);
-        setTimeout(() => setProgress(60, 'Writing your action plan...'), 600);
-        setTimeout(() => setProgress(80, 'Applying formatting...'), 900);
+        // Animate progress — purely cosmetic, PDF is already being built
+        const steps = [
+            [15, 'Loading your family profile...'],
+            [35, 'Calculating your savings...'],
+            [55, 'Writing your strategies...'],
+            [75, 'Building your action plan...'],
+            [90, 'Almost ready...'],
+            [100, 'Report ready — check your new tab!']
+        ];
+        steps.forEach(([pct, label], i) => {
+            setTimeout(() => setProgress(pct, label), (i + 1) * 300);
+        });
+
+        // Trigger print after content has loaded in the new tab
         setTimeout(() => {
-            setProgress(100, 'Done! Opening your report...');
-            const html = generatePDFHTML(r, tier);
-            win.document.write(html);
-            win.document.close();
-            win.focus();
-            setTimeout(() => {
+            try {
+                win.focus();
                 win.print();
-                document.getElementById('downloadBtn').textContent = '⬇️ Download Again';
-                document.getElementById('downloadBtn').disabled = false;
-                document.getElementById('popupWarning').classList.remove('visible');
-            }, 600);
-        }, 1200);
+            } catch(e) {}
+            document.getElementById('downloadBtn').textContent = '⬇️ Download Again';
+            document.getElementById('downloadBtn').disabled = false;
+            document.getElementById('popupWarning').classList.remove('visible');
+            setProgress(100, '✅ Done! Save as PDF from the print dialog.');
+        }, 2200);
     }
 
     function retryPDF() {
@@ -375,25 +423,35 @@
     function showProgressBar() {
         const btn = document.getElementById('downloadBtn');
         btn.disabled = true;
-        btn.textContent = 'Preparing PDF...';
+        btn.textContent = 'Opening report...';
         document.getElementById('popupWarning').classList.add('visible');
         document.getElementById('progressWrap').classList.add('visible');
-        setProgress(0, 'Loading your data...');
+        setProgress(0, 'Starting...');
     }
 
     function setProgress(pct, step) {
         document.getElementById('progressFill').style.width = pct + '%';
         document.getElementById('progressPct').textContent = pct + '%';
         document.getElementById('progressStep').textContent = step;
+        // Update dots — 6 dots, light up as progress passes each 17%
+        for (let i = 0; i < 6; i++) {
+            const dot = document.getElementById('dot' + i);
+            if (dot) dot.classList.toggle('done', pct >= (i + 1) * 17);
+        }
+        if (pct === 100) {
+            document.getElementById('progressText').textContent = 'Report ready!';
+            document.getElementById('progressFill').style.background = 'linear-gradient(90deg, #10B981, #059669)';
+            for (let i = 0; i < 6; i++) {
+                const dot = document.getElementById('dot' + i);
+                if (dot) { dot.classList.add('done'); dot.style.background = '#10B981'; }
+            }
+        }
     }
 
-    // Auto-trigger on page load — must still be user-initiated for popup to work
-    // So instead we show a prominent download button and prompt rather than auto-opening
+    // Pulse the download button on page load to draw attention
     setTimeout(() => {
         const btn = document.getElementById('downloadBtn');
-        if (btn) {
-            btn.style.animation = 'pulse 1.5s ease-in-out 2';
-        }
+        if (btn) btn.style.animation = 'pulse 1.5s ease-in-out 2';
     }, 800);
 
     function generatePDFHTML(r, tier) {
