@@ -366,53 +366,65 @@
 
     function downloadPDF() {
         const stored = localStorage.getItem('100kp_results');
-        if (!stored) return;
-
-        const r = JSON.parse(stored);
-
-        // Build HTML immediately — don't delay
-        const html = generatePDFHTML(r, tier);
-
-        // Open window and write content synchronously — browsers close blank tabs if left too long
-        const win = window.open('', '_blank');
-
-        if (!win || win.closed || typeof win.closed === 'undefined') {
-            document.getElementById('blockedFallback').classList.add('visible');
-            document.getElementById('popupWarning').classList.remove('visible');
+        if (!stored) {
+            alert('Please fill in the calculator first, then come back here.');
             return;
         }
 
-        // Write content immediately so the tab stays alive
-        win.document.write(html);
-        win.document.close();
+        const r = JSON.parse(stored);
 
-        // Show progress on THIS page while the PDF tab loads
+        // Show progress bar IMMEDIATELY so screen doesn't freeze
         showProgressBar();
+        setProgress(10, 'Loading your data...');
 
-        // Animate progress — purely cosmetic, PDF is already being built
-        const steps = [
-            [15, 'Loading your family profile...'],
-            [35, 'Calculating your savings...'],
-            [55, 'Writing your strategies...'],
-            [75, 'Building your action plan...'],
-            [90, 'Almost ready...'],
-            [100, 'Report ready — check your new tab!']
-        ];
-        steps.forEach(([pct, label], i) => {
-            setTimeout(() => setProgress(pct, label), (i + 1) * 300);
+        // Use requestAnimationFrame to let the browser paint the progress bar
+        // before we do the heavy work
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                setProgress(25, 'Building your profile...');
+
+                setTimeout(() => {
+                    setProgress(50, 'Calculating your strategies...');
+
+                    setTimeout(() => {
+                        setProgress(75, 'Writing your action plan...');
+
+                        setTimeout(() => {
+                            setProgress(90, 'Opening your report...');
+
+                            // NOW build the HTML — after UI has painted
+                            const html = generatePDFHTML(r, tier);
+
+                            // Open new window
+                            const win = window.open('', '_blank');
+
+                            if (!win || win.closed || typeof win.closed === 'undefined') {
+                                document.getElementById('blockedFallback').classList.add('visible');
+                                document.getElementById('popupWarning').classList.remove('visible');
+                                document.getElementById('progressWrap').classList.remove('visible');
+                                document.getElementById('downloadBtn').disabled = false;
+                                document.getElementById('downloadBtn').textContent = '⬇️ Try Again';
+                                return;
+                            }
+
+                            // Write HTML to new tab
+                            win.document.write(html);
+                            win.document.close();
+
+                            // Trigger print after fonts load
+                            setTimeout(() => {
+                                try { win.focus(); win.print(); } catch(e) {}
+                                setProgress(100, '✅ Done! In the new tab — save as PDF.');
+                                document.getElementById('downloadBtn').textContent = '⬇️ Download Again';
+                                document.getElementById('downloadBtn').disabled = false;
+                                document.getElementById('popupWarning').classList.remove('visible');
+                            }, 1500);
+
+                        }, 400);
+                    }, 400);
+                }, 400);
+            });
         });
-
-        // Trigger print after content has loaded in the new tab
-        setTimeout(() => {
-            try {
-                win.focus();
-                win.print();
-            } catch(e) {}
-            document.getElementById('downloadBtn').textContent = '⬇️ Download Again';
-            document.getElementById('downloadBtn').disabled = false;
-            document.getElementById('popupWarning').classList.remove('visible');
-            setProgress(100, '✅ Done! Save as PDF from the print dialog.');
-        }, 2200);
     }
 
     function retryPDF() {
@@ -423,7 +435,7 @@
     function showProgressBar() {
         const btn = document.getElementById('downloadBtn');
         btn.disabled = true;
-        btn.textContent = 'Opening report...';
+        btn.textContent = 'Preparing...';
         document.getElementById('popupWarning').classList.add('visible');
         document.getElementById('progressWrap').classList.add('visible');
         setProgress(0, 'Starting...');
@@ -433,7 +445,6 @@
         document.getElementById('progressFill').style.width = pct + '%';
         document.getElementById('progressPct').textContent = pct + '%';
         document.getElementById('progressStep').textContent = step;
-        // Update dots — 6 dots, light up as progress passes each 17%
         for (let i = 0; i < 6; i++) {
             const dot = document.getElementById('dot' + i);
             if (dot) dot.classList.toggle('done', pct >= (i + 1) * 17);
@@ -448,7 +459,7 @@
         }
     }
 
-    // Pulse the download button on page load to draw attention
+    // Pulse button on load
     setTimeout(() => {
         const btn = document.getElementById('downloadBtn');
         if (btn) btn.style.animation = 'pulse 1.5s ease-in-out 2';
@@ -1097,7 +1108,6 @@
 </html>`;
 
         return html;
-    }
     }
 </script>
 </body>
