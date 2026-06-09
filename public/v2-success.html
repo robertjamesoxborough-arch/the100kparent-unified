@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Report is Ready | The 100k Parent</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #F7FAFC; color: #2D3748; min-height: 100vh; }
+
+        .nav { background: white; border-bottom: 1px solid #E2E8F0; padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; }
+        .nav-logo { font-size: 1.25rem; font-weight: 800; color: #2E5C8A; text-decoration: none; }
+        .nav-back { font-size: 0.875rem; color: #4A90E2; text-decoration: none; font-weight: 600; }
+
+        .container { max-width: 700px; margin: 0 auto; padding: 3rem 1.5rem; }
+
+        .success-icon { width: 80px; height: 80px; background: #10B981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 2.5rem; }
+
+        h1 { text-align: center; font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .subtitle { text-align: center; color: #718096; font-size: 1.0625rem; margin-bottom: 2.5rem; }
+
+        .card { background: white; border-radius: 20px; padding: 2rem; box-shadow: 0 4px 24px rgba(0,0,0,0.08); margin-bottom: 1.5rem; }
+
+        .card-header { display: flex; align-items: center; gap: 1rem; padding-bottom: 1.5rem; border-bottom: 2px solid #E2E8F0; margin-bottom: 1.5rem; }
+        .card-icon { width: 50px; height: 50px; background: #4A90E2; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
+        .card-title { font-weight: 800; font-size: 1.125rem; }
+        .card-sub { color: #718096; font-size: 0.875rem; margin-top: 2px; }
+
+        .saving-row { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid #F7FAFC; }
+        .saving-row:last-of-type { border-bottom: none; }
+        .saving-label { font-weight: 600; font-size: 0.9375rem; }
+        .saving-desc { font-size: 0.8125rem; color: #A0AEC0; margin-top: 2px; }
+        .saving-amount { font-weight: 800; color: #10B981; font-size: 1.25rem; white-space: nowrap; }
+        .saving-amount.zero { color: #CBD5E0; }
+
+        .total-box { background: linear-gradient(135deg, #4A90E2, #2E5C8A); border-radius: 16px; padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; color: white; }
+        .total-label { font-weight: 700; font-size: 1rem; opacity: 0.9; }
+        .total-range { font-size: 0.8125rem; opacity: 0.7; margin-top: 4px; }
+        .total-amount { font-size: 2.5rem; font-weight: 800; }
+
+        .download-btn { display: block; width: 100%; background: #10B981; color: white; border: none; border-radius: 14px; padding: 1.125rem; font-size: 1.125rem; font-weight: 700; cursor: pointer; text-align: center; margin: 1.5rem 0 0.75rem; transition: all 0.2s; font-family: 'Inter', sans-serif; }
+        .download-btn:hover { background: #059669; transform: translateY(-1px); }
+        .download-btn:disabled { background: #A0AEC0; transform: none; cursor: not-allowed; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16,185,129,0.4); } 50% { transform: scale(1.02); box-shadow: 0 0 0 8px rgba(16,185,129,0); } }
+
+        .download-note { text-align: center; font-size: 0.8125rem; color: #A0AEC0; margin-bottom: 1.5rem; }
+
+        .tier-badge { display: inline-block; padding: 0.25rem 0.875rem; border-radius: 20px; font-size: 0.8125rem; font-weight: 700; margin-bottom: 1rem; }
+        .tier-badge.essential { background: #E8F4F8; color: #2E5C8A; }
+        .tier-badge.complete { background: #4A90E2; color: white; }
+
+        .advisor-box { background: #F0EDFF; border-radius: 14px; padding: 1.5rem; margin-top: 1rem; }
+        .advisor-box h3 { color: #7B68EE; margin-bottom: 0.5rem; font-size: 1rem; }
+        .advisor-box p { color: #4A5568; font-size: 0.9375rem; line-height: 1.6; }
+        .advisor-btn { display: inline-block; background: #7B68EE; color: white; padding: 0.75rem 1.5rem; border-radius: 10px; text-decoration: none; font-weight: 700; margin-top: 1rem; font-size: 0.9375rem; }
+
+        .no-results { text-align: center; padding: 3rem; }
+        .no-results p { color: #718096; margin-bottom: 1.5rem; }
+        .no-results a { background: #4A90E2; color: white; padding: 0.875rem 2rem; border-radius: 12px; text-decoration: none; font-weight: 700; }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 1.625rem; }
+            .total-amount { font-size: 2rem; }
+            .container { padding: 2rem 1.25rem; }
+        }
+
+        /* Loading state */
+        .loading { text-align: center; padding: 4rem; }
+        .spinner { width: 40px; height: 40px; border: 4px solid #E2E8F0; border-top-color: #4A90E2; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── PROGRESS BAR ── */
+        .pdf-progress-wrap {
+            background: white;
+            border: 2px solid #E2E8F0;
+            border-radius: 16px;
+            padding: 1.75rem;
+            margin: 1.5rem 0 0.75rem;
+            display: none;
+            box-shadow: 0 4px 20px rgba(74,144,226,0.1);
+        }
+        .pdf-progress-wrap.visible { display: block; }
+        .pdf-progress-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .pdf-progress-text {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #2D3748;
+        }
+        .pdf-progress-pct {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #4A90E2;
+            min-width: 3rem;
+            text-align: right;
+        }
+        .pdf-progress-bar {
+            height: 12px;
+            background: #EDF2F7;
+            border-radius: 99px;
+            overflow: hidden;
+            margin-bottom: 0.875rem;
+        }
+        .pdf-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4A90E2, #7B68EE);
+            border-radius: 99px;
+            width: 0%;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .pdf-progress-step {
+            font-size: 0.875rem;
+            color: #718096;
+            min-height: 1.4em;
+            transition: opacity 0.3s;
+        }
+        .pdf-progress-steps-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.875rem;
+            gap: 0.25rem;
+        }
+        .pdf-step-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #E2E8F0;
+            transition: background 0.3s;
+            flex-shrink: 0;
+        }
+        .pdf-step-dot.done { background: #4A90E2; }
+
+        /* ── POPUP WARNING ── */
+        .popup-warning {
+            background: #FEF3C7;
+            border: 2px solid #F59E0B;
+            border-radius: 14px;
+            padding: 1.25rem 1.5rem;
+            margin: 1rem 0;
+            display: none;
+        }
+        .popup-warning.visible { display: block; }
+        .popup-warning-title {
+            font-weight: 700;
+            font-size: 0.9375rem;
+            color: #92400E;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .popup-warning p {
+            font-size: 0.875rem;
+            color: #78350F;
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
+        }
+        .popup-warning p:last-child { margin-bottom: 0; }
+        .popup-warning strong { color: #92400E; }
+
+        /* ── BLOCKED FALLBACK ── */
+        .blocked-fallback {
+            background: #FEE2E2;
+            border: 2px solid #EF4444;
+            border-radius: 14px;
+            padding: 1.25rem 1.5rem;
+            margin: 1rem 0;
+            display: none;
+        }
+        .blocked-fallback.visible { display: block; }
+        .blocked-fallback-title {
+            font-weight: 700;
+            font-size: 0.9375rem;
+            color: #991B1B;
+            margin-bottom: 0.5rem;
+        }
+        .blocked-fallback p {
+            font-size: 0.875rem;
+            color: #7F1D1D;
+            line-height: 1.6;
+            margin-bottom: 0.75rem;
+        }
+        .blocked-fallback ol {
+            margin-left: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+        .blocked-fallback li {
+            font-size: 0.875rem;
+            color: #7F1D1D;
+            margin-bottom: 0.375rem;
+        }
+        .retry-btn {
+            background: #EF4444;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.9375rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: background 0.2s;
+        }
+        .retry-btn:hover { background: #DC2626; }
+    </style>
+</head>
+<body>
+
+<nav class="nav">
+    <a href="v2.html" class="nav-logo">The 100k Parent</a>
+    <a href="v2.html#calculator" class="nav-back">← Back to Calculator</a>
+</nav>
+
+<div class="container" id="mainContent">
+    <div class="loading" id="loadingState">
+        <div class="spinner"></div>
+        <p style="color: #718096;">Preparing your report...</p>
+    </div>
+</div>
+
+<script>
+    // Read URL params
+    const params = new URLSearchParams(window.location.search);
+    const tier = params.get('tier') || 'essential';
+    const tierLabel = tier === 'complete' ? 'Complete Guide' : 'Essential Report';
+    const tierPrice = tier === 'complete' ? '£49' : '£19';
+
+    // Read calculator results from localStorage
+    const stored = localStorage.getItem('100kp_results');
+    const r = stored ? JSON.parse(stored) : null;
+
+    const main = document.getElementById('mainContent');
+
+    if (!r) {
+        // No results — send them back to calculator
+        main.innerHTML = `
+            <div class="no-results">
+                <div class="success-icon" style="background: #F59E0B;">⚠️</div>
+                <h1>No calculator results found</h1>
+                <p>Please complete the savings calculator first so we can personalise your report.</p>
+                <a href="v2.html#calculator">Go to Calculator</a>
+            </div>`;
+    } else {
+        const avg = Math.round((r.minSaving + r.maxSaving) / 2);
+
+        main.innerHTML = `
+            <div class="success-icon">🎉</div>
+            <h1>Your report is ready</h1>
+            <p class="subtitle">Your personalised childcare savings report based on your family details</p>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">📄</div>
+                    <div>
+                        <div class="tier-badge ${tier}">${tierLabel} — ${tierPrice}</div>
+                        <div class="card-title">Your Childcare Savings Report</div>
+                        <div class="card-sub">The 100k Parent &bull; 2025/26 &bull; Personalised for your family</div>
+                    </div>
+                </div>
+
+                <div class="saving-row">
+                    <div>
+                        <div class="saving-label">Tax-Free Childcare</div>
+                        <div class="saving-desc">20% government top-up on eligible costs</div>
+                    </div>
+                    <div class="saving-amount ${r.tfc === 0 ? 'zero' : ''}">£${Math.round(r.tfc).toLocaleString()}</div>
+                </div>
+
+                <div class="saving-row">
+                    <div>
+                        <div class="saving-label">Salary Sacrifice</div>
+                        <div class="saving-desc">Income Tax + National Insurance savings</div>
+                    </div>
+                    <div class="saving-amount ${r.salary === 0 ? 'zero' : ''}">£${Math.round(r.salary).toLocaleString()}</div>
+                </div>
+
+                <div class="saving-row">
+                    <div>
+                        <div class="saving-label">Income Splitting</div>
+                        <div class="saving-desc">Optimising income across tax bands</div>
+                    </div>
+                    <div class="saving-amount ${r.splitting === 0 ? 'zero' : ''}">£${Math.round(r.splitting).toLocaleString()}</div>
+                </div>
+
+                <div class="saving-row">
+                    <div>
+                        <div class="saving-label">30 Hours Free Childcare</div>
+                        <div class="saving-desc">Government-funded nursery hours</div>
+                    </div>
+                    <div class="saving-amount ${r.thirtyHours === 0 ? 'zero' : ''}">£${Math.round(r.thirtyHours).toLocaleString()}</div>
+                </div>
+
+                <div class="total-box">
+                    <div>
+                        <div class="total-label">Your estimated annual saving</div>
+                        <div class="total-range">Range: £${Math.round(r.minSaving).toLocaleString()} — £${Math.round(r.maxSaving).toLocaleString()}</div>
+                    </div>
+                    <div class="total-amount">£${avg.toLocaleString()}</div>
+                </div>
+
+                <button class="download-btn" id="downloadBtn" onclick="downloadPDF()">
+                    ⬇️ Download Your PDF Report
+                </button>
+
+                <!-- Popup warning — shown before PDF opens -->
+                <div class="popup-warning" id="popupWarning">
+                    <div class="popup-warning-title">⚠️ Allow the pop-up to download your report</div>
+                    <p>Your PDF opens in a new tab. Your browser may block it — look for a <strong>pop-up blocked</strong> notification in your address bar and click <strong>Allow</strong>.</p>
+                    <p>On mobile, tap <strong>Allow</strong> if prompted, or use the button below if nothing opens.</p>
+                </div>
+
+                <!-- Progress bar -->
+                <div class="pdf-progress-wrap" id="progressWrap">
+                    <div class="pdf-progress-label">
+                        <span class="pdf-progress-text" id="progressText">Preparing your report</span>
+                        <span class="pdf-progress-pct" id="progressPct">0%</span>
+                    </div>
+                    <div class="pdf-progress-bar">
+                        <div class="pdf-progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="pdf-progress-step" id="progressStep">Starting...</div>
+                    <div class="pdf-progress-steps-row">
+                        <div class="pdf-step-dot" id="dot0"></div>
+                        <div class="pdf-step-dot" id="dot1"></div>
+                        <div class="pdf-step-dot" id="dot2"></div>
+                        <div class="pdf-step-dot" id="dot3"></div>
+                        <div class="pdf-step-dot" id="dot4"></div>
+                        <div class="pdf-step-dot" id="dot5"></div>
+                    </div>
+                </div>
+
+                <!-- Blocked fallback -->
+                <div class="blocked-fallback" id="blockedFallback">
+                    <div class="blocked-fallback-title">🚫 Pop-up blocked — here's how to fix it</div>
+                    <p>Your browser blocked the PDF from opening. To allow it:</p>
+                    <ol>
+                        <li>Look at the top of your browser for a <strong>pop-up blocked</strong> icon</li>
+                        <li>Click it and select <strong>Always allow pop-ups from this site</strong></li>
+                        <li>Then click the button below to try again</li>
+                    </ol>
+                    <p>Or on iPhone/Safari: Settings → Safari → Block Pop-ups → turn off</p>
+                    <button class="retry-btn" onclick="retryPDF()">Try Again</button>
+                </div>
+
+                ${tier === 'complete' ? `
+                <div class="advisor-box">
+                    <h3>📞 Your 30-Minute Advisor Call</h3>
+                    <p>As a Complete Guide customer, you have a free call with our childcare savings advisor included. They will review your situation and help you implement the strategies.</p>
+                    <a href="https://calendly.com/the100kparent" target="_blank" class="advisor-btn">Book Your Call</a>
+                </div>` : ''}
+            </div>
+
+            <div style="text-align: center; margin-top: 1rem;">
+                <a href="v2.html#calculator" style="color: #4A90E2; font-size: 0.875rem; text-decoration: none; font-weight: 600;">← Recalculate with different figures</a>
+            </div>`;
+
+        // Auto-trigger PDF download after short delay
+        // Auto-trigger handled by startPDFGeneration above
+    }
+
+    function downloadPDF() {
+        const stored = localStorage.getItem('100kp_results');
+        if (!stored) {
+            alert('Please fill in the calculator first, then come back here.');
+            return;
+        }
+
+        const r = JSON.parse(stored);
+
+        // Show progress bar IMMEDIATELY so screen doesn't freeze
+        showProgressBar();
+        setProgress(10, 'Loading your data...');
+
+        // Use requestAnimationFrame to let the browser paint the progress bar
+        // before we do the heavy work
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                setProgress(25, 'Building your profile...');
+
+                setTimeout(() => {
+                    setProgress(50, 'Calculating your strategies...');
+
+                    setTimeout(() => {
+                        setProgress(75, 'Writing your action plan...');
+
+                        setTimeout(() => {
+                            setProgress(90, 'Opening your report...');
+
+                            // NOW build the HTML — after UI has painted
+                            const html = generatePDFHTML(r, tier);
+
+                            // Open new window
+                            const win = window.open('', '_blank');
+
+                            if (!win || win.closed || typeof win.closed === 'undefined') {
+                                document.getElementById('blockedFallback').classList.add('visible');
+                                document.getElementById('popupWarning').classList.remove('visible');
+                                document.getElementById('progressWrap').classList.remove('visible');
+                                document.getElementById('downloadBtn').disabled = false;
+                                document.getElementById('downloadBtn').textContent = '⬇️ Try Again';
+                                return;
+                            }
+
+                            // Write HTML to new tab
+                            win.document.write(html);
+                            win.document.close();
+
+                            // Trigger print after fonts load
+                            setTimeout(() => {
+                                try { win.focus(); win.print(); } catch(e) {}
+                                setProgress(100, '✅ Done! In the new tab — save as PDF.');
+                                document.getElementById('downloadBtn').textContent = '⬇️ Download Again';
+                                document.getElementById('downloadBtn').disabled = false;
+                                document.getElementById('popupWarning').classList.remove('visible');
+                            }, 1500);
+
+                        }, 400);
+                    }, 400);
+                }, 400);
+            });
+        });
+    }
+
+    function retryPDF() {
+        document.getElementById('blockedFallback').classList.remove('visible');
+        downloadPDF();
+    }
+
+    function showProgressBar() {
+        const btn = document.getElementById('downloadBtn');
+        btn.disabled = true;
+        btn.textContent = 'Preparing...';
+        document.getElementById('popupWarning').classList.add('visible');
+        document.getElementById('progressWrap').classList.add('visible');
+        setProgress(0, 'Starting...');
+    }
+
+    function setProgress(pct, step) {
+        document.getElementById('progressFill').style.width = pct + '%';
+        document.getElementById('progressPct').textContent = pct + '%';
+        document.getElementById('progressStep').textContent = step;
+        for (let i = 0; i < 6; i++) {
+            const dot = document.getElementById('dot' + i);
+            if (dot) dot.classList.toggle('done', pct >= (i + 1) * 17);
+        }
+        if (pct === 100) {
+            document.getElementById('progressText').textContent = 'Report ready!';
+            document.getElementById('progressFill').style.background = 'linear-gradient(90deg, #10B981, #059669)';
+            for (let i = 0; i < 6; i++) {
+                const dot = document.getElementById('dot' + i);
+                if (dot) { dot.classList.add('done'); dot.style.background = '#10B981'; }
+            }
+        }
+    }
+
+    // Pulse button on load
+    setTimeout(() => {
+        const btn = document.getElementById('downloadBtn');
+        if (btn) btn.style.animation = 'pulse 1.5s ease-in-out 2';
+    }, 800);
+
+    function generatePDFHTML(r, tier) {
+        const avg = Math.round((r.minSaving + r.maxSaving) / 2);
+        const date = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+        const tierLabel = tier === 'complete' ? 'Complete Guide' : 'Essential Report';
+        const taxYear = '2025/26';
+
+        // ── INPUTS ──────────────────────────────────────────────────────
+        const income1 = r.income1 || 0;
+        const income2 = r.income2 || 0;
+        const hasPartner = income2 > 0;
+        const higherIncome = Math.max(income1, income2);
+        const lowerIncome = hasPartner ? Math.min(income1, income2) : 0;
+        const higherEarner = income1 >= income2 ? 'you' : 'your partner';
+        const lowerEarner = income1 >= income2 ? 'your partner' : 'you';
+        const monthlyChildcare = r.monthlyChildcare || 0;
+        const annualChildcare = monthlyChildcare * 12;
+        const ages = r.ages || [];
+        const numChildren = r.numChildren || 1;
+        const employment = r.employment || 'employed';
+        const employment2 = r.employment2 || 'employed';
+        const isDirector = employment === 'director' || employment2 === 'director';
+        const isSelfEmployed1 = employment === 'self-employed';
+        const isSelfEmployed2 = employment2 === 'self-employed';
+        const bothSelfEmployed = isSelfEmployed1 && (isSelfEmployed2 || !hasPartner);
+
+        // ── CHILD ANALYSIS ──────────────────────────────────────────────
+        const hasUnder1 = ages.some(a => a === 0);
+        const hasUnder2 = ages.some(a => a === 0 || a === 1);
+        const under5Count = ages.filter(a => a >= 0 && a <= 4).length;
+        const hasUnder5 = under5Count > 0;
+        const schoolAgeCount = ages.filter(a => a >= 5 && a <= 11).length;
+        const nextEligibleAge = ages.filter(a => a < 0).length > 0 ? 'under 9 months' : null;
+
+        // ── INCOME THRESHOLDS ───────────────────────────────────────────
+        const over100k = higherIncome > 100000;
+        const isJustOver100k = higherIncome > 100000 && higherIncome <= 115000;
+        const isWellOver100k = higherIncome > 115000 && higherIncome <= 149000;
+        const isHighEarner = higherIncome > 149000;
+        const isUnder100k = higherIncome < 100000;
+        const isNear90k = higherIncome >= 85000 && higherIncome < 100000;
+        const in60TrapZone = higherIncome > 100000 && higherIncome <= 125140;
+        const partnerOver100k = income2 > 100000;
+
+        // ── KEY CALCULATIONS ────────────────────────────────────────────
+        // Salary sacrifice needed
+        const sacrificeNeeded = higherIncome > 100000 ? higherIncome - 99999 : 0;
+        const sacrificeNeededPartner = income2 > 100000 ? income2 - 99999 : 0;
+
+        // Tax rate for sacrifice
+        const sacrificeTaxRate = in60TrapZone ? 0.62 : higherIncome > 50270 ? 0.42 : 0.32;
+        const taxSavedBySacrifice = Math.round(sacrificeNeeded * sacrificeTaxRate);
+
+        // 60% trap
+        const personalAllowanceLost = in60TrapZone ? Math.min(12570, Math.round((higherIncome - 100000) / 2)) : 0;
+        const extraTaxFrom60Trap = Math.round(personalAllowanceLost * 0.40);
+
+        // Child Benefit (2025/26 rates)
+        const cbFirstChild = 1331;
+        const cbAdditionalChild = 881;
+        const totalCB = cbFirstChild + (Math.max(0, numChildren - 1) * cbAdditionalChild);
+        const hicbcApplies = higherIncome > 60000;
+        const hicbcRate = higherIncome >= 80000 ? 1.0 : Math.max(0, (higherIncome - 60000) / 20000);
+        const hicbcCharge = Math.round(totalCB * hicbcRate);
+        const cbNetBenefit = totalCB - hicbcCharge;
+
+        // Workplace Nursery Benefit (new - average saving £6,500/yr)
+        const workplaceNurseryEligible = !isSelfEmployed1 && annualChildcare > 0;
+        const workplaceNurserySaving = Math.round(annualChildcare * (higherIncome > 50270 ? 0.42 : 0.32));
+
+        // Annual childcare cost context
+        const avgNurseryCostUnder2 = 12430; // England average 2025 (£238.95/wk × 52)
+        const avgNurseryCostOver2 = 11737; // England average 2025 (£225.7/wk × 52)
+        const londonPremium = 1.6; // London ~60% more expensive
+
+        // 30 hours value — updated 2025/26 rates
+        const nurseryRatePerHour = hasUnder2 ? 9.00 : 15.00; // funded rate vs market rate
+        const marketRatePerHour = 15.00;
+        const fundedHoursPerWeek = hasUnder2 ? 15 : 30;
+        const fundedWeeksPerYear = 38;
+        const thirtyHoursValue = under5Count * marketRatePerHour * fundedHoursPerWeek * fundedWeeksPerYear;
+
+        // Pension annual allowance check
+        const annualAllowance = higherIncome > 260000 ? Math.max(10000, 60000 - Math.round((higherIncome - 260000) / 2)) : 60000;
+        const sacrificeWithinAllowance = sacrificeNeeded <= annualAllowance;
+
+        // ── PERSONA ─────────────────────────────────────────────────────
+        let personaTitle, personaDesc, urgencyColor, urgencyLabel;
+
+        if (isJustOver100k && hasUnder5) {
+            personaTitle = 'You are in the highest-priority position — act before April';
+            personaDesc = `With income just over £100,000 and children in childcare, you face an immediate cash cliff edge. A pension contribution of £${sacrificeNeeded.toLocaleString()} reduces your adjusted net income to £99,999, unlocking Tax-Free Childcare and ${fundedHoursPerWeek} hours of free childcare simultaneously — a combined benefit worth up to £${(Math.round(r.tfc) + Math.round(r.thirtyHours)).toLocaleString()} per year. The tax savings on the pension contribution itself add a further £${taxSavedBySacrifice.toLocaleString()}.`;
+            urgencyColor = '#DC2626'; urgencyLabel = '🔴 Urgent — Act Before April 5th';
+        } else if (isWellOver100k && hasUnder5) {
+            personaTitle = 'The 60% tax trap is costing you far more than you realise';
+            personaDesc = `Between £100,000 and £125,140, every £2 you earn costs £1 of your personal allowance — creating an effective 60% marginal tax rate. Combined with the loss of childcare benefits, you need to earn £149,000 to match the disposable income of someone on £99,999 with two nursery-age children. This report shows you how to engineer your way out.`;
+            urgencyColor = '#DC2626'; urgencyLabel = '🔴 High Priority — Significant Opportunity';
+        } else if (isHighEarner) {
+            personaTitle = 'Wealth planning and tax efficiency are your primary levers';
+            personaDesc = `At income above £149,000, the childcare eligibility question is settled — you won't qualify for the government schemes. But there are still significant tax savings available through salary sacrifice, workplace nursery schemes, income optimisation and director strategies. This report covers all of them with your specific numbers.`;
+            urgencyColor = '#D97706'; urgencyLabel = '🟡 Strategic Planning';
+        } else if (isNear90k) {
+            personaTitle = 'You qualify now — and protecting eligibility matters';
+            personaDesc = `With income approaching £90,000-£100,000, you currently qualify for all childcare schemes. This report focuses on maximising everything you're entitled to claim, and protecting your eligibility if income rises — particularly through pension contributions and salary sacrifice.`;
+            urgencyColor = '#059669'; urgencyLabel = '🟢 Claim Everything You Are Entitled To';
+        } else if (isUnder100k && hasUnder5) {
+            personaTitle = 'You qualify for full government support — here is how to claim it all';
+            personaDesc = `With income below £100,000, you qualify for all available government childcare schemes. Most families in your position are not claiming everything they're entitled to — leaving significant money unclaimed. This report gives you the complete picture with your specific numbers and direct links to apply.`;
+            urgencyColor = '#059669'; urgencyLabel = '🟢 Claim What\'s Yours';
+        } else {
+            personaTitle = 'Your personalised childcare savings plan';
+            personaDesc = `Based on your income of £${income1.toLocaleString()}${hasPartner ? ` and your partner's income of £${income2.toLocaleString()}` : ''}, with ${numChildren} ${numChildren === 1 ? 'child' : 'children'} and £${monthlyChildcare.toLocaleString()}/month in childcare costs, here is your complete savings strategy for ${taxYear}.`;
+            urgencyColor = '#4A90E2'; urgencyLabel = '📋 Your Action Plan';
+        }
+
+        // ── STRATEGY SECTIONS ───────────────────────────────────────────
+        let strategies = '';
+
+        // ─ STRATEGY 1: PENSION SALARY SACRIFICE (if over threshold) ─────
+        if (sacrificeNeeded > 0 || sacrificeNeededPartner > 0) {
+            const whoNeeds = sacrificeNeeded > 0 && sacrificeNeededPartner > 0 ? 'Both you and your partner need' : sacrificeNeeded > 0 ? 'You need' : 'Your partner needs';
+            const amount = Math.max(sacrificeNeeded, sacrificeNeededPartner);
+            const monthlyAmount = Math.round(amount / 12);
+            const childcareBenefitUnlocked = Math.round(r.tfc) + Math.round(r.thirtyHours);
+            const totalBenefit = taxSavedBySacrifice + childcareBenefitUnlocked;
+
+            strategies += `
+            <div class="s-card priority">
+                <div class="s-header">
+                    <span class="s-icon">🎯</span>
+                    <div class="s-title-block">
+                        <div class="s-title">Priority Action — Pension Salary Sacrifice</div>
+                        <div class="s-badge">Most Impactful · Act Before April 5th</div>
+                    </div>
+                    <div class="s-amount">£${totalBenefit.toLocaleString()}<span>/yr</span></div>
+                </div>
+                <div class="s-body">
+                    <p>${whoNeeds} to contribute <strong>£${amount.toLocaleString()}/year (£${monthlyAmount.toLocaleString()}/month)</strong> to a pension to bring adjusted net income below £100,000. This single action triggers a cascade of benefits:</p>
+
+                    <div class="calc-table">
+                        <div class="ct-row header"><span>Component</span><span>Amount</span><span>How</span></div>
+                        <div class="ct-row"><span>Tax + NI saved on pension contribution</span><span class="green">£${taxSavedBySacrifice.toLocaleString()}</span><span>${Math.round(sacrificeTaxRate * 100)}% effective relief</span></div>
+                        <div class="ct-row"><span>Tax-Free Childcare unlocked</span><span class="green">£${Math.round(r.tfc).toLocaleString()}</span><span>20% top-up on £${Math.min(annualChildcare, 10000 * numChildren).toLocaleString()}</span></div>
+                        <div class="ct-row"><span>${fundedHoursPerWeek} hours free childcare unlocked</span><span class="green">£${Math.round(r.thirtyHours).toLocaleString()}</span><span>${fundedHoursPerWeek}hrs × 38wks × ${under5Count} child${under5Count > 1 ? 'ren' : ''}</span></div>
+                        ${in60TrapZone ? `<div class="ct-row"><span>Personal allowance restored (${personalAllowanceLost.toLocaleString()} of £12,570)</span><span class="green">£${extraTaxFrom60Trap.toLocaleString()}</span><span>End 60% trap</span></div>` : ''}
+                        <div class="ct-row total"><span>Total annual benefit</span><span class="green">£${totalBenefit.toLocaleString()}</span><span>From £${monthlyAmount.toLocaleString()}/month pension</span></div>
+                    </div>
+
+                    ${!sacrificeWithinAllowance ? `<div class="alert amber"><strong>⚠️ Annual Allowance:</strong> Your sacrifice of £${amount.toLocaleString()} may approach your pension annual allowance of £${annualAllowance.toLocaleString()}. Speak to a financial adviser about carry forward from previous years before proceeding.</div>` : ''}
+
+                    ${in60TrapZone ? `<div class="alert red">
+                        <strong>⚠️ You Are Currently in the 60% Tax Trap</strong><br>
+                        Your income between £100,000 and £125,140 is taxed at an effective 62% marginal rate (40% income tax + removing £1 of personal allowance per £2 earned above £100k). You have currently lost £${personalAllowanceLost.toLocaleString()} of your £12,570 personal allowance, costing you an extra £${extraTaxFrom60Trap.toLocaleString()} in tax this year. A pension contribution restores this immediately.
+                    </div>` : ''}
+
+                    <div class="action-steps">
+                        <div class="action-step">
+                            <div class="as-num">1</div>
+                            <div><strong>Salary Sacrifice (best route)</strong> — Email HR: <em>"I would like to increase my pension contributions via salary sacrifice by £${monthlyAmount.toLocaleString()}/month effective from next payroll. Please adjust my salary sacrifice arrangement accordingly."</em> Takes one payroll cycle. Saves Income Tax AND National Insurance (saves you ~£${Math.round(amount * 0.02).toLocaleString()}/yr extra vs personal contribution).</div>
+                        </div>
+                        <div class="action-step">
+                            <div class="as-num">2</div>
+                            <div><strong>Personal Pension Contribution (if salary sacrifice unavailable)</strong> — Pay directly into your pension provider. You pay from net income; HMRC adds basic rate (20%) relief automatically. Claim higher/additional rate relief via Self Assessment. Takes up to 2 months to process.</div>
+                        </div>
+                        <div class="action-step">
+                            <div class="as-num">3</div>
+                            <div><strong>Confirm adjusted net income</strong> — Check your P60 or ask payroll for your projected gross salary. Adjusted net income = gross salary - pension contributions - Gift Aid donations. Must be below £100,000 to qualify.</div>
+                        </div>
+                        <div class="action-step">
+                            <div class="as-num">4</div>
+                            <div><strong>Apply for childcare schemes immediately after</strong> — Once pension is in place, apply for Tax-Free Childcare and 30 hours via childcarechoices.gov.uk. Do not wait until the next term — apply within days of confirming your adjusted net income.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // ─ STRATEGY 2: TAX-FREE CHILDCARE ──────────────────────────────
+        const tfcEligible = !over100k;
+        strategies += `
+        <div class="s-card ${tfcEligible ? '' : 'locked'}">
+            <div class="s-header">
+                <span class="s-icon">💳</span>
+                <div class="s-title-block">
+                    <div class="s-title">Tax-Free Childcare (TFC)</div>
+                    <div class="s-badge ${tfcEligible ? 'green' : 'red'}">${tfcEligible ? `You Qualify — Worth £${Math.round(r.tfc).toLocaleString()}/year` : 'Currently Blocked — See Strategy 1'}</div>
+                </div>
+                <div class="s-amount ${tfcEligible ? '' : 'red'}">£${Math.round(r.tfc).toLocaleString()}<span>/yr</span></div>
+            </div>
+            <div class="s-body">
+                <p>The government contributes <strong>20p for every 80p you pay</strong> into a Tax-Free Childcare account — equivalent to basic rate tax relief on childcare spending — up to £2,000 per child per year (£4,000 for disabled children).</p>
+
+                <div class="calc-table">
+                    <div class="ct-row header"><span>Item</span><span>Amount</span><span>Detail</span></div>
+                    <div class="ct-row"><span>Your monthly childcare spend</span><span>£${monthlyChildcare.toLocaleString()}</span><span>£${annualChildcare.toLocaleString()}/year</span></div>
+                    <div class="ct-row"><span>Eligible spend (max £10k/child)</span><span>£${Math.min(annualChildcare, 10000 * numChildren).toLocaleString()}</span><span>£${Math.min(monthlyChildcare, Math.round(10000 * numChildren / 12)).toLocaleString()}/month</span></div>
+                    <div class="ct-row"><span>Government top-up (20%)</span><span class="green">£${Math.round(r.tfc).toLocaleString()}</span><span>£${Math.round(r.tfc / 12).toLocaleString()}/month free money</span></div>
+                    <div class="ct-row"><span>Maximum possible (£2k/child × ${numChildren})</span><span>£${2000 * numChildren}</span><span>${numChildren === 1 ? 'One child' : numChildren + ' children'}</span></div>
+                    ${annualChildcare > 10000 * numChildren ? `<div class="ct-row"><span>Childcare above eligible cap</span><span class="red">£${(annualChildcare - 10000 * numChildren).toLocaleString()}</span><span>Not eligible for TFC top-up</span></div>` : ''}
+                </div>
+
+                ${tfcEligible ? `
+                <div class="action-steps">
+                    <div class="action-step">
+                        <div class="as-num">1</div>
+                        <div><strong>Apply at childcarechoices.gov.uk</strong> — Takes 20 minutes. You need your National Insurance number, date of birth, and details of your childcare provider. Apply via Government Gateway (create an account if you don't have one).</div>
+                    </div>
+                    <div class="action-step">
+                        <div class="as-num">2</div>
+                        <div><strong>Set up your TFC account</strong> — Once approved, you receive a TFC account number. Pay your nursery through this account instead of directly. The government top-up appears automatically within 24 hours of each payment.</div>
+                    </div>
+                    <div class="action-step">
+                        <div class="as-num">3</div>
+                        <div><strong>Reconfirm every 3 months</strong> — HMRC sends a reconfirmation reminder. You must confirm within the 2-week window or your account is suspended. Set a recurring calendar reminder for every 3 months from your approval date.</div>
+                    </div>
+                    <div class="action-step">
+                        <div class="as-num">4</div>
+                        <div><strong>Check for Childcare Voucher conflict</strong> — If you or your partner still receive Childcare Vouchers from a previous employer scheme, you cannot use TFC simultaneously. Calculate which is worth more: Vouchers (capped at £55/week basic rate or £28/week higher rate) vs TFC (20% of full childcare spend up to £10k/child).</div>
+                    </div>
+                </div>
+                <div class="alert blue">
+                    <strong>💡 Tip:</strong> You can use TFC to pay for nurseries, childminders, after-school clubs and holiday camps — not just nursery fees. If you use multiple providers, each can be paid through the same TFC account.
+                </div>` : `
+                <div class="alert red">
+                    <strong>To unlock £${(2000 * numChildren).toLocaleString()}/year:</strong> Reduce adjusted net income below £100,000 via pension contributions of £${sacrificeNeeded.toLocaleString()}/year (see Strategy 1). Once done, apply immediately — don't wait for the next term.
+                </div>`}
+            </div>
+        </div>`;
+
+        // ─ STRATEGY 3: WORKPLACE NURSERY BENEFIT ────────────────────────
+        if (!bothSelfEmployed) {
+            strategies += `
+            <div class="s-card">
+                <div class="s-header">
+                    <span class="s-icon">🏢</span>
+                    <div class="s-title-block">
+                        <div class="s-title">Workplace Nursery Benefit — The Hidden Gem</div>
+                        <div class="s-badge blue">Average saving £6,500/yr · No cap · HMRC compliant</div>
+                    </div>
+                    <div class="s-amount">£${workplaceNurserySaving.toLocaleString()}<span>/yr potential</span></div>
+                </div>
+                <div class="s-body">
+                    <p>The Workplace Nursery Benefit is the most generous and least-known childcare tax relief available in the UK. Unlike Tax-Free Childcare (capped at £2,000/child), <strong>there is no cap on the saving</strong> — you sacrifice your entire nursery cost from pre-tax salary, saving Income Tax and National Insurance on every pound.</p>
+
+                    <div class="calc-table">
+                        <div class="ct-row header"><span>Scenario</span><span>Monthly saving</span><span>Annual saving</span></div>
+                        <div class="ct-row"><span>Your nursery cost (£${monthlyChildcare.toLocaleString()}/month)</span><span></span><span></span></div>
+                        <div class="ct-row"><span>Saving at ${Math.round(sacrificeTaxRate * 100)}% effective rate</span><span class="green">£${Math.round(monthlyChildcare * sacrificeTaxRate).toLocaleString()}</span><span class="green">£${workplaceNurserySaving.toLocaleString()}</span></div>
+                        <div class="ct-row total"><span>Your net nursery cost after benefit</span><span>£${Math.round(monthlyChildcare * (1 - sacrificeTaxRate)).toLocaleString()}</span><span>£${Math.round(annualChildcare * (1 - sacrificeTaxRate)).toLocaleString()}</span></div>
+                    </div>
+
+                    <p style="margin-top:12px;"><strong>How it works:</strong> Your employer pays the nursery directly and deducts the equivalent amount from your gross salary. The reduction happens before tax and NI are calculated — so you save the full combined rate on every pound of childcare cost.</p>
+
+                    <div class="two-col">
+                        <div class="col-box green-bg">
+                            <div class="col-title">✅ Advantages</div>
+                            <ul>
+                                <li>No cap on savings</li>
+                                <li>Saves Income Tax + NI (32-62%)</li>
+                                <li>Employer also saves NI (13.8%)</li>
+                                <li>Can be combined with 30 hours childcare</li>
+                                <li>Available at any income level</li>
+                            </ul>
+                        </div>
+                        <div class="col-box amber-bg">
+                            <div class="col-title">⚠️ Watch Out For</div>
+                            <ul>
+                                <li>Cannot use with Tax-Free Childcare simultaneously for same costs</li>
+                                <li>Employer must offer the scheme</li>
+                                <li>Nursery must be Ofsted registered</li>
+                                <li>May reduce Statutory Maternity Pay — pause before qualifying period</li>
+                                <li>Salary must stay above National Minimum Wage (£12.21/hr)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="action-steps">
+                        <div class="action-step">
+                            <div class="as-num">1</div>
+                            <div><strong>Ask HR today</strong> — Email: <em>"Does our company offer a Workplace Nursery Benefit or Workplace Nursery Scheme? I'd like to understand how to access salary sacrifice for childcare costs."</em> More employers offer this than parents realise — it's often buried in benefits portals.</div>
+                        </div>
+                        <div class="action-step">
+                            <div class="as-num">2</div>
+                            <div><strong>If not offered yet</strong> — Forward our employer guide (available in the Complete package) to your HR or benefits team. Employers save National Insurance (13.8%) on the sacrificed amount, making it financially beneficial for them too.</div>
+                        </div>
+                        <div class="action-step">
+                            <div class="as-num">3</div>
+                            <div><strong>Compare with TFC</strong> — If your nursery bill exceeds £10,000/year per child, the Workplace Nursery Benefit will save you more than TFC above that threshold. Calculate both options before choosing.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // ─ STRATEGY 4: 30 HOURS FREE CHILDCARE ──────────────────────────
+        if (hasUnder5) {
+            const eligible30hrs = r.has30Hours;
+            const hoursAvailable = hasUnder2 ? 15 : 30;
+            const nextMilestone = hasUnder2 ? 'From the term after your child turns 2, you will be entitled to 30 hours per week (if both parents are working and eligible).' : '';
+
+            strategies += `
+            <div class="s-card ${eligible30hrs ? '' : 'locked'}">
+                <div class="s-header">
+                    <span class="s-icon">🕐</span>
+                    <div class="s-title-block">
+                        <div class="s-title">Government-Funded Childcare Hours</div>
+                        <div class="s-badge ${eligible30hrs ? 'green' : 'red'}">${eligible30hrs ? `${hoursAvailable} Hours/Week — ${under5Count} Eligible Child${under5Count > 1 ? 'ren' : ''}` : 'Currently Blocked — See How To Unlock'}</div>
+                    </div>
+                    <div class="s-amount ${eligible30hrs ? '' : 'red'}">£${Math.round(r.thirtyHours).toLocaleString()}<span>/yr</span></div>
+                </div>
+                <div class="s-body">
+                    ${hasUnder2 ? `<div class="alert amber"><strong>📅 Your child is under 2:</strong> From September 2025, working parents of children aged 9 months+ can claim 15 hours/week funded childcare. The full 30 hours applies from the term after your child turns 2. Apply 3 months before the qualifying date — do not wait until the term starts as places fill up.</div>` : ''}
+
+                    <div class="calc-table">
+                        <div class="ct-row header"><span>Entitlement</span><span>Hours/week</span><span>Annual value</span></div>
+                        <div class="ct-row"><span>Funded hours per child</span><span>${hoursAvailable} hours</span><span>${hoursAvailable} × 38 wks = ${hoursAvailable * 38} hours</span></div>
+                        <div class="ct-row"><span>Market rate (average England 2025)</span><span>£15/hour</span><span>—</span></div>
+                        <div class="ct-row"><span>Eligible children (under 5)</span><span>${under5Count}</span><span>—</span></div>
+                        <div class="ct-row total"><span>Total annual value</span><span></span><span class="green">£${Math.round(r.thirtyHours).toLocaleString()}</span></div>
+                    </div>
+
+                    <p style="margin-top:12px;"><strong>Important:</strong> The funded rate (what the government pays your nursery) is lower than the market rate. Many providers charge a 'top-up' for meals, snacks, nappies and consumables — typically £3-8/day. Factor this into your net saving. Some providers also offer a 'stretched offer' — fewer hours per week across 52 weeks instead of 38, which suits families using year-round childcare.</p>
+
+                    ${nextMilestone ? `<div class="alert blue"><strong>📅 Coming up:</strong> ${nextMilestone}</div>` : ''}
+
+                    ${eligible30hrs ? `
+                    <div class="action-steps">
+                        <div class="action-step">
+                            <div class="as-num">1</div>
+                            <div><strong>Apply at childcarechoices.gov.uk</strong> — At least 3 months before your child's eligibility date. Do not apply on the date — places fill up and your provider needs the code in advance. Applications take 5-10 minutes.</div>
+                        </div>
+                        <div class="action-step">
+                            <div class="as-num">2</div>
+                            <div><strong>Give your code to the provider</strong> — You will receive an 11-digit eligibility code. Give this to your childcare provider immediately. They must verify it before the term starts or they cannot claim the funding.</div>
+                        </div>
+                        <div class="action-step">
+                            <div class="as-num">3</div>
+                            <div><strong>Reconfirm every 3 months — critical</strong> — HMRC sends a reminder email. You have a 2-week window to reconfirm. Miss it and you lose the term's entitlement with no appeal. Set 4 calendar reminders per year now.</div>
+                        </div>
+                        <div class="action-step">
+                            <div class="as-num">4</div>
+                            <div><strong>Ask about the stretched offer</strong> — If your nursery offers it, 22.5 hours/week across 52 weeks can be more valuable than 30 hours across 38 weeks for full-time working parents. Calculate which works better for your schedule.</div>
+                        </div>
+                    </div>` : `
+                    <div class="alert red">
+                        <strong>To unlock £${Math.round(thirtyHoursValue).toLocaleString()}/year:</strong>
+                        <ul style="margin-top:8px;margin-left:20px;">
+                            ${over100k ? `<li>Reduce adjusted net income below £100,000 via pension (see Strategy 1)</li>` : ''}
+                            ${!hasPartner ? `<li>Both partners must be working — single income households do not qualify for 30 hours (only 15 universal hours at age 3)</li>` : ''}
+                            ${hasPartner && Math.min(income1, income2) < 2379 ? `<li>Both partners must earn at least £2,379/year (equivalent to 16 hours/week at minimum wage)</li>` : ''}
+                        </ul>
+                    </div>`}
+                </div>
+            </div>`;
+        }
+
+        // ─ STRATEGY 5: CHILD BENEFIT & HICBC ────────────────────────────
+        strategies += `
+        <div class="s-card">
+            <div class="s-header">
+                <span class="s-icon">👶</span>
+                <div class="s-title-block">
+                    <div class="s-title">Child Benefit & High Income Child Benefit Charge</div>
+                    <div class="s-badge ${hicbcApplies && cbNetBenefit <= 0 ? 'red' : hicbcApplies ? 'amber' : 'green'}">${hicbcApplies ? (cbNetBenefit > 0 ? `Partial — £${cbNetBenefit.toLocaleString()} net after charge` : 'Charge exceeds benefit — register anyway') : `Full entitlement — £${totalCB.toLocaleString()}/year`}</div>
+                </div>
+                <div class="s-amount ${cbNetBenefit > 0 ? '' : 'red'}">£${Math.max(0, cbNetBenefit).toLocaleString()}<span>/yr net</span></div>
+            </div>
+            <div class="s-body">
+                <div class="calc-table">
+                    <div class="ct-row header"><span>Item</span><span>Amount</span><span>Rate (2025/26)</span></div>
+                    <div class="ct-row"><span>First child Child Benefit</span><span>£${cbFirstChild.toLocaleString()}</span><span>£25.60/week</span></div>
+                    ${numChildren > 1 ? `<div class="ct-row"><span>Additional ${numChildren - 1} child${numChildren > 2 ? 'ren' : ''}</span><span>£${((numChildren - 1) * cbAdditionalChild).toLocaleString()}</span><span>£16.95/week each</span></div>` : ''}
+                    <div class="ct-row"><span>Total Child Benefit entitlement</span><span>£${totalCB.toLocaleString()}</span><span>Per year</span></div>
+                    ${hicbcApplies ? `
+                    <div class="ct-row"><span>High Income Charge (${Math.round(hicbcRate * 100)}% of benefit)</span><span class="red">-£${hicbcCharge.toLocaleString()}</span><span>Income £${higherIncome.toLocaleString()} — charge at ${Math.round(hicbcRate * 100)}%</span></div>
+                    <div class="ct-row total"><span>Net Child Benefit after charge</span><span class="${cbNetBenefit > 0 ? 'green' : 'red'}">£${Math.max(0, cbNetBenefit).toLocaleString()}</span><span>${cbNetBenefit > 0 ? 'Worth claiming' : 'Still register — see below'}</span></div>` : `
+                    <div class="ct-row total"><span>Your net entitlement</span><span class="green">£${totalCB.toLocaleString()}</span><span>Full amount — no charge</span></div>`}
+                </div>
+
+                ${higherIncome > 60000 && higherIncome < 80000 ? `<div class="alert amber">
+                    <strong>💡 Reduce the charge with pension contributions:</strong> Your income is between £60,000 and £80,000. A pension contribution reducing adjusted net income towards £60,000 eliminates or reduces the High Income Charge. For example, contributing £${Math.min(higherIncome - 60000, 20000).toLocaleString()} to a pension would save you £${Math.round(Math.min(higherIncome - 60000, 20000) / 20000 * totalCB).toLocaleString()} in HICBC — in addition to the direct tax saving on the pension contribution.
+                </div>` : ''}
+
+                ${higherIncome >= 80000 ? `<div class="alert amber">
+                    <strong>⚠️ Still register for Child Benefit — even if the charge wipes it out</strong><br>
+                    This is one of the most common and costly mistakes high-earning parents make. Always register because:
+                    <ul style="margin-top:8px;margin-left:20px;">
+                        <li>The non-working or lower-earning partner accrues <strong>National Insurance credits</strong> — worth up to £5,800/year in future State Pension entitlement</li>
+                        <li>Your child automatically receives a National Insurance number at age 16</li>
+                        <li>If income falls below the threshold in a future year, payments restart immediately</li>
+                        <li>You can choose to receive the benefit and pay the charge, or opt out of payments but keep NI credits</li>
+                    </ul>
+                </div>` : ''}
+
+                <div class="action-steps">
+                    <div class="action-step">
+                        <div class="as-num">1</div>
+                        <div><strong>Register at gov.uk/child-benefit</strong> — Apply within 3 months of birth for backdated payments (HMRC backdates up to 3 months). Even if you plan to opt out of payments, you must register to secure NI credits.</div>
+                    </div>
+                    ${hicbcApplies ? `<div class="action-step">
+                        <div class="as-num">2</div>
+                        <div><strong>Complete Self Assessment</strong> — If your income exceeds £60,000 and you or your partner receives Child Benefit, the higher earner must register for Self Assessment and declare the HICBC each year. Failure to do so results in penalties.</div>
+                    </div>` : ''}
+                    <div class="action-step">
+                        <div class="as-num">${hicbcApplies ? 3 : 2}</div>
+                        <div><strong>Choose payment vs NI credits</strong> — At gov.uk/child-benefit you can choose: (a) receive payments and pay the charge via Self Assessment, or (b) opt out of payments but keep the NI credit — which protects your State Pension without the admin of receiving and repaying the benefit.</div>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+
+        // ─ STRATEGY 6: INCOME SPLITTING ─────────────────────────────────
+        if (hasPartner && r.splitting > 0) {
+            strategies += `
+            <div class="s-card">
+                <div class="s-header">
+                    <span class="s-icon">⚖️</span>
+                    <div class="s-title-block">
+                        <div class="s-title">Income Optimisation Between Partners</div>
+                        <div class="s-badge">Tax Band Arbitrage</div>
+                    </div>
+                    <div class="s-amount">£${Math.round(r.splitting).toLocaleString()}<span>/yr</span></div>
+                </div>
+                <div class="s-body">
+                    <p>${higherEarner.charAt(0).toUpperCase() + higherEarner.slice(1)} earn${higherEarner === 'you' ? '' : 's'} £${higherIncome.toLocaleString()} (${higherIncome > 50270 ? 'higher' : 'basic'} rate taxpayer) and ${lowerEarner} earn${lowerEarner === 'you' ? '' : 's'} £${lowerIncome.toLocaleString()} (${lowerIncome > 50270 ? 'higher' : lowerIncome > 12570 ? 'basic' : 'below personal allowance'} rate taxpayer). There is a tax efficiency opportunity between these two income positions.</p>
+
+                    <div class="two-col">
+                        <div class="col-box">
+                            <div class="col-title">Spousal Pension Contributions</div>
+                            <p>The higher earner can contribute up to £3,600/year gross into the lower earner's pension (even if the lower earner has no income). The lower earner's pension provider claims 20% basic rate relief from HMRC automatically — giving £720 free pension funding per year.</p>
+                        </div>
+                        <div class="col-box">
+                            <div class="col-title">Personal Allowance Protection</div>
+                            <p>If the lower earner earns below £12,570 (the personal allowance), they have unused allowance. Explore whether income can be redirected — e.g. savings interest, rental income, dividend income from jointly owned investments — to use their allowance fully.</p>
+                        </div>
+                    </div>
+
+                    ${isDirector ? `<div class="alert blue">
+                        <strong>Director Strategy:</strong> As a company director, you may be able to pay a salary to your partner (if they provide genuine services to the business) up to the personal allowance threshold (£12,570) with no income tax and minimal NI. Consult your accountant on the employment law and IR35 implications. Additionally, consider whether shares can be structured to enable dividend payments to your partner — each with their own dividend allowance (£500 in 2025/26) and basic rate dividend tax of 8.75%.
+                    </div>` : ''}
+
+                    <div class="action-steps">
+                        <div class="action-step">
+                            <div class="as-num">1</div>
+                            <div><strong>Review joint savings and investments</strong> — Are savings accounts, investment accounts and rental properties in the most tax-efficient name? Moving income-generating assets to the lower-earning partner (via legal transfer) can reduce household tax significantly.</div>
+                        </div>
+                        <div class="action-step">
+                            <div class="as-num">2</div>
+                            <div><strong>Set up spousal pension contributions</strong> — Contact your pension provider about contributing to your partner's pension. This is particularly effective if your partner is not working and has unused annual allowance from previous years (carry forward rules apply).</div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // ─ STRATEGY 7: DIRECTOR STRATEGIES ─────────────────────────────
+        if (isDirector) {
+            strategies += `
+            <div class="s-card">
+                <div class="s-header">
+                    <span class="s-icon">🏛️</span>
+                    <div class="s-title-block">
+                        <div class="s-title">Company Director — Advanced Strategies</div>
+                        <div class="s-badge blue">Director-Specific · High Value</div>
+                    </div>
+                    <div class="s-amount">See below</div>
+                </div>
+                <div class="s-body">
+                    <p>As a company director, you have structural advantages that employed individuals do not. These strategies can significantly reduce your adjusted net income while building wealth for your family.</p>
+
+                    <div class="action-steps">
+                        <div class="action-step">
+                            <div class="as-num">1</div>
+                            <div><strong>Employer pension contributions (most tax-efficient)</strong> — Your company pays directly into your pension as an employer contribution. This is: (a) a Corporation Tax deduction for the company, (b) exempt from Income Tax and National Insurance, (c) does not reduce your personal adjusted net income in the same way as salary. This is often the single most tax-efficient action available to directors. No annual allowance personal limit concern — employer contributions use the separate employer allowance.</div>
+                        </div>
+                        <div class="action-step">
+                            <div class="as-num">2</div>
+                            <div><strong>Dividend timing management</strong> — Dividends count toward adjusted net income. If you are near the £100,000 threshold, consider whether dividends planned for Q1 can be deferred to next tax year (after April 5th). The saving from keeping adjusted net income below £100,000 can far exceed the benefit of taking the dividend now.</div>
+                        </div>
+                        <div class="action-step">
+                            <div class="as-num">3</div>
+                            <div><strong>Model your adjusted net income before April 5th</strong> — Adjusted net income = all income (salary + dividends + benefits) minus pension contributions minus Gift Aid. You need to know this number precisely to plan contributions. Your accountant should model this for you each February/March.</div>
+                        </div>
+                        <div class="action-step">
+                            <div class="as-num">4</div>
+                            <div><strong>Workplace Nursery Benefit via your company</strong> — As a director, your company can establish a Workplace Nursery arrangement. Your company pays the nursery fees; the equivalent amount is deducted from your gross salary. Unlike employed individuals, directors have more control over how this is set up. This saves Income Tax, National Insurance (employee and employer) and reduces Corporation Tax liability.</div>
+                        </div>
+                    </div>
+                    <div class="alert blue"><strong>⚠️ Get specialist advice:</strong> Director remuneration and pension strategies are complex and interact with IR35, the annual allowance, and Corporation Tax rules. The 30-minute advisor call included in your Complete package is particularly valuable for directors — these strategies can be worth £10,000-£30,000 when implemented correctly.</div>
+                </div>
+            </div>`;
+        }
+
+        // ─ FUTURE PLANNING ───────────────────────────────────────────────
+        if (hasUnder2 || ages.some(a => a >= 5)) {
+            strategies += `
+            <div class="s-card">
+                <div class="s-header">
+                    <span class="s-icon">📅</span>
+                    <div class="s-title-block">
+                        <div class="s-title">Future Planning — What Changes and When</div>
+                        <div class="s-badge blue">Plan Ahead</div>
+                    </div>
+                </div>
+                <div class="s-body">
+                    <div class="calc-table">
+                        <div class="ct-row header"><span>Milestone</span><span>What happens</span><span>Action needed</span></div>
+                        ${hasUnder1 ? `<div class="ct-row"><span>Child turns 9 months</span><span>15 hours funded childcare begins</span><span>Apply 3 months before</span></div>` : ''}
+                        ${hasUnder2 ? `<div class="ct-row"><span>Child turns 2</span><span>15 hours → 30 hours (if working)</span><span>Reapply — new code needed</span></div>` : ''}
+                        ${hasUnder5 ? `<div class="ct-row"><span>Child starts school (age 4-5)</span><span>Free school hours replace nursery</span><span>Review childcare costs — may reduce TFC need</span></div>` : ''}
+                        ${schoolAgeCount > 0 ? `<div class="ct-row"><span>School-age children (5-11)</span><span>Holiday club, after-school eligible for TFC</span><span>Continue TFC account for wraparound care</span></div>` : ''}
+                        <div class="ct-row"><span>Every April 5th</span><span>Tax year end — pension deadline</span><span>Confirm adjusted net income and top up pension if needed</span></div>
+                        <div class="ct-row"><span>Every 3 months</span><span>TFC and 30 hours reconfirmation</span><span>Confirm eligibility in Government Gateway</span></div>
+                    </div>
+                    <div class="alert blue"><strong>💡 Key insight:</strong> Tax-Free Childcare applies to wraparound childcare (after-school clubs, holiday camps) as well as nursery. As your children move into school, you can continue using TFC to pay for holiday childcare — many parents miss this and close their TFC accounts unnecessarily.</div>
+                </div>
+            </div>`;
+        }
+
+        // ── NEXT STEPS (PERSONALISED) ───────────────────────────────────
+        let steps = '';
+        let stepNum = 1;
+
+        if (sacrificeNeeded > 0) {
+            steps += `<div class="step-row"><div class="step-num">${stepNum++}</div><div><h4>This week — Set up salary sacrifice pension</h4><p>Email HR today: <em>"Please increase my salary sacrifice pension contributions by £${Math.round(sacrificeNeeded / 12).toLocaleString()}/month from next payroll."</em> This is your highest-priority action — every month you delay costs you £${Math.round((taxSavedBySacrifice + Math.round(r.tfc) + Math.round(r.thirtyHours)) / 12).toLocaleString()} in combined tax savings and childcare benefits.</p></div></div>`;
+        }
+
+        if (!over100k && annualChildcare > 0) {
+            steps += `<div class="step-row"><div class="step-num">${stepNum++}</div><div><h4>This week — Apply for Tax-Free Childcare</h4><p>Go to <strong>childcarechoices.gov.uk</strong>. Takes 20 minutes. Set up payment through your new TFC account instead of paying the nursery directly. You will receive £${Math.round(r.tfc / 12).toLocaleString()}/month in government top-up from day one.</p></div></div>`;
+        }
+
+        if (r.has30Hours && hasUnder5) {
+            steps += `<div class="step-row"><div class="step-num">${stepNum++}</div><div><h4>This month — Claim your ${fundedHoursPerWeek} hours code</h4><p>Apply at <strong>childcarechoices.gov.uk</strong> at least 3 months before the start of the next term. You receive an 11-digit code — give it to your nursery immediately. Set 4 recurring calendar reminders to reconfirm every 3 months.</p></div></div>`;
+        }
+
+        if (!bothSelfEmployed) {
+            steps += `<div class="step-row"><div class="step-num">${stepNum++}</div><div><h4>This month — Ask HR about Workplace Nursery Benefit</h4><p>Ask whether your employer offers a Workplace Nursery Scheme. If they do, enrolling could save you up to £${workplaceNurserySaving.toLocaleString()}/year — significantly more than Tax-Free Childcare. If they don't offer it yet, ask them to consider it — they save National Insurance costs too.</p></div></div>`;
+        }
+
+        steps += `<div class="step-row"><div class="step-num">${stepNum++}</div><div><h4>This month — Register for Child Benefit</h4><p>Even if the High Income Charge applies, register at <strong>gov.uk/child-benefit</strong>. The non-working or lower-earning partner accrues National Insurance credits protecting their State Pension. You can opt out of payments but keep the NI credits.</p></div></div>`;
+
+        if (hicbcApplies) {
+            steps += `<div class="step-row"><div class="step-num">${stepNum++}</div><div><h4>Before January 31st — File Self Assessment</h4><p>If your income exceeds £60,000 and you receive Child Benefit, you must file a Self Assessment return to declare and pay the High Income Child Benefit Charge. Register at <strong>gov.uk/self-assessment</strong> if not already registered. Penalties apply for late filing.</p></div></div>`;
+        }
+
+        steps += `<div class="step-row"><div class="step-num">${stepNum++}</div><div><h4>Before April 5th every year — Review adjusted net income</h4><p>Check your projected adjusted net income before the tax year ends. If you are near £60,000, £100,000, or £125,140, a pension top-up before April 5th can save significant money. Set a February reminder to review with your accountant or advisor.</p></div></div>`;
+
+        if (tier === 'complete') {
+            steps += `<div class="step-row priority-step"><div class="step-num">📞</div><div><h4>Book your 30-minute advisor call</h4><p>Your call with our financial advisor is included. They will review your specific adjusted net income position, confirm which strategies apply to your exact situation, model the pension contribution needed, and help you implement everything. Check your confirmation email for the booking link. <strong>Most clients save more from the call than the entire cost of the guide.</strong></p></div></div>`;
+        }
+
+        // ── FULL HTML ───────────────────────────────────────────────────
+        const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Your Childcare Savings Report — The 100k Parent</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; color:#2D3748; font-size:13.5px; line-height:1.65; background:white; }
+
+/* COVER */
+.cover { background:linear-gradient(135deg,#E8F4F8 0%,#F0EDFF 100%); padding:56px 50px; min-height:100vh; display:flex; flex-direction:column; justify-content:space-between; page-break-after:always; }
+.cover-logo { font-size:22px; font-weight:800; color:#2E5C8A; }
+.cover-tier { display:inline-block; background:#4A90E2; color:white; padding:5px 14px; border-radius:20px; font-size:12px; font-weight:700; margin-right:8px; }
+.cover-urgency { display:inline-block; padding:5px 14px; border-radius:20px; font-size:12px; font-weight:700; background:${urgencyColor}20; color:${urgencyColor}; border:1px solid ${urgencyColor}40; }
+.cover-title { font-size:42px; font-weight:800; line-height:1.1; margin:20px 0 12px; }
+.cover-sub { font-size:17px; color:#718096; margin-bottom:28px; max-width:580px; }
+.cover-persona { background:white; border-radius:16px; padding:22px 26px; border-left:5px solid ${urgencyColor}; box-shadow:0 4px 20px rgba(0,0,0,0.08); margin-bottom:24px; }
+.cover-persona h3 { font-size:15px; color:${urgencyColor}; margin-bottom:8px; font-weight:700; }
+.cover-persona p { font-size:13.5px; color:#4A5568; line-height:1.7; }
+.cover-box { background:white; border-radius:16px; padding:24px 28px; display:inline-block; box-shadow:0 4px 20px rgba(74,144,226,0.15); }
+.cover-label { font-size:10px; font-weight:700; color:#A0AEC0; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
+.cover-amount { font-size:54px; font-weight:800; color:#10B981; line-height:1; }
+.cover-range { font-size:12px; color:#718096; margin-top:6px; }
+.cover-meta { font-size:11px; color:#A0AEC0; }
+
+/* PAGES */
+.page { padding:44px 50px; page-break-after:always; }
+.page:last-child { page-break-after:avoid; }
+.ph { display:flex; justify-content:space-between; align-items:center; padding-bottom:12px; border-bottom:2px solid #E8F4F8; margin-bottom:24px; }
+.ph-logo { font-size:13px; font-weight:800; color:#2E5C8A; }
+.ph-page { font-size:11px; color:#A0AEC0; }
+h2 { font-size:21px; font-weight:800; margin-bottom:6px; color:#1A202C; }
+h4 { font-size:14px; font-weight:700; margin-bottom:5px; color:#2D3748; }
+.intro { color:#718096; margin-bottom:20px; font-size:13.5px; line-height:1.7; }
+
+/* PROFILE GRID */
+.pgrid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:20px; }
+.pitem { background:#F7FAFC; border-radius:10px; padding:12px 14px; }
+.plabel { font-size:10px; font-weight:600; color:#A0AEC0; text-transform:uppercase; letter-spacing:.05em; margin-bottom:4px; }
+.pval { font-size:14px; font-weight:700; }
+
+/* SUMMARY TABLE */
+.sum-row { display:flex; justify-content:space-between; align-items:center; padding:12px 16px; border-radius:10px; margin-bottom:7px; }
+.sum-row.ok { background:#F0FDF4; }
+.sum-row.no { background:#FEF2F2; opacity:.75; }
+.sum-label { font-weight:600; font-size:13.5px; }
+.sum-desc { font-size:11px; color:#718096; margin-top:2px; }
+.sum-amt { font-weight:800; font-size:17px; }
+.sum-amt.green { color:#10B981; }
+.sum-amt.red { color:#EF4444; }
+.sum-amt.grey { color:#CBD5E0; }
+.tot-box { background:linear-gradient(135deg,#4A90E2,#2E5C8A); border-radius:14px; padding:20px 26px; color:white; display:flex; justify-content:space-between; align-items:center; margin:16px 0 8px; }
+.tot-label { font-size:13px; font-weight:600; opacity:.9; }
+.tot-range { font-size:11px; opacity:.7; margin-top:3px; }
+.tot-amount { font-size:36px; font-weight:800; }
+.elig-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:16px; }
+.elig { border-radius:10px; padding:12px 16px; display:flex; align-items:center; gap:10px; }
+.elig.yes { background:#D1FAE5; }
+.elig.no { background:#FEE2E2; }
+.elig.maybe { background:#FEF3C7; }
+.elig-text { font-size:12.5px; font-weight:600; }
+.elig-sub { font-size:10.5px; color:#718096; margin-top:2px; }
+
+/* STRATEGY CARDS */
+.s-card { border:2px solid #E2E8F0; border-radius:14px; margin-bottom:18px; overflow:hidden; page-break-inside:avoid; }
+.s-card.priority { border-color:#4A90E2; }
+.s-card.locked { border-color:#FCA5A5; }
+.s-header { display:flex; align-items:center; gap:12px; padding:14px 18px; background:#F7FAFC; border-bottom:1px solid #E2E8F0; }
+.s-card.priority .s-header { background:#EBF5FF; }
+.s-card.locked .s-header { background:#FFF5F5; }
+.s-icon { font-size:22px; flex-shrink:0; }
+.s-title-block { flex:1; }
+.s-title { font-weight:800; font-size:14px; color:#1A202C; }
+.s-badge { display:inline-block; font-size:10.5px; font-weight:700; padding:2px 9px; border-radius:20px; background:#E8F4F8; color:#2E5C8A; margin-top:3px; }
+.s-badge.green { background:#D1FAE5; color:#065F46; }
+.s-badge.red { background:#FEE2E2; color:#991B1B; }
+.s-badge.amber { background:#FEF3C7; color:#92400E; }
+.s-badge.blue { background:#DBEAFE; color:#1E40AF; }
+.s-amount { font-size:20px; font-weight:800; color:#10B981; text-align:right; flex-shrink:0; white-space:nowrap; }
+.s-amount span { font-size:11px; font-weight:400; color:#718096; display:block; }
+.s-amount.red { color:#EF4444; }
+.s-body { padding:16px 18px; }
+.s-body p { margin-bottom:12px; color:#4A5568; line-height:1.7; }
+
+/* CALC TABLE */
+.calc-table { background:#F7FAFC; border-radius:10px; padding:12px 14px; margin:10px 0; }
+.ct-row { display:flex; justify-content:space-between; gap:8px; padding:5px 0; border-bottom:1px solid #E2E8F0; font-size:12.5px; }
+.ct-row:last-child { border-bottom:none; }
+.ct-row.header { font-weight:700; font-size:11px; color:#A0AEC0; text-transform:uppercase; letter-spacing:.04em; padding-bottom:8px; }
+.ct-row.total { font-weight:700; border-top:2px solid #CBD5E0; border-bottom:none; padding-top:8px; margin-top:3px; }
+.ct-row span:first-child { flex:2; }
+.ct-row span:nth-child(2) { flex:1; text-align:right; font-weight:600; }
+.ct-row span:nth-child(3) { flex:1.5; text-align:right; color:#718096; font-size:11.5px; }
+.green { color:#10B981; }
+.red { color:#EF4444; }
+
+/* ACTION STEPS */
+.action-steps { margin-top:14px; display:flex; flex-direction:column; gap:10px; }
+.action-step { display:flex; gap:12px; align-items:flex-start; background:#F7FAFC; border-radius:10px; padding:12px 14px; }
+.as-num { width:26px; height:26px; background:#4A90E2; color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; flex-shrink:0; }
+.action-step div { font-size:12.5px; color:#4A5568; line-height:1.65; }
+.action-step strong { color:#2D3748; }
+
+/* ALERTS */
+.alert { border-radius:10px; padding:12px 15px; margin:10px 0; font-size:12.5px; line-height:1.65; }
+.alert.amber { background:#FFFBEB; border:1px solid #FCD34D; color:#78350F; }
+.alert.red { background:#FFF5F5; border:1px solid #FCA5A5; color:#7F1D1D; }
+.alert.blue { background:#EFF6FF; border:1px solid #BFDBFE; color:#1E40AF; }
+.alert ul { margin-left:16px; margin-top:6px; }
+.alert li { margin-bottom:4px; }
+
+/* TWO COL */
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:12px 0; }
+.col-box { border-radius:10px; padding:12px 14px; font-size:12px; }
+.col-box.green-bg { background:#F0FDF4; }
+.col-box.amber-bg { background:#FFFBEB; }
+.col-box { background:#F7FAFC; }
+.col-title { font-weight:700; margin-bottom:6px; color:#2D3748; font-size:12.5px; }
+.col-box ul { margin-left:14px; }
+.col-box li { margin-bottom:4px; color:#4A5568; }
+
+/* NEXT STEPS */
+.step-row { display:flex; gap:14px; margin-bottom:16px; page-break-inside:avoid; align-items:flex-start; }
+.step-row.priority-step { background:#EBF5FF; border-radius:12px; padding:14px; border:2px solid #4A90E2; }
+.step-num { width:30px; height:30px; background:#4A90E2; color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; flex-shrink:0; margin-top:2px; }
+.step-row h4 { color:#2E5C8A; margin-bottom:5px; }
+.step-row p { font-size:12.5px; color:#4A5568; line-height:1.7; }
+
+/* IFS CALLOUT */
+.ifs-box { background:#FFFBEB; border:1px solid #FCD34D; border-radius:12px; padding:14px 18px; margin:14px 0; font-size:12.5px; color:#78350F; }
+
+/* DISCLAIMER */
+.disclaimer { background:#F7FAFC; border-left:4px solid #CBD5E0; padding:12px 16px; border-radius:0 8px 8px 0; margin-top:20px; font-size:11.5px; color:#718096; line-height:1.6; }
+
+/* FOOTER */
+.rfooter { text-align:center; padding:28px 50px; background:#F7FAFC; border-top:2px solid #E2E8F0; }
+.rfooter-logo { font-size:17px; font-weight:800; color:#2E5C8A; margin-bottom:5px; }
+.rfooter p { font-size:11px; color:#A0AEC0; }
+
+@media print {
+    body { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .s-card { page-break-inside:avoid; }
+    .step-row { page-break-inside:avoid; }
+    .cover { page-break-after:always; min-height:auto; }
+    .page { page-break-after:always; }
+    .page:last-child { page-break-after:avoid; }
+}
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+    <div class="cover-logo">The 100k Parent</div>
+    <div>
+        <div><span class="cover-tier">${tierLabel}</span><span class="cover-urgency">${urgencyLabel}</span></div>
+        <h1 class="cover-title">Your Personalised<br>Childcare Savings Report</h1>
+        <p class="cover-sub">Built specifically for your income, family setup and childcare situation — with real numbers, HMRC-accurate strategies and exact action steps.</p>
+        <div class="cover-persona">
+            <h3>${personaTitle}</h3>
+            <p>${personaDesc}</p>
+        </div>
+        <div class="cover-box">
+            <div class="cover-label">Estimated annual saving</div>
+            <div class="cover-amount">£${avg.toLocaleString()}</div>
+            <div class="cover-range">Range: £${Math.round(r.minSaving).toLocaleString()} — £${Math.round(r.maxSaving).toLocaleString()} per year &bull; Tax year ${taxYear}</div>
+        </div>
+    </div>
+    <div class="cover-meta">
+        <p>Prepared: ${date} &bull; The 100k Parent &bull; the100kparent.com</p>
+        <p>This report is personalised to: Income £${income1.toLocaleString()}${hasPartner ? ` + partner £${income2.toLocaleString()}` : ''} &bull; ${numChildren} child${numChildren > 1 ? 'ren' : ''} &bull; £${monthlyChildcare.toLocaleString()}/month childcare</p>
+    </div>
+</div>
+
+<!-- PAGE 2: PROFILE & SUMMARY -->
+<div class="page">
+    <div class="ph"><div class="ph-logo">The 100k Parent</div><div class="ph-page">Your Profile & Summary &bull; ${taxYear}</div></div>
+    <h2>Your Family Profile</h2>
+    <p class="intro">This report is built on the figures below. Recalculate at any time at the100kparent.com/v2 if your situation changes.</p>
+    <div class="pgrid">
+        <div class="pitem"><div class="plabel">Your Income</div><div class="pval">£${income1.toLocaleString()}</div></div>
+        <div class="pitem"><div class="plabel">Partner's Income</div><div class="pval">${hasPartner ? '£' + income2.toLocaleString() : 'Not applicable'}</div></div>
+        <div class="pitem"><div class="plabel">Employment</div><div class="pval" style="text-transform:capitalize">${employment.replace('-',' ')}${hasPartner ? ' / ' + employment2.replace('-',' ') : ''}</div></div>
+        <div class="pitem"><div class="plabel">Number of Children</div><div class="pval">${numChildren}</div></div>
+        <div class="pitem"><div class="plabel">Children's Ages</div><div class="pval">${ages.map(a => a === 0 ? 'Under 1' : a + ' yrs').join(', ')}</div></div>
+        <div class="pitem"><div class="plabel">Monthly Childcare</div><div class="pval">£${monthlyChildcare.toLocaleString()} (£${annualChildcare.toLocaleString()}/yr)</div></div>
+    </div>
+
+    <h2>Savings Summary</h2>
+    <div class="sum-row ${r.tfc > 0 ? 'ok' : 'no'}"><div><div class="sum-label">Tax-Free Childcare</div><div class="sum-desc">20% govt top-up, max £${2000*numChildren}k/yr (${numChildren} child${numChildren>1?'ren':''})</div></div><div class="sum-amt ${r.tfc > 0 ? 'green' : 'red'}">£${Math.round(r.tfc).toLocaleString()}</div></div>
+    <div class="sum-row ${r.thirtyHours > 0 ? 'ok' : 'no'}"><div><div class="sum-label">${fundedHoursPerWeek} Hours Free Childcare</div><div class="sum-desc">Govt-funded nursery hours &bull; ${under5Count} eligible child${under5Count!==1?'ren':''} under 5</div></div><div class="sum-amt ${r.thirtyHours > 0 ? 'green' : 'red'}">£${Math.round(r.thirtyHours).toLocaleString()}</div></div>
+    <div class="sum-row ok"><div><div class="sum-label">Salary Sacrifice / Pension</div><div class="sum-desc">Tax + NI savings at ${Math.round(sacrificeTaxRate*100)}% effective rate</div></div><div class="sum-amt ${r.salary > 0 ? 'green' : 'grey'}">£${Math.round(r.salary).toLocaleString()}</div></div>
+    <div class="sum-row ${r.splitting > 0 ? 'ok' : 'no'}"><div><div class="sum-label">Income Optimisation</div><div class="sum-desc">Tax band optimisation between partners</div></div><div class="sum-amt ${r.splitting > 0 ? 'green' : 'grey'}">£${Math.round(r.splitting).toLocaleString()}</div></div>
+    <div class="tot-box"><div><div class="tot-label">Estimated annual saving</div><div class="tot-range">Range: £${Math.round(r.minSaving).toLocaleString()} — £${Math.round(r.maxSaving).toLocaleString()}</div></div><div class="tot-amount">£${avg.toLocaleString()}</div></div>
+
+    ${in60TrapZone ? `<div class="ifs-box">📊 <strong>IFS Research (2026):</strong> A parent earning £100,001 with two nursery-age children in London needs to earn <strong>£149,000</strong> to match the disposable income of someone on £99,999. The combined 60% tax trap, lost childcare benefits, and lost personal allowance create one of the steepest cliff edges in the UK tax system. This report shows you how to navigate it.</div>` : ''}
+
+    <div class="elig-grid">
+        <div class="elig ${!over100k ? 'yes' : 'no'}"><span style="font-size:16px">${!over100k ? '✅' : '❌'}</span><div><div class="elig-text">Tax-Free Childcare</div><div class="elig-sub">${!over100k ? 'Eligible — apply now' : 'Blocked — pension can unlock'}</div></div></div>
+        <div class="elig ${r.has30Hours ? 'yes' : 'no'}"><span style="font-size:16px">${r.has30Hours ? '✅' : '❌'}</span><div><div class="elig-text">${fundedHoursPerWeek} Hours Childcare</div><div class="elig-sub">${r.has30Hours ? 'Eligible — claim code now' : 'Check eligibility'}</div></div></div>
+        <div class="elig ${!bothSelfEmployed ? 'yes' : 'maybe'}"><span style="font-size:16px">${!bothSelfEmployed ? '✅' : '⚠️'}</span><div><div class="elig-text">Salary Sacrifice</div><div class="elig-sub">${!bothSelfEmployed ? 'Available — ask HR' : 'Not available — self-employed'}</div></div></div>
+        <div class="elig ${hasPartner ? 'yes' : 'no'}"><span style="font-size:16px">${hasPartner ? '✅' : '➖'}</span><div><div class="elig-text">Income Splitting</div><div class="elig-sub">${hasPartner ? 'Dual income — opportunities exist' : 'Single income household'}</div></div></div>
+        <div class="elig ${!hicbcApplies ? 'yes' : cbNetBenefit > 0 ? 'maybe' : 'no'}"><span style="font-size:16px">${!hicbcApplies ? '✅' : '⚠️'}</span><div><div class="elig-text">Child Benefit</div><div class="elig-sub">${!hicbcApplies ? 'Full £' + totalCB.toLocaleString() + '/yr' : 'Net £' + Math.max(0,cbNetBenefit).toLocaleString() + '/yr — still register'}</div></div></div>
+        <div class="elig ${workplaceNurseryEligible ? 'yes' : 'no'}"><span style="font-size:16px">${workplaceNurseryEligible ? '✅' : '❌'}</span><div><div class="elig-text">Workplace Nursery Benefit</div><div class="elig-sub">${workplaceNurseryEligible ? 'Check with HR — avg £6,500/yr' : 'Not available self-employed'}</div></div></div>
+    </div>
+</div>
+
+<!-- PAGE 3+: STRATEGIES -->
+<div class="page">
+    <div class="ph"><div class="ph-logo">The 100k Parent</div><div class="ph-page">Your Strategies &bull; ${taxYear}</div></div>
+    <h2>Your Personalised Strategies</h2>
+    <p class="intro">Ordered by impact for your specific situation. Each strategy includes your exact numbers, a clear explanation of how it works, and specific action steps.</p>
+    ${strategies}
+    <div class="disclaimer"><strong>Important:</strong> Figures are estimates based on your inputs and HMRC rules for ${taxYear}. Actual savings depend on your full financial circumstances, employer arrangements and timing. Always confirm your adjusted net income with a qualified accountant or financial adviser before making changes to pension contributions or remuneration.</div>
+</div>
+
+<!-- NEXT STEPS -->
+<div class="page">
+    <div class="ph"><div class="ph-logo">The 100k Parent</div><div class="ph-page">Your Action Plan &bull; ${taxYear}</div></div>
+    <h2>Your Action Plan</h2>
+    <p class="intro">These are your specific next steps, ordered by urgency and financial impact. Each one has a direct action you can take today.</p>
+    ${steps}
+    <div class="disclaimer"><strong>Disclaimer:</strong> This report is for informational purposes only and does not constitute financial, tax or legal advice. The 100k Parent is not FCA regulated. Always consult a qualified financial adviser or accountant before making changes to your pension, salary structure or tax arrangements. HMRC rules and rates quoted are for the ${taxYear} tax year and may change.</div>
+</div>
+
+<!-- FOOTER -->
+<div class="rfooter">
+    <div class="rfooter-logo">The 100k Parent</div>
+    <p>Helping UK families earning over £100k navigate childcare costs and build family wealth</p>
+    <p style="margin-top:4px;">© 2026 The 100k Parent &bull; the100kparent.com &bull; ${date}</p>
+</div>
+
+</body>
+</html>`;
+
+        return html;
+    }
+</script>
+</body>
+</html>
