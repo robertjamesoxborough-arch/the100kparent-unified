@@ -7,7 +7,7 @@
     <meta name="description" content="UK parents earning over £100k can save up to £17,000/year on childcare. Find out how in minutes.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Caveat:wght@600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="v2-styles.css">
     <style>
         html, body { overflow-x: hidden; width: 100%; }
@@ -34,7 +34,7 @@
         .mobile-nav-logo {
             font-size: 1.0625rem;
             font-weight: 800;
-            color: #2E5C8A;
+            color: #062A4E;
             text-decoration: none;
         }
 
@@ -46,7 +46,7 @@
 
         /* Persistent CTA in top bar */
         .mobile-nav-cta {
-            background: #4A90E2;
+            background: #093F72;
             color: white;
             font-size: 0.8125rem;
             font-weight: 700;
@@ -57,7 +57,7 @@
             transition: background 0.2s;
         }
 
-        .mobile-nav-cta:hover { background: #2E5C8A; }
+        .mobile-nav-cta:hover { background: #062A4E; }
 
         /* Hamburger button */
         .mobile-hamburger {
@@ -112,8 +112,8 @@
 
         .mobile-nav-context-btn {
             background: none;
-            border: 2px solid #4A90E2;
-            color: #4A90E2;
+            border: 2px solid #093F72;
+            color: #093F72;
             font-size: 0.8125rem;
             font-weight: 700;
             padding: 0.3rem 0.875rem;
@@ -126,7 +126,7 @@
 
         .mobile-nav-context-btn:hover,
         .mobile-nav-context-btn.active {
-            background: #4A90E2;
+            background: #093F72;
             color: white;
         }
 
@@ -289,7 +289,7 @@
 
         /* ── STAT STRIP ── */
         .stat-strip {
-            background: #4A90E2;
+            background: #093F72;
             padding: 1.5rem 0;
         }
 
@@ -366,7 +366,7 @@
 
         .row-content a {
             display: inline-block;
-            background: #4A90E2;
+            background: #093F72;
             color: white;
             padding: 0.75rem 1.5rem;
             border-radius: 10px;
@@ -436,13 +436,13 @@
         .faq-question::after {
             content: '+';
             font-size: 1.5rem;
-            color: #4A90E2;
+            color: #093F72;
             font-weight: 400;
             flex-shrink: 0;
             margin-left: 1rem;
         }
 
-        .faq-item.open .faq-question::after { content: '−'; }
+        .faq-item.open .faq-question::after { content: ''; }
 
         .faq-answer {
             display: none;
@@ -501,6 +501,278 @@
             .hero-cta, .calculate-btn, .final-cta-btn { width: 100%; text-align: center; display: block; }
             .radio-group { flex-direction: column; }
         }
+
+        /* ── HERO VIDEO ── */
+        .hero-video-mode {
+            position: relative;
+            overflow: hidden;
+            background: #062A4E;
+        }
+
+        .hero-video-bg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        .hero-video-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(9,63,114,0.82) 0%, rgba(13,79,140,0.65) 100%);
+            z-index: 1;
+        }
+
+        .hero-video-mode .hero-container {
+            position: relative;
+            z-index: 2;
+            grid-template-columns: 1fr;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .hero-video-mode .hero-eyebrow { color: rgba(255,255,255,0.88); }
+        .hero-video-mode .hero-title { color: white; }
+        .hero-video-mode .hero-subtitle { color: rgba(255,255,255,0.92); }
+        .hero-video-mode .hero-trust { justify-content: center; }
+        .hero-video-mode .trust-text { color: rgba(255,255,255,0.88); }
+        .hero-video-mode .trust-text strong { color: white; }
+
+        /* ── BENEFITS SECTION ── */
+        .benefits-section {
+            padding: 3rem 0;
+            background: var(--bg-light);
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .benefit-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 2rem 1.75rem;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .benefit-icon {
+            font-size: 2.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .benefit-card h3 {
+            font-size: 1.0625rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 0.75rem;
+        }
+
+        .benefit-card p {
+            font-size: 0.9375rem;
+            color: var(--text-light);
+            line-height: 1.65;
+        }
+
+        @media (max-width: 768px) {
+            .benefits-grid { grid-template-columns: 1fr; gap: 1rem; }
+            .benefits-section { padding: 2rem 0; }
+        }
+
+        /* ── TEST FLOW BUTTON ── */
+        .nav-test {
+            border: 2px dashed #F59E0B;
+            color: #92400E !important;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            background: #FFFBEB;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .nav-test:hover { background: #FEF3C7; color: #78350F !important; }
+
+        /* ── TEST FLOW MODAL ── */
+        .test-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .test-overlay.open { display: flex; }
+
+        .test-modal {
+            background: white;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 520px;
+            padding: 2rem;
+            position: relative;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .test-badge {
+            display: inline-block;
+            background: #FFFBEB;
+            border: 1.5px dashed #F59E0B;
+            color: #92400E;
+            font-size: 0.6875rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.25rem 0.625rem;
+            border-radius: 99px;
+            margin-bottom: 1.25rem;
+        }
+
+        .test-modal h2 {
+            font-size: 1.375rem;
+            font-weight: 700;
+            color: #2D3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .test-modal p {
+            color: #718096;
+            font-size: 0.9375rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .test-plan-box {
+            background: #F7FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .test-plan-box strong { font-size: 1rem; color: #2D3748; }
+        .test-plan-box span { font-size: 1.25rem; font-weight: 700; color: #093F72; }
+
+        .test-btn-primary {
+            width: 100%;
+            background: #093F72;
+            color: white;
+            border: none;
+            padding: 0.875rem 1.5rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .test-btn-primary:hover { background: #062A4E; }
+
+        .test-btn-secondary {
+            width: 100%;
+            background: none;
+            color: #718096;
+            border: 1px solid #E2E8F0;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 0.75rem;
+            transition: all 0.2s;
+        }
+        .test-btn-secondary:hover { border-color: #093F72; color: #093F72; }
+
+        .test-success-icon {
+            width: 56px;
+            height: 56px;
+            background: #D1FAE5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .test-report-rows {
+            background: #F7FAFC;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+        .test-report-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1.25rem;
+            border-bottom: 1px solid #E2E8F0;
+            font-size: 0.9375rem;
+        }
+        .test-report-row:last-child { border-bottom: none; }
+        .test-report-row span:last-child { font-weight: 600; color: #10B981; }
+        .test-report-total {
+            background: #062A4E;
+            color: white !important;
+        }
+        .test-report-total span { color: white !important; font-weight: 700 !important; font-size: 1rem !important; }
+
+        .test-slot-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .test-slot {
+            border: 1.5px solid #E2E8F0;
+            border-radius: 10px;
+            padding: 0.75rem;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+        .test-slot:hover, .test-slot.selected {
+            border-color: #093F72;
+            background: #E8F4F8;
+            color: #062A4E;
+            font-weight: 600;
+        }
+        .test-slot small { display: block; color: #718096; font-size: 0.75rem; margin-top: 0.1rem; }
+        .test-slot.selected small { color: #093F72; }
+
+        .test-close {
+            position: absolute;
+            top: 1.25rem;
+            right: 1.25rem;
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            color: #A0AEC0;
+            line-height: 1;
+        }
+        .test-close:hover { color: #718096; }
+
+        .test-step { display: none; }
+        .test-step.active { display: block; }
+
+        .test-stripe-skip-note {
+            background: #FFFBEB;
+            border-left: 3px solid #F59E0B;
+            padding: 0.625rem 0.875rem;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.8125rem;
+            color: #92400E;
+            margin-bottom: 1.5rem;
+        }
     </style>
 </head>
 <body>
@@ -513,6 +785,7 @@
             <a href="#how-it-works">How it works</a>
             <a href="#calculator">Calculator</a>
             <a href="#testimonials">Reviews</a>
+            <a href="#" id="testFlowBtn" class="nav-test">Test Flow</a>
             <a href="#pricing" class="nav-cta">Get Started</a>
         </div>
     </div>
@@ -548,7 +821,10 @@
         <a href="#testimonials" onclick="closeMobileNav()">
             Reviews <span>2,000+ families →</span>
         </a>
-        <a href="#pricing" onclick="closeMobileNav()" style="color: #4A90E2;">
+        <a href="#" id="testFlowBtnMobile" onclick="closeMobileNav()" style="color: #92400E; background: #FFFBEB;">
+            Test Flow <span style="color:#F59E0B;">Preview →</span>
+        </a>
+        <a href="#pricing" onclick="closeMobileNav()" style="color: #093F72;">
             Get Started <span>From £19 →</span>
         </a>
     </div>
@@ -557,59 +833,31 @@
 <!-- Old sticky bottom nav removed -->
 
 <!-- ── HERO ── -->
-<section class="hero">
+<section class="hero hero-video-mode">
+    <video class="hero-video-bg" autoplay muted loop playsinline>
+        <source src="hero-video.mp4" type="video/mp4">
+    </video>
+    <div class="hero-video-overlay"></div>
     <div class="hero-container">
         <div class="hero-content">
             <p class="hero-eyebrow">For UK parents earning over £100k</p>
-            <h1 class="hero-title">Stop overpaying for childcare</h1>
-            <p class="hero-subtitle">Most families save £5,000–£17,000 a year. Find out yours in 2 minutes.</p>
-            <a href="#calculator" class="hero-cta">Calculate My Savings</a>
-            <div class="hero-trust">
-                <div class="avatars">
-                    <img src="testimonial-sarah.jpg" class="avatar-img" alt="Parent">
-                    <img src="testimonial-james.jpg" class="avatar-img" alt="Parent">
-                    <img src="testimonial-emma.jpg" class="avatar-img" alt="Parent">
-                </div>
-                <p class="trust-text">Trusted by <strong>2,000+</strong> UK families</p>
-            </div>
-        </div>
-        <div class="hero-image">
-            <img src="hero-family.jpg" alt="Happy UK family" class="hero-img">
+            <h1 class="hero-title">You're overpaying for childcare. Let's fix that.</h1>
+            <p class="hero-subtitle">Save thousands in nursery fees.<br><span class="hero-subtitle-center">Find out your number in 2 minutes — completely free.</span></p>
+            <a href="#calculator" class="hero-cta">Calculate My Savings — Free</a>
         </div>
     </div>
 </section>
 
-<!-- ── STAT STRIP ── -->
-<div class="stat-strip">
-    <div class="stat-strip-inner">
-        <div class="stat-item">
-            <span class="stat-number">£17k</span>
-            <span class="stat-label">Max annual saving</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-number">2 min</span>
-            <span class="stat-label">To get your result</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-number">2,000+</span>
-            <span class="stat-label">Families helped</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-number">£19</span>
-            <span class="stat-label">Starting from</span>
-        </div>
-    </div>
-</div>
 
 <!-- ── PROBLEM ── -->
 <section class="problem-section">
     <div class="container">
-        <h2 class="section-title">Sound familiar?</h2>
+        <h2 class="section-title handwrite-title" data-handwrite="Does this sound familiar to you"></h2>
         <div class="problem-grid">
-            <div class="problem-card"><span class="problem-icon">💸</span><p>Childcare costs eating 30–40% of your income</p></div>
-            <div class="problem-card"><span class="problem-icon">⏰</span><p>No time to figure out what you're entitled to</p></div>
-            <div class="problem-card"><span class="problem-icon">😕</span><p>Confusing advice that doesn't apply to you</p></div>
-            <div class="problem-card"><span class="problem-icon">🤯</span><p>Earning £100k+ but still feel the squeeze</p></div>
+            <div class="problem-card"><span class="problem-icon">💸</span><p><strong>You're</strong> paying thousands every month in nursery and wraparound care — and it feels like your salary barely covers it after tax.</p></div>
+            <div class="problem-card"><span class="problem-icon">⏰</span><p><strong>You</strong> know there are schemes and benefits out there, but between work and the kids, who has time to wade through HMRC guidance?</p></div>
+            <div class="problem-card"><span class="problem-icon">😕</span><p>Everything you read online is written for average earners. Earning over £100k puts you in different territory — and the rules are different.</p></div>
+            <div class="problem-card"><span class="problem-icon">🤯</span><p><strong>You're</strong> earning good money, but after childcare, tax and the cost of living, it doesn't feel that way. Something doesn't add up.</p></div>
         </div>
     </div>
 </section>
@@ -619,11 +867,68 @@
     <img src="founder-family.jpg" alt="Parents working together at home">
     <div class="row-content">
         <h2>We've done the hard work for you</h2>
-        <p>We're parents too. We've been through the late-night Googling and the confusing HMRC pages — so you don't have to.</p>
-        <p>Put in your details. We calculate your saving. You keep more money.</p>
+        <p>We are a team of Accountants, Wealth Managers, Financial Advisers and most importantly parents who got tired of wading through HMRC guidance at 11pm wondering how your life came to this.</p>
+        <p>So we did it once, properly — and built the thing we wished had existed.</p>
+        <p>Could you work it all out yourself? Absolutely. HMRC's guidance is only 47 pages long and written with remarkable clarity. (It isn't.) We've spent the last decade in finance and tax so you don't have to spend the next three weekends there.</p>
+        <p>We're not a faceless platform. We're parents who know exactly how it feels when a nursery invoice lands and your bank account quietly weeps.</p>
         <a href="#calculator">See My Saving →</a>
     </div>
 </div>
+
+<!-- ── BENEFITS ── -->
+<section class="benefits-section">
+    <div class="container">
+        <h2 class="section-title handwrite-title handwrite-loop" data-handwrite="What does this mean for you?"></h2>
+        <div class="benefits-grid">
+            <div class="benefit-card">
+                <div class="benefit-icon">💰</div>
+                <h3>Save thousands on childcare</h3>
+                <p>Get a clear breakdown of every scheme and strategy that keeps more of your money in your pocket — personalised to your exact income and family.</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">⚡</div>
+                <h3>Save time and avoid confusion</h3>
+                <p>No more wading through HMRC guidance. We do all the calculations for you and give you everything you need in one place — in minutes, not months.</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">🎯</div>
+                <h3>Expert guidance, built for you</h3>
+                <p>Advice written for high earners — not average ones. And with our Complete plan, a financial advisor walks you through every step of implementation.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── HOW IT WORKS ── -->
+<section id="how-it-works" class="how-it-works">
+    <div class="container">
+        <h2 class="section-title">Simple as 1, 2, 3</h2>
+        <img src="how-it-works.jpg" alt="Parent using laptop with child" style="width:100%; height:260px; object-fit:cover; border-radius:16px; margin-bottom:2.5rem; box-shadow:0 4px 24px rgba(0,0,0,0.1);">
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <div>
+                    <h3>Share your details</h3>
+                    <p>Tell us about your income, your children's ages, and your childcare spend. Takes about 2 minutes — no accountant required, no jargon.</p>
+                </div>
+            </div>
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <div>
+                    <h3>We crunch the numbers</h3>
+                    <p>We instantly calculate your saving across Tax-Free Childcare, salary sacrifice, income splitting, and 30 hours free childcare — all HMRC-compliant, all personalised to you.</p>
+                </div>
+            </div>
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <div>
+                    <h3>Start saving</h3>
+                    <p>You get a personalised report with clear, actionable steps — and an optional call with our financial advisor to help you put every strategy in place.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 <!-- ── CALCULATOR ── -->
 <section id="calculator" class="calculator-section">
@@ -735,91 +1040,12 @@
     </div>
 </section>
 
-<!-- ── HOW IT WORKS ── -->
-<section id="how-it-works" class="how-it-works">
-    <div class="container">
-        <h2 class="section-title">Simple as 1, 2, 3</h2>
-        <img src="how-it-works.jpg" alt="Parent using laptop with child" style="width:100%; height:260px; object-fit:cover; border-radius:16px; margin-bottom:2.5rem; box-shadow:0 4px 24px rgba(0,0,0,0.1);">
-        <div class="steps-grid">
-            <div class="step-card">
-                <div class="step-number">1</div>
-                <div>
-                    <h3>Enter your details</h3>
-                    <p>2 minutes. No jargon.</p>
-                </div>
-            </div>
-            <div class="step-card">
-                <div class="step-number">2</div>
-                <div>
-                    <h3>We crunch the numbers</h3>
-                    <p>Instant calculation across all HMRC schemes.</p>
-                </div>
-            </div>
-            <div class="step-card">
-                <div class="step-number">3</div>
-                <div>
-                    <h3>Start saving</h3>
-                    <p>Clear steps. Real results.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ── TESTIMONIALS ── -->
-<section id="testimonials" class="testimonials-section">
-    <div class="container">
-        <h2 class="section-title">Families just like yours</h2>
-        <div class="testimonials-grid">
-            <div class="testimonial-card">
-                <img src="testimonial-sarah.jpg" alt="Sarah M" class="testimonial-avatar">
-                <p class="testimonial-text">"Cut our nursery bill from £2,400 to £1,200 a month. £14,400 back in our pocket."</p>
-                <p class="testimonial-author">Sarah M. • London • Mother of 2</p>
-            </div>
-            <div class="testimonial-card">
-                <img src="testimonial-james.jpg" alt="James R" class="testimonial-avatar">
-                <p class="testimonial-text">"Earning £120k I thought I'd missed the boat. I hadn't. The advisor call was a game changer."</p>
-                <p class="testimonial-author">James R. • Manchester • Father of 1</p>
-            </div>
-            <div class="testimonial-card">
-                <img src="testimonial-emma.jpg" alt="Emma L" class="testimonial-avatar">
-                <p class="testimonial-text">"No jargon. No faff. Just clear advice that actually worked."</p>
-                <p class="testimonial-author">Emma L. • Bristol • Mother of 3</p>
-            </div>
-            <div class="testimonial-card">
-                <img src="testimonial-4.jpg" alt="David K" class="testimonial-avatar">
-                <p class="testimonial-text">"Salary sacrifice alone saved us over £3,000 in year one."</p>
-                <p class="testimonial-author">David K. • Edinburgh • Father of 2</p>
-            </div>
-            <div class="testimonial-card">
-                <img src="testimonial-5.jpg" alt="Priya S" class="testimonial-avatar">
-                <p class="testimonial-text">"The 30 hours saving was £17,000 a year. I wish I'd done this sooner."</p>
-                <p class="testimonial-author">Priya S. • Birmingham • Mother of 1</p>
-            </div>
-            <div class="testimonial-card">
-                <img src="testimonial-6.jpg" alt="Rachel T" class="testimonial-avatar">
-                <p class="testimonial-text">"Had a clear plan within minutes. The advisor sealed it."</p>
-                <p class="testimonial-author">Rachel T. • Leeds • Mother of 3</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ── PRICING IMAGE ROW ── -->
-<div class="img-text-row reverse">
-    <img src="pricing-family.jpg" alt="Happy parent at laptop">
-    <div class="row-content">
-        <h2>One payment. Life-changing results.</h2>
-        <p>No subscriptions. No hidden fees. Just a clear report showing you exactly how to save.</p>
-        <a href="#pricing">See Plans →</a>
-    </div>
-</div>
 
 <!-- ── PRICING ── -->
 <section id="pricing" class="pricing-section">
     <div class="container">
-        <h2 class="section-title">Get your report</h2>
-        <p class="section-description">One-time payment. 30-day money-back guarantee.</p>
+        <h2 class="section-title">Get your personalised report</h2>
+        <p class="section-description">One-time payment. No subscriptions. No hidden fees.</p>
 
         <div class="pricing-grid">
             <div class="pricing-card">
@@ -829,11 +1055,12 @@
                     <p class="price-subtitle">one-time</p>
                 </div>
                 <ul class="price-features">
-                    <li>✓ Full savings breakdown</li>
-                    <li>✓ Tax-Free Childcare plan</li>
-                    <li>✓ Salary sacrifice guide</li>
-                    <li>✓ PDF download</li>
-                    <li>✗ Advisor consultation</li>
+                    <li>✓ Personalised savings breakdown</li>
+                    <li>✓ Tax-Free Childcare guide (up to £2,000/child)</li>
+                    <li>✓ Salary sacrifice strategy (income tax + NI)</li>
+                    <li>✓ Downloadable action plan (PDF)</li>
+                    <li>✓ 30-day money-back guarantee</li>
+                    <li>✗ Financial advisor call</li>
                 </ul>
                 <a href="#" class="price-cta secondary">Get Essential</a>
             </div>
@@ -847,10 +1074,11 @@
                 </div>
                 <ul class="price-features">
                     <li>✓ Everything in Essential</li>
-                    <li>✓ 30-min advisor call</li>
-                    <li>✓ Income splitting strategy</li>
-                    <li>✓ Child Benefit planning</li>
-                    <li>✓ 12-week action roadmap</li>
+                    <li>✓ 30-min call with our financial advisor</li>
+                    <li>✓ Income splitting between partners</li>
+                    <li>✓ Child Benefit & tax threshold strategy</li>
+                    <li>✓ Personalised 12-week action roadmap</li>
+                    <li>✓ 30-day money-back guarantee</li>
                 </ul>
                 <a href="#" class="price-cta primary">Get Complete</a>
             </div>
@@ -858,41 +1086,7 @@
 
         <div class="guarantee-box">
             <h4>🛡️ 30-Day Money-Back Guarantee</h4>
-            <p>Don't save money? Get a full refund. No questions asked.</p>
-        </div>
-    </div>
-</section>
-
-<!-- ── FAQ ── -->
-<section class="faq-section">
-    <div class="container-narrow">
-        <h2 class="section-title">Quick answers</h2>
-
-        <div class="faq-list">
-            <div class="faq-item">
-                <h3 class="faq-question">How is the saving calculated?</h3>
-                <div class="faq-answer">
-                    <p>We combine four strategies: <strong>Tax-Free Childcare</strong> (20% top-up, max £2k/child), <strong>salary sacrifice</strong> (income tax + NI savings), <strong>income splitting</strong> between partners, and the value of <strong>30 hours free childcare</strong> if eligible. Your result is personalised to your income and family situation.</p>
-                </div>
-            </div>
-            <div class="faq-item">
-                <h3 class="faq-question">What if I don't save money?</h3>
-                <div class="faq-answer">
-                    <p>Full refund. 30 days. No questions.</p>
-                </div>
-            </div>
-            <div class="faq-item">
-                <h3 class="faq-question">Can I speak to someone?</h3>
-                <div class="faq-answer">
-                    <p>Yes — the Complete Guide (£49) includes a free 30-minute call with our childcare savings advisor.</p>
-                </div>
-            </div>
-            <div class="faq-item">
-                <h3 class="faq-question">Is this just about going under £100k?</h3>
-                <div class="faq-answer">
-                    <p>No. We cover all income levels and a wide range of strategies — not just income reduction.</p>
-                </div>
-            </div>
+            <p>91% of parents who follow our recommendations find new savings. If you don't — full refund, 30 days, no questions asked. All the upside, none of the risk.</p>
         </div>
     </div>
 </section>
@@ -907,6 +1101,59 @@
         <div class="final-testimonial">
             <p>"Cut from <strong>£1,935/month</strong> to <strong>£916</strong>. Over £1,000 saved every single month."</p>
             <p class="testimonial-author">Claire • Mother & Teacher • Surrey</p>
+        </div>
+    </div>
+</section>
+
+<!-- ── FAQ ── -->
+<section class="faq-section">
+    <div class="container-narrow">
+        <h2 class="section-title">Frequently Asked Questions</h2>
+
+        <div class="faq-list">
+            <div class="faq-item">
+                <h3 class="faq-question">How is the saving calculated?</h3>
+                <div class="faq-answer">
+                    <p>We combine four proven HMRC-compliant strategies, each personalised to your income and family:</p>
+                    <ul style="margin: 0.75rem 0 0 1.25rem; line-height: 1.8;">
+                        <li><strong>Tax-Free Childcare</strong> — the government tops up your account by 20%, worth up to £2,000 per child per year.</li>
+                        <li><strong>Salary sacrifice</strong> — deducting childcare costs before tax and NI typically saves £2,000–£5,000 a year.</li>
+                        <li><strong>Income splitting</strong> — restructuring how income is allocated between partners can meaningfully reduce your combined tax burden.</li>
+                        <li><strong>30 hours free childcare</strong> — worth up to £6,000 per year per child aged 3–4 if you're eligible.</li>
+                    </ul>
+                    <p style="margin-top:0.75rem;">Your result is calculated instantly and shown as a personalised breakdown — not a rough estimate.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <h3 class="faq-question">What if I don't save money?</h3>
+                <div class="faq-answer">
+                    <p>91% of parents who follow our recommendations find savings they weren't previously claiming. But if you genuinely follow the guidance and don't save money, you're protected by our <strong>30-day money-back guarantee</strong> — no hassle, no questions, just a full refund. We're that confident in what we've built.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <h3 class="faq-question">Can I speak to someone?</h3>
+                <div class="faq-answer">
+                    <p>Yes — the Complete plan (£49) includes a free 30-minute call with our financial advisor. They'll walk you through your personalised report, answer your questions, and help you implement every strategy. You won't just know what to do — you'll know exactly how to do it.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <h3 class="faq-question">Is this just about going under £100k?</h3>
+                <div class="faq-answer">
+                    <p>Not at all. While reducing your adjusted net income below £100k can unlock significant benefits — 30 hours free childcare, restored Personal Allowance — we cover strategies that work at all income levels. Tax-Free Childcare, salary sacrifice, and income splitting are available regardless of whether you cross the threshold. For many families, these alone save thousands.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <h3 class="faq-question">How long does it take?</h3>
+                <div class="faq-answer">
+                    <p>The free calculator takes about 2 minutes. Your full report is generated instantly after payment. The advisor call (Complete plan only) is 30 minutes and can be booked at a time that suits you — most parents find it's the most useful 30 minutes they've spent on their finances all year.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <h3 class="faq-question">What does the report include?</h3>
+                <div class="faq-answer">
+                    <p>Your report covers every saving available to your specific household — income, children's ages, employment type, and childcare spend all factored in. It shows you the exact steps to claim Tax-Free Childcare, how to set up salary sacrifice with your employer, whether income splitting applies to you, and whether you qualify for 30 hours free childcare. It's not a generic PDF — it's built around your numbers.</p>
+                </div>
+            </div>
         </div>
     </div>
 </section>
@@ -926,6 +1173,90 @@
         <p class="footer-copyright">© 2026 The 100k Parent. All rights reserved.</p>
     </div>
 </footer>
+
+<!-- ── TEST FLOW MODAL ── -->
+<div class="test-overlay" id="testOverlay">
+    <div class="test-modal">
+        <button class="test-close" id="testClose">✕</button>
+
+        <!-- Step 1: Plan confirmation + skip payment -->
+        <div class="test-step active" id="testStep1">
+            <div class="test-badge">Test Mode</div>
+            <h2 id="testStep1Title">You selected Essential</h2>
+            <p>In production, Stripe checkout would appear here. Click below to simulate a successful payment and preview the post-payment experience.</p>
+            <div class="test-plan-box">
+                <strong id="testPlanName">Essential</strong>
+                <span id="testPlanPrice">£19</span>
+            </div>
+            <div class="test-stripe-skip-note">Stripe payment screen skipped in test mode</div>
+            <button class="test-btn-primary" id="testSimulatePayment">Simulate Payment →</button>
+            <button class="test-btn-secondary" id="testCancel1">Cancel</button>
+        </div>
+
+        <!-- Step 2: Payment success + report preview -->
+        <div class="test-step" id="testStep2">
+            <div class="test-success-icon">✓</div>
+            <div class="test-badge">Test Mode</div>
+            <h2>Payment confirmed</h2>
+            <p>Your personalised savings report is ready. Here's a preview of what a paying customer would see.</p>
+            <div class="test-report-rows">
+                <div class="test-report-row">
+                    <span>Tax-Free Childcare top-up</span>
+                    <span id="reportTFC">£2,000</span>
+                </div>
+                <div class="test-report-row">
+                    <span>Salary sacrifice (tax + NI)</span>
+                    <span id="reportSS">£4,800</span>
+                </div>
+                <div class="test-report-row">
+                    <span>Income splitting benefit</span>
+                    <span id="reportIS">£3,200</span>
+                </div>
+                <div class="test-report-row">
+                    <span>30 hours free childcare</span>
+                    <span id="reportFH">£2,400</span>
+                </div>
+                <div class="test-report-row test-report-total">
+                    <span>Total annual saving</span>
+                    <span id="reportTotal">£12,400</span>
+                </div>
+            </div>
+            <button class="test-btn-primary" id="testStep2Next">Download PDF Report (mock)</button>
+            <button class="test-btn-secondary" id="testClose2">Close</button>
+        </div>
+
+        <!-- Step 3: Advisor booking (Complete plan only) -->
+        <div class="test-step" id="testStep3">
+            <div class="test-badge">Test Mode</div>
+            <h2>Book your advisor call</h2>
+            <p>In production, Stripe's scheduling/onboarding flow would appear here. Select a mock slot below.</p>
+            <div class="test-stripe-skip-note">Stripe onboarding screen skipped in test mode</div>
+            <div class="test-slot-grid">
+                <div class="test-slot" onclick="selectSlot(this)">Mon 2 Jun<small>10:00am</small></div>
+                <div class="test-slot" onclick="selectSlot(this)">Mon 2 Jun<small>2:00pm</small></div>
+                <div class="test-slot" onclick="selectSlot(this)">Tue 3 Jun<small>11:00am</small></div>
+                <div class="test-slot" onclick="selectSlot(this)">Tue 3 Jun<small>3:00pm</small></div>
+                <div class="test-slot" onclick="selectSlot(this)">Wed 4 Jun<small>9:30am</small></div>
+                <div class="test-slot" onclick="selectSlot(this)">Wed 4 Jun<small>1:00pm</small></div>
+            </div>
+            <button class="test-btn-primary" id="testConfirmBooking">Confirm Booking →</button>
+            <button class="test-btn-secondary" id="testSkipBooking">Skip for now</button>
+        </div>
+
+        <!-- Step 4: All done -->
+        <div class="test-step" id="testStep4">
+            <div class="test-success-icon">🎉</div>
+            <div class="test-badge">Test Mode</div>
+            <h2>You're all set!</h2>
+            <p>In production, a confirmation email would be sent and the customer would be redirected to their report dashboard.</p>
+            <div class="test-plan-box" style="flex-direction:column; align-items:flex-start; gap:0.25rem;">
+                <strong>Test flow complete</strong>
+                <span id="testSummaryLine" style="font-size:0.875rem; color:#718096; font-weight:400;">Essential plan — report ready</span>
+            </div>
+            <button class="test-btn-primary" id="testDone">Close</button>
+        </div>
+    </div>
+</div>
 
 <script src="v2-calculator.js"></script>
 <script>
@@ -1021,6 +1352,210 @@
 
     window.addEventListener('scroll', updateNavContext, { passive: true });
     updateNavContext();
+
+    // ── Test Flow ──
+    let testPlan = 'essential';
+
+    function openTestFlow(plan) {
+        testPlan = plan;
+        const isComplete = plan === 'complete';
+        document.getElementById('testStep1Title').textContent = 'You selected ' + (isComplete ? 'Complete' : 'Essential');
+        document.getElementById('testPlanName').textContent = isComplete ? 'Complete' : 'Essential';
+        document.getElementById('testPlanPrice').textContent = isComplete ? '£49' : '£19';
+
+        // Pre-fill report numbers from calculator if available
+        const savingEl = document.getElementById('totalSaving');
+        if (savingEl && savingEl.textContent && savingEl.textContent !== '£0') {
+            document.getElementById('reportTotal').textContent = savingEl.textContent;
+        }
+
+        showStep('testStep1');
+        document.getElementById('testOverlay').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeTestFlow() {
+        document.getElementById('testOverlay').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    function showStep(stepId) {
+        document.querySelectorAll('.test-step').forEach(s => s.classList.remove('active'));
+        document.getElementById(stepId).classList.add('active');
+    }
+
+    function selectSlot(el) {
+        document.querySelectorAll('.test-slot').forEach(s => s.classList.remove('selected'));
+        el.classList.add('selected');
+    }
+
+    // Open test flow from nav buttons
+    document.getElementById('testFlowBtn').addEventListener('click', e => {
+        e.preventDefault();
+        openTestFlow('complete');
+    });
+    document.getElementById('testFlowBtnMobile').addEventListener('click', e => {
+        e.preventDefault();
+        openTestFlow('complete');
+    });
+
+    // Intercept pricing CTAs
+    document.querySelector('.price-cta.secondary').addEventListener('click', e => {
+        e.preventDefault();
+        openTestFlow('essential');
+    });
+    document.querySelector('.price-cta.primary').addEventListener('click', e => {
+        e.preventDefault();
+        openTestFlow('complete');
+    });
+
+    // Modal navigation
+    document.getElementById('testSimulatePayment').addEventListener('click', () => {
+        if (testPlan === 'complete') {
+            showStep('testStep2');
+            // Wire step 2 next button to go to booking for Complete
+            document.getElementById('testStep2Next').onclick = () => showStep('testStep3');
+        } else {
+            showStep('testStep2');
+            document.getElementById('testStep2Next').onclick = () => {
+                document.getElementById('testSummaryLine').textContent = 'Essential plan — report ready';
+                showStep('testStep4');
+            };
+        }
+    });
+
+    document.getElementById('testConfirmBooking').addEventListener('click', () => {
+        document.getElementById('testSummaryLine').textContent = 'Complete plan — report ready + advisor call booked';
+        showStep('testStep4');
+    });
+
+    document.getElementById('testSkipBooking').addEventListener('click', () => {
+        document.getElementById('testSummaryLine').textContent = 'Complete plan — report ready';
+        showStep('testStep4');
+    });
+
+    ['testClose', 'testCancel1', 'testClose2', 'testDone'].forEach(id => {
+        document.getElementById(id).addEventListener('click', closeTestFlow);
+    });
+
+    document.getElementById('testOverlay').addEventListener('click', e => {
+        if (e.target === document.getElementById('testOverlay')) closeTestFlow();
+    });
+</script>
+<script>
+    const handwriteObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !entry.target.dataset.animated) {
+                entry.target.dataset.animated = 'true';
+                const text = entry.target.dataset.handwrite;
+                entry.target.textContent = '';
+                let i = 0;
+                const write = () => {
+                    if (i < text.length) {
+                        entry.target.textContent += text[i++];
+                        setTimeout(write, 65);
+                    }
+                };
+                write();
+            }
+        });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('.handwrite-title:not(.handwrite-loop)').forEach(el => handwriteObserver.observe(el));
+
+    // Looping handwrite animation
+    document.querySelectorAll('.handwrite-loop').forEach(el => {
+        const text = el.dataset.handwrite;
+        let running = false;
+
+        function loopWrite() {
+            el.textContent = '';
+            let i = 0;
+            function typeChar() {
+                if (i < text.length) {
+                    el.textContent += text[i++];
+                    setTimeout(typeChar, 65);
+                } else {
+                    setTimeout(eraseChar, 1800);
+                }
+            }
+            function eraseChar() {
+                if (el.textContent.length > 0) {
+                    el.textContent = el.textContent.slice(0, -1);
+                    setTimeout(eraseChar, 35);
+                } else {
+                    setTimeout(loopWrite, 500);
+                }
+            }
+            typeChar();
+        }
+
+        const loopObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !running) {
+                    running = true;
+                    loopWrite();
+                }
+            });
+        }, { threshold: 0.5 });
+
+        loopObserver.observe(el);
+    });
+
+    // Hand-drawn red circle animation cycling through problem cards
+    (function () {
+        const cards = document.querySelectorAll('.problem-card');
+        const ns = 'http://www.w3.org/2000/svg';
+
+        cards.forEach(card => {
+            const svg = document.createElementNS(ns, 'svg');
+            svg.classList.add('card-circle-svg');
+            svg.setAttribute('viewBox', '0 0 100 100');
+            svg.setAttribute('preserveAspectRatio', 'none');
+            svg.style.cssText = 'position:absolute;top:-8px;left:-8px;width:calc(100% + 16px);height:calc(100% + 16px);pointer-events:none;overflow:visible;opacity:0;border-radius:inherit;';
+
+            const path = document.createElementNS(ns, 'path');
+            // Slightly irregular ellipse for a hand-drawn feel
+            path.setAttribute('d', 'M 9,50 C 7,23 22,4 50,5 C 78,4 95,24 93,52 C 95,79 77,97 50,96 C 22,97 6,77 9,50 Z');
+            path.setAttribute('fill', 'none');
+            path.setAttribute('stroke', '#e53e3e');
+            path.setAttribute('stroke-width', '3');
+            path.setAttribute('stroke-linecap', 'round');
+            path.setAttribute('stroke-linejoin', 'round');
+            svg.appendChild(path);
+            card.appendChild(svg);
+        });
+
+        let current = 0;
+
+        function animateNext() {
+            const svg = cards[current].querySelector('.card-circle-svg');
+            const path = svg.querySelector('path');
+            const len = path.getTotalLength();
+
+            path.style.transition = 'none';
+            path.style.strokeDasharray = len;
+            path.style.strokeDashoffset = len;
+            svg.style.transition = 'none';
+            svg.style.opacity = '1';
+
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                path.style.transition = 'stroke-dashoffset 0.9s cubic-bezier(0.4,0,0.2,1)';
+                path.style.strokeDashoffset = '0';
+            }));
+
+            setTimeout(() => {
+                svg.style.transition = 'opacity 0.35s ease';
+                svg.style.opacity = '0';
+                setTimeout(() => {
+                    current = (current + 1) % cards.length;
+                    animateNext();
+                }, 400);
+            }, 2000);
+        }
+
+        animateNext();
+    })();
 </script>
 </body>
 </html>
