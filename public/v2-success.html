@@ -11,12 +11,12 @@
         body { font-family: 'Inter', sans-serif; background: #F7FAFC; color: #2D3748; min-height: 100vh; }
 
         .nav { background: white; border-bottom: 1px solid #E2E8F0; padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; }
-        .nav-logo { font-size: 1.25rem; font-weight: 800; color: #2E5C8A; text-decoration: none; }
-        .nav-back { font-size: 0.875rem; color: #4A90E2; text-decoration: none; font-weight: 600; }
+        .nav-logo { font-size: 1.25rem; font-weight: 800; color: #062A4E; text-decoration: none; }
+        .nav-back { font-size: 0.875rem; color: #093F72; text-decoration: none; font-weight: 600; }
 
         .container { max-width: 700px; margin: 0 auto; padding: 3rem 1.5rem; }
 
-        .success-icon { width: 80px; height: 80px; background: #10B981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 2.5rem; }
+        .report-ready-mark { width: 80px; height: 80px; background: white; border: 2px solid #E2E8F0; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; box-shadow: 0 4px 16px rgba(9,63,114,0.10); }
 
         h1 { text-align: center; font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; }
         .subtitle { text-align: center; color: #718096; font-size: 1.0625rem; margin-bottom: 2.5rem; }
@@ -24,7 +24,7 @@
         .card { background: white; border-radius: 20px; padding: 2rem; box-shadow: 0 4px 24px rgba(0,0,0,0.08); margin-bottom: 1.5rem; }
 
         .card-header { display: flex; align-items: center; gap: 1rem; padding-bottom: 1.5rem; border-bottom: 2px solid #E2E8F0; margin-bottom: 1.5rem; }
-        .card-icon { width: 50px; height: 50px; background: #4A90E2; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
+        .card-icon { width: 50px; height: 50px; background: #093F72; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
         .card-title { font-weight: 800; font-size: 1.125rem; }
         .card-sub { color: #718096; font-size: 0.875rem; margin-top: 2px; }
 
@@ -32,24 +32,24 @@
         .saving-row:last-of-type { border-bottom: none; }
         .saving-label { font-weight: 600; font-size: 0.9375rem; }
         .saving-desc { font-size: 0.8125rem; color: #A0AEC0; margin-top: 2px; }
-        .saving-amount { font-weight: 800; color: #10B981; font-size: 1.25rem; white-space: nowrap; }
+        .saving-amount { font-weight: 800; color: #15803D; font-size: 1.25rem; white-space: nowrap; }
         .saving-amount.zero { color: #CBD5E0; }
 
-        .total-box { background: linear-gradient(135deg, #4A90E2, #2E5C8A); border-radius: 16px; padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; color: white; }
+        .total-box { background: linear-gradient(135deg, #093F72, #062A4E); border-radius: 16px; padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; color: white; }
         .total-label { font-weight: 700; font-size: 1rem; opacity: 0.9; }
         .total-range { font-size: 0.8125rem; opacity: 0.7; margin-top: 4px; }
         .total-amount { font-size: 2.5rem; font-weight: 800; }
 
-        .download-btn { display: block; width: 100%; background: #10B981; color: white; border: none; border-radius: 14px; padding: 1.125rem; font-size: 1.125rem; font-weight: 700; cursor: pointer; text-align: center; margin: 1.5rem 0 0.75rem; transition: all 0.2s; font-family: 'Inter', sans-serif; }
-        .download-btn:hover { background: #059669; transform: translateY(-1px); }
+        .download-btn { display: block; width: 100%; background: #15803D; color: white; border: none; border-radius: 14px; padding: 1.125rem; font-size: 1.125rem; font-weight: 700; cursor: pointer; text-align: center; margin: 1.5rem 0 0.75rem; transition: all 0.2s; font-family: 'Inter', sans-serif; }
+        .download-btn:hover { background: #14532D; transform: translateY(-1px); }
         .download-btn:disabled { background: #A0AEC0; transform: none; cursor: not-allowed; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16,185,129,0.4); } 50% { transform: scale(1.02); box-shadow: 0 0 0 8px rgba(16,185,129,0); } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(21,128,61,0.4); } 50% { transform: scale(1.02); box-shadow: 0 0 0 8px rgba(21,128,61,0); } }
 
         .download-note { text-align: center; font-size: 0.8125rem; color: #A0AEC0; margin-bottom: 1.5rem; }
 
         .tier-badge { display: inline-block; padding: 0.25rem 0.875rem; border-radius: 20px; font-size: 0.8125rem; font-weight: 700; margin-bottom: 1rem; }
-        .tier-badge.essential { background: #E8F4F8; color: #2E5C8A; }
-        .tier-badge.complete { background: #4A90E2; color: white; }
+        .tier-badge.essential { background: #E1EFFC; color: #062A4E; }
+        .tier-badge.complete { background: #093F72; color: white; }
 
         .advisor-box { background: #F0EDFF; border-radius: 14px; padding: 1.5rem; margin-top: 1rem; }
         .advisor-box h3 { color: #7B68EE; margin-bottom: 0.5rem; font-size: 1rem; }
@@ -58,7 +58,7 @@
 
         .no-results { text-align: center; padding: 3rem; }
         .no-results p { color: #718096; margin-bottom: 1.5rem; }
-        .no-results a { background: #4A90E2; color: white; padding: 0.875rem 2rem; border-radius: 12px; text-decoration: none; font-weight: 700; }
+        .no-results a { background: #093F72; color: white; padding: 0.875rem 2rem; border-radius: 12px; text-decoration: none; font-weight: 700; }
 
         @media (max-width: 600px) {
             h1 { font-size: 1.625rem; }
@@ -68,7 +68,7 @@
 
         /* Loading state */
         .loading { text-align: center; padding: 4rem; }
-        .spinner { width: 40px; height: 40px; border: 4px solid #E2E8F0; border-top-color: #4A90E2; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
+        .spinner { width: 40px; height: 40px; border: 4px solid #E2E8F0; border-top-color: #093F72; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
         /* ── PROGRESS BAR ── */
@@ -247,10 +247,21 @@
                 <a href="v2.html#calculator">Go to Calculator</a>
             </div>`;
     } else {
-        const avg = Math.round((r.minSaving + r.maxSaving) / 2);
+        const potentialTfc = Math.round(Math.min((r.monthlyChildcare * 12) * 0.20, 2000 * r.numChildren));
+        const potentialThirtyHours = Math.round(0.4 * (r.monthlyChildcare || 0) * 12);
+        const potentialSalary = Math.round(r.salary || 0);
+        const avg = potentialTfc + potentialThirtyHours + potentialSalary;
+        const rangeMin = Math.min(potentialTfc, potentialThirtyHours, potentialSalary);
+        const rangeMax = avg;
 
         main.innerHTML = `
-            <div class="success-icon">🎉</div>
+            <div class="report-ready-mark">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="#093F72" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" fill="#EBF4FF"/>
+                    <polyline points="14 2 14 8 20 8" stroke="#093F72" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                    <polyline points="9 15 11 17 15 13" stroke="#15803D" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
             <h1>Your report is ready</h1>
             <p class="subtitle">Your personalised childcare savings report based on your family details</p>
 
@@ -269,7 +280,7 @@
                         <div class="saving-label">Tax-Free Childcare</div>
                         <div class="saving-desc">20% government top-up on eligible costs</div>
                     </div>
-                    <div class="saving-amount ${r.tfc === 0 ? 'zero' : ''}">£${Math.round(r.tfc).toLocaleString()}</div>
+                    <div class="saving-amount">£${potentialTfc.toLocaleString()}</div>
                 </div>
 
                 <div class="saving-row">
@@ -282,24 +293,16 @@
 
                 <div class="saving-row">
                     <div>
-                        <div class="saving-label">Income Splitting</div>
-                        <div class="saving-desc">Optimising income across tax bands</div>
-                    </div>
-                    <div class="saving-amount ${r.splitting === 0 ? 'zero' : ''}">£${Math.round(r.splitting).toLocaleString()}</div>
-                </div>
-
-                <div class="saving-row">
-                    <div>
                         <div class="saving-label">30 Hours Free Childcare</div>
                         <div class="saving-desc">Government-funded nursery hours</div>
                     </div>
-                    <div class="saving-amount ${r.thirtyHours === 0 ? 'zero' : ''}">£${Math.round(r.thirtyHours).toLocaleString()}</div>
+                    <div class="saving-amount">£${potentialThirtyHours.toLocaleString()}</div>
                 </div>
 
                 <div class="total-box">
                     <div>
-                        <div class="total-label">Your estimated annual saving</div>
-                        <div class="total-range">Range: £${Math.round(r.minSaving).toLocaleString()} — £${Math.round(r.maxSaving).toLocaleString()}</div>
+                        <div class="total-label">Your possible annual saving</div>
+                        <div class="total-range">Range: £${rangeMin.toLocaleString()} — £${rangeMax.toLocaleString()}</div>
                     </div>
                     <div class="total-amount">£${avg.toLocaleString()}</div>
                 </div>
@@ -350,14 +353,14 @@
 
                 ${tier === 'complete' ? `
                 <div class="advisor-box">
-                    <h3>📞 Your 30-Minute Advisor Call</h3>
-                    <p>As a Complete Guide customer, you have a free call with our childcare savings advisor included. They will review your situation and help you implement the strategies.</p>
-                    <a href="https://calendly.com/the100kparent" target="_blank" class="advisor-btn">Book Your Call</a>
+                    <h3>📞 30-Minute Consultation with a Qualified Financial Adviser</h3>
+                    <p>Your Complete Guide includes a private 30-minute meeting with one of our qualified financial advisers. They will review your personal tax position, confirm your eligibility for each saving strategy, and provide tailored recommendations you can act on immediately. This is a professional advisory session — not a sales call.</p>
+                    <a href="https://calendly.com/the100kparent" target="_blank" class="advisor-btn">Schedule Your Consultation</a>
                 </div>` : ''}
             </div>
 
             <div style="text-align: center; margin-top: 1rem;">
-                <a href="v2.html#calculator" style="color: #4A90E2; font-size: 0.875rem; text-decoration: none; font-weight: 600;">← Recalculate with different figures</a>
+                <a href="v2.html#calculator" style="color: #093F72; font-size: 0.875rem; text-decoration: none; font-weight: 600;">← Recalculate with different figures</a>
             </div>`;
 
         // Auto-trigger PDF download after short delay
@@ -451,10 +454,10 @@
         }
         if (pct === 100) {
             document.getElementById('progressText').textContent = 'Report ready!';
-            document.getElementById('progressFill').style.background = 'linear-gradient(90deg, #10B981, #059669)';
+            document.getElementById('progressFill').style.background = 'linear-gradient(90deg, #15803D, #14532D)';
             for (let i = 0; i < 6; i++) {
                 const dot = document.getElementById('dot' + i);
-                if (dot) { dot.classList.add('done'); dot.style.background = '#10B981'; }
+                if (dot) { dot.classList.add('done'); dot.style.background = '#15803D'; }
             }
         }
     }
@@ -466,7 +469,9 @@
     }, 800);
 
     function generatePDFHTML(r, tier) {
-        const avg = Math.round((r.minSaving + r.maxSaving) / 2);
+        const pdfTfc = Math.round(Math.min((r.monthlyChildcare * 12) * 0.20, 2000 * r.numChildren));
+        const pdfThirtyHours = Math.round(0.4 * (r.monthlyChildcare || 0) * 12);
+        const avg = pdfTfc + pdfThirtyHours + Math.round(r.salary || 0);
         const date = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
         const tierLabel = tier === 'complete' ? 'Complete Guide' : 'Essential Report';
         const taxYear = '2025/26';
@@ -568,11 +573,11 @@
         } else if (isNear90k) {
             personaTitle = 'You qualify now — and protecting eligibility matters';
             personaDesc = `With income approaching £90,000-£100,000, you currently qualify for all childcare schemes. This report focuses on maximising everything you're entitled to claim, and protecting your eligibility if income rises — particularly through pension contributions and salary sacrifice.`;
-            urgencyColor = '#059669'; urgencyLabel = '🟢 Claim Everything You Are Entitled To';
+            urgencyColor = '#15803D'; urgencyLabel = '🟢 Claim Everything You Are Entitled To';
         } else if (isUnder100k && hasUnder5) {
             personaTitle = 'You qualify for full government support — here is how to claim it all';
             personaDesc = `With income below £100,000, you qualify for all available government childcare schemes. Most families in your position are not claiming everything they're entitled to — leaving significant money unclaimed. This report gives you the complete picture with your specific numbers and direct links to apply.`;
-            urgencyColor = '#059669'; urgencyLabel = '🟢 Claim What\'s Yours';
+            urgencyColor = '#15803D'; urgencyLabel = '🟢 Claim What\'s Yours';
         } else {
             personaTitle = 'Your personalised childcare savings plan';
             personaDesc = `Based on your income of £${income1.toLocaleString()}${hasPartner ? ` and your partner's income of £${income2.toLocaleString()}` : ''}, with ${numChildren} ${numChildren === 1 ? 'child' : 'children'} and £${monthlyChildcare.toLocaleString()}/month in childcare costs, here is your complete savings strategy for ${taxYear}.`;
@@ -1027,9 +1032,9 @@
 body { font-family:'Inter',sans-serif; color:#2D3748; font-size:13.5px; line-height:1.65; background:white; }
 
 /* COVER */
-.cover { background:linear-gradient(135deg,#E8F4F8 0%,#F0EDFF 100%); padding:56px 50px; min-height:100vh; display:flex; flex-direction:column; justify-content:space-between; page-break-after:always; }
-.cover-logo { font-size:22px; font-weight:800; color:#2E5C8A; }
-.cover-tier { display:inline-block; background:#4A90E2; color:white; padding:5px 14px; border-radius:20px; font-size:12px; font-weight:700; margin-right:8px; }
+.cover { background:linear-gradient(135deg,#E1EFFC 0%,#F0EDFF 100%); padding:56px 50px; min-height:100vh; display:flex; flex-direction:column; justify-content:space-between; page-break-after:always; }
+.cover-logo { font-size:22px; font-weight:800; color:#062A4E; }
+.cover-tier { display:inline-block; background:#093F72; color:white; padding:5px 14px; border-radius:20px; font-size:12px; font-weight:700; margin-right:8px; }
 .cover-urgency { display:inline-block; padding:5px 14px; border-radius:20px; font-size:12px; font-weight:700; background:${urgencyColor}20; color:${urgencyColor}; border:1px solid ${urgencyColor}40; }
 .cover-title { font-size:42px; font-weight:800; line-height:1.1; margin:20px 0 12px; }
 .cover-sub { font-size:17px; color:#718096; margin-bottom:28px; max-width:580px; }
@@ -1038,15 +1043,15 @@ body { font-family:'Inter',sans-serif; color:#2D3748; font-size:13.5px; line-hei
 .cover-persona p { font-size:13.5px; color:#4A5568; line-height:1.7; }
 .cover-box { background:white; border-radius:16px; padding:24px 28px; display:inline-block; box-shadow:0 4px 20px rgba(74,144,226,0.15); }
 .cover-label { font-size:10px; font-weight:700; color:#A0AEC0; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
-.cover-amount { font-size:54px; font-weight:800; color:#10B981; line-height:1; }
+.cover-amount { font-size:54px; font-weight:800; color:#15803D; line-height:1; }
 .cover-range { font-size:12px; color:#718096; margin-top:6px; }
 .cover-meta { font-size:11px; color:#A0AEC0; }
 
 /* PAGES */
 .page { padding:44px 50px; page-break-after:always; }
 .page:last-child { page-break-after:avoid; }
-.ph { display:flex; justify-content:space-between; align-items:center; padding-bottom:12px; border-bottom:2px solid #E8F4F8; margin-bottom:24px; }
-.ph-logo { font-size:13px; font-weight:800; color:#2E5C8A; }
+.ph { display:flex; justify-content:space-between; align-items:center; padding-bottom:12px; border-bottom:2px solid #E1EFFC; margin-bottom:24px; }
+.ph-logo { font-size:13px; font-weight:800; color:#062A4E; }
 .ph-page { font-size:11px; color:#A0AEC0; }
 h2 { font-size:21px; font-weight:800; margin-bottom:6px; color:#1A202C; }
 h4 { font-size:14px; font-weight:700; margin-bottom:5px; color:#2D3748; }
@@ -1065,16 +1070,16 @@ h4 { font-size:14px; font-weight:700; margin-bottom:5px; color:#2D3748; }
 .sum-label { font-weight:600; font-size:13.5px; }
 .sum-desc { font-size:11px; color:#718096; margin-top:2px; }
 .sum-amt { font-weight:800; font-size:17px; }
-.sum-amt.green { color:#10B981; }
+.sum-amt.green { color:#15803D; }
 .sum-amt.red { color:#EF4444; }
 .sum-amt.grey { color:#CBD5E0; }
-.tot-box { background:linear-gradient(135deg,#4A90E2,#2E5C8A); border-radius:14px; padding:20px 26px; color:white; display:flex; justify-content:space-between; align-items:center; margin:16px 0 8px; }
+.tot-box { background:linear-gradient(135deg,#093F72,#062A4E); border-radius:14px; padding:20px 26px; color:white; display:flex; justify-content:space-between; align-items:center; margin:16px 0 8px; }
 .tot-label { font-size:13px; font-weight:600; opacity:.9; }
 .tot-range { font-size:11px; opacity:.7; margin-top:3px; }
 .tot-amount { font-size:36px; font-weight:800; }
 .elig-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:16px; }
 .elig { border-radius:10px; padding:12px 16px; display:flex; align-items:center; gap:10px; }
-.elig.yes { background:#D1FAE5; }
+.elig.yes { background:#DCFCE7; }
 .elig.no { background:#FEE2E2; }
 .elig.maybe { background:#FEF3C7; }
 .elig-text { font-size:12.5px; font-weight:600; }
@@ -1082,20 +1087,20 @@ h4 { font-size:14px; font-weight:700; margin-bottom:5px; color:#2D3748; }
 
 /* STRATEGY CARDS */
 .s-card { border:2px solid #E2E8F0; border-radius:14px; margin-bottom:18px; overflow:hidden; page-break-inside:avoid; }
-.s-card.priority { border-color:#4A90E2; }
+.s-card.priority { border-color:#093F72; }
 .s-card.locked { border-color:#FCA5A5; }
 .s-header { display:flex; align-items:center; gap:12px; padding:14px 18px; background:#F7FAFC; border-bottom:1px solid #E2E8F0; }
-.s-card.priority .s-header { background:#EBF5FF; }
+.s-card.priority .s-header { background:#E1EFFC; }
 .s-card.locked .s-header { background:#FFF5F5; }
 .s-icon { font-size:22px; flex-shrink:0; }
 .s-title-block { flex:1; }
 .s-title { font-weight:800; font-size:14px; color:#1A202C; }
 .s-badge { display:inline-block; font-size:10.5px; font-weight:700; padding:2px 9px; border-radius:20px; background:#E8F4F8; color:#2E5C8A; margin-top:3px; }
-.s-badge.green { background:#D1FAE5; color:#065F46; }
+.s-badge.green { background:#DCFCE7; color:#14532D; }
 .s-badge.red { background:#FEE2E2; color:#991B1B; }
 .s-badge.amber { background:#FEF3C7; color:#92400E; }
 .s-badge.blue { background:#DBEAFE; color:#1E40AF; }
-.s-amount { font-size:20px; font-weight:800; color:#10B981; text-align:right; flex-shrink:0; white-space:nowrap; }
+.s-amount { font-size:20px; font-weight:800; color:#15803D; text-align:right; flex-shrink:0; white-space:nowrap; }
 .s-amount span { font-size:11px; font-weight:400; color:#718096; display:block; }
 .s-amount.red { color:#EF4444; }
 .s-body { padding:16px 18px; }
@@ -1110,13 +1115,13 @@ h4 { font-size:14px; font-weight:700; margin-bottom:5px; color:#2D3748; }
 .ct-row span:first-child { flex:2; }
 .ct-row span:nth-child(2) { flex:1; text-align:right; font-weight:600; }
 .ct-row span:nth-child(3) { flex:1.5; text-align:right; color:#718096; font-size:11.5px; }
-.green { color:#10B981; }
+.green { color:#15803D; }
 .red { color:#EF4444; }
 
 /* ACTION STEPS */
 .action-steps { margin-top:14px; display:flex; flex-direction:column; gap:10px; }
 .action-step { display:flex; gap:12px; align-items:flex-start; background:#F7FAFC; border-radius:10px; padding:12px 14px; }
-.as-num { width:26px; height:26px; background:#4A90E2; color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; flex-shrink:0; }
+.as-num { width:26px; height:26px; background:#093F72; color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; flex-shrink:0; }
 .action-step div { font-size:12.5px; color:#4A5568; line-height:1.65; }
 .action-step strong { color:#2D3748; }
 
@@ -1140,9 +1145,9 @@ h4 { font-size:14px; font-weight:700; margin-bottom:5px; color:#2D3748; }
 
 /* NEXT STEPS */
 .step-row { display:flex; gap:14px; margin-bottom:16px; page-break-inside:avoid; align-items:flex-start; }
-.step-row.priority-step { background:#EBF5FF; border-radius:12px; padding:14px; border:2px solid #4A90E2; }
-.step-num { width:30px; height:30px; background:#4A90E2; color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; flex-shrink:0; margin-top:2px; }
-.step-row h4 { color:#2E5C8A; margin-bottom:5px; }
+.step-row.priority-step { background:#E1EFFC; border-radius:12px; padding:14px; border:2px solid #093F72; }
+.step-num { width:30px; height:30px; background:#093F72; color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; flex-shrink:0; margin-top:2px; }
+.step-row h4 { color:#062A4E; margin-bottom:5px; }
 .step-row p { font-size:12.5px; color:#4A5568; line-height:1.7; }
 
 /* IFS CALLOUT */
@@ -1153,7 +1158,7 @@ h4 { font-size:14px; font-weight:700; margin-bottom:5px; color:#2D3748; }
 
 /* FOOTER */
 .rfooter { text-align:center; padding:28px 50px; background:#F7FAFC; border-top:2px solid #E2E8F0; }
-.rfooter-logo { font-size:17px; font-weight:800; color:#2E5C8A; margin-bottom:5px; }
+.rfooter-logo { font-size:17px; font-weight:800; color:#062A4E; margin-bottom:5px; }
 .rfooter p { font-size:11px; color:#A0AEC0; }
 
 @media print {
@@ -1206,13 +1211,12 @@ h4 { font-size:14px; font-weight:700; margin-bottom:5px; color:#2D3748; }
     </div>
 
     <h2>Savings Summary</h2>
-    <div class="sum-row ${r.tfc > 0 ? 'ok' : 'no'}"><div><div class="sum-label">Tax-Free Childcare</div><div class="sum-desc">20% govt top-up, max £${2000*numChildren}k/yr (${numChildren} child${numChildren>1?'ren':''})</div></div><div class="sum-amt ${r.tfc > 0 ? 'green' : 'red'}">£${Math.round(r.tfc).toLocaleString()}</div></div>
-    <div class="sum-row ${r.thirtyHours > 0 ? 'ok' : 'no'}"><div><div class="sum-label">${fundedHoursPerWeek} Hours Free Childcare</div><div class="sum-desc">Govt-funded nursery hours &bull; ${under5Count} eligible child${under5Count!==1?'ren':''} under 5</div></div><div class="sum-amt ${r.thirtyHours > 0 ? 'green' : 'red'}">£${Math.round(r.thirtyHours).toLocaleString()}</div></div>
+    <div class="sum-row ok"><div><div class="sum-label">Tax-Free Childcare</div><div class="sum-desc">20% govt top-up, max £${2000*numChildren}k/yr (${numChildren} child${numChildren>1?'ren':''})</div></div><div class="sum-amt green">£${pdfTfc.toLocaleString()}</div></div>
+    <div class="sum-row ok"><div><div class="sum-label">${fundedHoursPerWeek} Hours Free Childcare</div><div class="sum-desc">Govt-funded nursery hours</div></div><div class="sum-amt green">£${pdfThirtyHours.toLocaleString()}</div></div>
     <div class="sum-row ok"><div><div class="sum-label">Salary Sacrifice / Pension</div><div class="sum-desc">Tax + NI savings at ${Math.round(sacrificeTaxRate*100)}% effective rate</div></div><div class="sum-amt ${r.salary > 0 ? 'green' : 'grey'}">£${Math.round(r.salary).toLocaleString()}</div></div>
-    <div class="sum-row ${r.splitting > 0 ? 'ok' : 'no'}"><div><div class="sum-label">Income Optimisation</div><div class="sum-desc">Tax band optimisation between partners</div></div><div class="sum-amt ${r.splitting > 0 ? 'green' : 'grey'}">£${Math.round(r.splitting).toLocaleString()}</div></div>
-    <div class="tot-box"><div><div class="tot-label">Estimated annual saving</div><div class="tot-range">Range: £${Math.round(r.minSaving).toLocaleString()} — £${Math.round(r.maxSaving).toLocaleString()}</div></div><div class="tot-amount">£${avg.toLocaleString()}</div></div>
+    <div class="tot-box"><div><div class="tot-label">Estimated annual saving</div></div><div class="tot-amount">£${avg.toLocaleString()}</div></div>
 
-    ${in60TrapZone ? `<div class="ifs-box">📊 <strong>IFS Research (2026):</strong> A parent earning £100,001 with two nursery-age children in London needs to earn <strong>£149,000</strong> to match the disposable income of someone on £99,999. The combined 60% tax trap, lost childcare benefits, and lost personal allowance create one of the steepest cliff edges in the UK tax system. This report shows you how to navigate it.</div>` : ''}
+    ${in60TrapZone ? `<div class="ifs-box">📊 <strong>IFS Research (2026):</strong> The combined 60% tax trap, lost childcare benefits, and lost personal allowance create one of the steepest cliff edges in the UK tax system. This report shows you how to navigate it.</div>` : ''}
 
     <div class="elig-grid">
         <div class="elig ${!over100k ? 'yes' : 'no'}"><span style="font-size:16px">${!over100k ? '✅' : '❌'}</span><div><div class="elig-text">Tax-Free Childcare</div><div class="elig-sub">${!over100k ? 'Eligible — apply now' : 'Blocked — pension can unlock'}</div></div></div>
