@@ -1217,14 +1217,29 @@ h4 { font-size:14px; font-weight:700; margin-bottom:5px; color:#2D3748; }
 
     ${in60TrapZone ? `<div class="ifs-box">📊 <strong>IFS Research (2026):</strong> The combined 60% tax trap, lost childcare benefits, and lost personal allowance create one of the steepest cliff edges in the UK tax system. This report shows you how to navigate it.</div>` : ''}
 
+    ${over100k ? `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:16px;">
+        <div>
+            <div style="font-size:10.5px;font-weight:700;color:#991B1B;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid #FCA5A5;">You are currently not eligible for:</div>
+            <div class="elig no" style="margin-bottom:8px;"><span style="font-size:16px">❌</span><div><div class="elig-text">Tax-Free Childcare</div><div class="elig-sub">Blocked — pension contribution can unlock</div></div></div>
+            <div class="elig no"><span style="font-size:16px">❌</span><div><div class="elig-text">${fundedHoursPerWeek} Hours Free Childcare</div><div class="elig-sub">Blocked — pension contribution can unlock</div></div></div>
+        </div>
+        <div>
+            <div style="font-size:10.5px;font-weight:700;color:#14532D;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid #86EFAC;">Need to check with your employer</div>
+            <div class="elig yes" style="margin-bottom:8px;"><span style="font-size:16px">✅</span><div><div class="elig-text">Salary Sacrifice</div><div class="elig-sub">${!bothSelfEmployed ? 'Available — speak to HR' : 'Not available — self-employed'}</div></div></div>
+            <div class="elig yes"><span style="font-size:16px">✅</span><div><div class="elig-text">Workplace Nursery Benefit</div><div class="elig-sub">Check with HR — avg £6,500/yr</div></div></div>
+        </div>
+    </div>
+    ` : `
     <div class="elig-grid">
-        <div class="elig ${!over100k ? 'yes' : 'no'}"><span style="font-size:16px">${!over100k ? '✅' : '❌'}</span><div><div class="elig-text">Tax-Free Childcare</div><div class="elig-sub">${!over100k ? 'Eligible — apply now' : 'Blocked — pension can unlock'}</div></div></div>
+        <div class="elig yes"><span style="font-size:16px">✅</span><div><div class="elig-text">Tax-Free Childcare</div><div class="elig-sub">Eligible — apply now</div></div></div>
         <div class="elig ${r.has30Hours ? 'yes' : 'no'}"><span style="font-size:16px">${r.has30Hours ? '✅' : '❌'}</span><div><div class="elig-text">${fundedHoursPerWeek} Hours Childcare</div><div class="elig-sub">${r.has30Hours ? 'Eligible — claim code now' : 'Check eligibility'}</div></div></div>
         <div class="elig ${!bothSelfEmployed ? 'yes' : 'maybe'}"><span style="font-size:16px">${!bothSelfEmployed ? '✅' : '⚠️'}</span><div><div class="elig-text">Salary Sacrifice</div><div class="elig-sub">${!bothSelfEmployed ? 'Available — ask HR' : 'Not available — self-employed'}</div></div></div>
         <div class="elig ${hasPartner ? 'yes' : 'no'}"><span style="font-size:16px">${hasPartner ? '✅' : '➖'}</span><div><div class="elig-text">Income Splitting</div><div class="elig-sub">${hasPartner ? 'Dual income — opportunities exist' : 'Single income household'}</div></div></div>
         <div class="elig ${!hicbcApplies ? 'yes' : cbNetBenefit > 0 ? 'maybe' : 'no'}"><span style="font-size:16px">${!hicbcApplies ? '✅' : '⚠️'}</span><div><div class="elig-text">Child Benefit</div><div class="elig-sub">${!hicbcApplies ? 'Full £' + totalCB.toLocaleString() + '/yr' : 'Net £' + Math.max(0,cbNetBenefit).toLocaleString() + '/yr — still register'}</div></div></div>
         <div class="elig ${workplaceNurseryEligible ? 'yes' : 'no'}"><span style="font-size:16px">${workplaceNurseryEligible ? '✅' : '❌'}</span><div><div class="elig-text">Workplace Nursery Benefit</div><div class="elig-sub">${workplaceNurseryEligible ? 'Check with HR — avg £6,500/yr' : 'Not available self-employed'}</div></div></div>
     </div>
+    `}
 </div>
 
 <!-- PAGE 3+: STRATEGIES -->
