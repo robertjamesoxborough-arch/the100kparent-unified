@@ -514,9 +514,11 @@
         const partnerOver100k = income2 > 100000;
 
         // ── KEY CALCULATIONS ────────────────────────────────────────────
-        // Salary sacrifice needed
-        const sacrificeNeeded = higherIncome > 100000 ? higherIncome - 99999 : 0;
+        // Salary sacrifice needed — per person
+        const sacrificeNeeded = higherIncome > 100000 ? higherIncome - 99999 : 0; // higher earner (used for tax calcs)
         const sacrificeNeededPartner = income2 > 100000 ? income2 - 99999 : 0;
+        const sacrificeYou = income1 > 100000 ? income1 - 99999 : 0;       // what "you" (income1) must contribute
+        const sacrificePartnerAmt = income2 > 100000 ? income2 - 99999 : 0; // what partner must contribute
 
         // Tax rate for sacrifice
         const sacrificeTaxRate = in60TrapZone ? 0.62 : higherIncome > 50270 ? 0.42 : 0.32;
@@ -559,9 +561,9 @@
         let personaTitle, personaDesc, urgencyColor, urgencyLabel;
 
         if (isJustOver100k && hasUnder5) {
-            personaTitle = 'You are in the highest-priority position — act before April';
+            personaTitle = 'You are in the highest-priority position';
             personaDesc = `With income just over £100,000 and children in childcare, you face an immediate cash cliff edge. A pension contribution of £${sacrificeNeeded.toLocaleString()} reduces your adjusted net income to £99,999, unlocking Tax-Free Childcare and ${fundedHoursPerWeek} hours of free childcare simultaneously — a combined benefit worth up to £${(Math.round(r.tfc) + Math.round(r.thirtyHours)).toLocaleString()} per year. The tax savings on the pension contribution itself add a further £${taxSavedBySacrifice.toLocaleString()}.`;
-            urgencyColor = '#DC2626'; urgencyLabel = '🔴 Urgent — Act Before April 5th';
+            urgencyColor = '#DC2626'; urgencyLabel = '🔴 Urgent — High Priority';
         } else if (isWellOver100k && hasUnder5) {
             personaTitle = 'The 60% tax trap is costing you far more than you realise';
             personaDesc = `Between £100,000 and £125,140, every £2 you earn costs £1 of your personal allowance — creating an effective 60% marginal tax rate. Combined with the loss of childcare benefits, you need to earn £149,000 to match the disposable income of someone on £99,999 with two nursery-age children. This report shows you how to engineer your way out.`;
@@ -588,12 +590,14 @@
         let strategies = '';
 
         // ─ STRATEGY 1: PENSION SALARY SACRIFICE (if over threshold) ─────
-        if (sacrificeNeeded > 0 || sacrificeNeededPartner > 0) {
-            const whoNeeds = sacrificeNeeded > 0 && sacrificeNeededPartner > 0 ? 'Both you and your partner need' : sacrificeNeeded > 0 ? 'You need' : 'Your partner needs';
-            const amount = Math.max(sacrificeNeeded, sacrificeNeededPartner);
-            const monthlyAmount = Math.round(amount / 12);
+        if (sacrificeYou > 0 || sacrificePartnerAmt > 0) {
+            const bothNeedSacrifice = sacrificeYou > 0 && sacrificePartnerAmt > 0;
             const childcareBenefitUnlocked = Math.round(r.tfc) + Math.round(r.thirtyHours);
             const totalBenefit = taxSavedBySacrifice + childcareBenefitUnlocked;
+
+            // For the action step email, use "your" individual amount
+            const monthlyYou = Math.round(sacrificeYou / 12);
+            const monthlyPartner = Math.round(sacrificePartnerAmt / 12);
 
             strategies += `
             <div class="s-card priority">
@@ -601,23 +605,37 @@
                     <span class="s-icon">🎯</span>
                     <div class="s-title-block">
                         <div class="s-title">Priority Action — Pension Salary Sacrifice</div>
-                        <div class="s-badge">Most Impactful · Act Before April 5th</div>
+                        <div class="s-badge">Most Impactful</div>
                     </div>
                     <div class="s-amount">£${totalBenefit.toLocaleString()}<span>/yr</span></div>
                 </div>
                 <div class="s-body">
-                    <p>${whoNeeds} to contribute <strong>£${amount.toLocaleString()}/year (£${monthlyAmount.toLocaleString()}/month)</strong> to a pension to bring adjusted net income below £100,000. This single action triggers a cascade of benefits:</p>
+                    <p>To bring ${bothNeedSacrifice ? 'both incomes' : 'your adjusted net income'} below £100,000 and unlock the benefits below, the following minimum pension contributions are required:</p>
 
+                    ${bothNeedSacrifice ? `
+                    <div class="calc-table" style="margin-bottom:14px;">
+                        <div class="ct-row header"><span>Who</span><span>Current income</span><span>Must contribute</span><span>Per month</span></div>
+                        <div class="ct-row"><span>You</span><span>£${income1.toLocaleString()}</span><span class="green"><strong>£${sacrificeYou.toLocaleString()}/yr</strong></span><span>£${monthlyYou.toLocaleString()}/mo</span></div>
+                        <div class="ct-row"><span>Your partner</span><span>£${income2.toLocaleString()}</span><span class="green"><strong>£${sacrificePartnerAmt.toLocaleString()}/yr</strong></span><span>£${monthlyPartner.toLocaleString()}/mo</span></div>
+                    </div>
+                    ` : `
+                    <div class="calc-table" style="margin-bottom:14px;">
+                        <div class="ct-row header"><span>Who</span><span>Current income</span><span>Must contribute</span><span>Per month</span></div>
+                        <div class="ct-row"><span>${sacrificeYou > 0 ? 'You' : 'Your partner'}</span><span>£${(sacrificeYou > 0 ? income1 : income2).toLocaleString()}</span><span class="green"><strong>£${(sacrificeYou || sacrificePartnerAmt).toLocaleString()}/yr</strong></span><span>£${(sacrificeYou > 0 ? monthlyYou : monthlyPartner).toLocaleString()}/mo</span></div>
+                    </div>
+                    `}
+
+                    <p>This single action triggers a cascade of benefits:</p>
                     <div class="calc-table">
                         <div class="ct-row header"><span>Component</span><span>Amount</span><span>How</span></div>
                         <div class="ct-row"><span>Tax + NI saved on pension contribution</span><span class="green">£${taxSavedBySacrifice.toLocaleString()}</span><span>${Math.round(sacrificeTaxRate * 100)}% effective relief</span></div>
                         <div class="ct-row"><span>Tax-Free Childcare unlocked</span><span class="green">£${Math.round(r.tfc).toLocaleString()}</span><span>20% top-up on £${Math.min(annualChildcare, 10000 * numChildren).toLocaleString()}</span></div>
                         <div class="ct-row"><span>${fundedHoursPerWeek} hours free childcare unlocked</span><span class="green">£${Math.round(r.thirtyHours).toLocaleString()}</span><span>${fundedHoursPerWeek}hrs × 38wks × ${under5Count} child${under5Count > 1 ? 'ren' : ''}</span></div>
                         ${in60TrapZone ? `<div class="ct-row"><span>Personal allowance restored (${personalAllowanceLost.toLocaleString()} of £12,570)</span><span class="green">£${extraTaxFrom60Trap.toLocaleString()}</span><span>End 60% trap</span></div>` : ''}
-                        <div class="ct-row total"><span>Total annual benefit</span><span class="green">£${totalBenefit.toLocaleString()}</span><span>From £${monthlyAmount.toLocaleString()}/month pension</span></div>
+                        <div class="ct-row total"><span>Total annual benefit</span><span class="green">£${totalBenefit.toLocaleString()}</span><span></span></div>
                     </div>
 
-                    ${!sacrificeWithinAllowance ? `<div class="alert amber"><strong>⚠️ Annual Allowance:</strong> Your sacrifice of £${amount.toLocaleString()} may approach your pension annual allowance of £${annualAllowance.toLocaleString()}. Speak to a financial adviser about carry forward from previous years before proceeding.</div>` : ''}
+                    ${!sacrificeWithinAllowance ? `<div class="alert amber"><strong>⚠️ Annual Allowance:</strong> Your sacrifice may approach your pension annual allowance of £${annualAllowance.toLocaleString()}. Speak to a financial adviser about carry forward from previous years before proceeding.</div>` : ''}
 
                     ${in60TrapZone ? `<div class="alert red">
                         <strong>⚠️ You Are Currently in the 60% Tax Trap</strong><br>
@@ -625,21 +643,25 @@
                     </div>` : ''}
 
                     <div class="action-steps">
-                        <div class="action-step">
+                        ${sacrificeYou > 0 ? `<div class="action-step">
                             <div class="as-num">1</div>
-                            <div><strong>Salary Sacrifice (best route)</strong> — Email HR: <em>"I would like to increase my pension contributions via salary sacrifice by £${monthlyAmount.toLocaleString()}/month effective from next payroll. Please adjust my salary sacrifice arrangement accordingly."</em> Takes one payroll cycle. Saves Income Tax AND National Insurance (saves you ~£${Math.round(amount * 0.02).toLocaleString()}/yr extra vs personal contribution).</div>
+                            <div><strong>You — Email your HR:</strong> <em>"I would like to increase my pension contributions via salary sacrifice by £${monthlyYou.toLocaleString()}/month effective from next payroll. Please adjust my salary sacrifice arrangement accordingly."</em> Takes one payroll cycle. Saves Income Tax AND National Insurance.</div>
+                        </div>` : ''}
+                        ${sacrificePartnerAmt > 0 ? `<div class="action-step">
+                            <div class="as-num">${sacrificeYou > 0 ? 2 : 1}</div>
+                            <div><strong>Your partner — Email their HR:</strong> <em>"I would like to increase my pension contributions via salary sacrifice by £${monthlyPartner.toLocaleString()}/month effective from next payroll. Please adjust my salary sacrifice arrangement accordingly."</em></div>
+                        </div>` : ''}
+                        <div class="action-step">
+                            <div class="as-num">${(sacrificeYou > 0 ? 1 : 0) + (sacrificePartnerAmt > 0 ? 1 : 0) + 1}</div>
+                            <div><strong>Personal Pension Contribution (if salary sacrifice unavailable)</strong> — Pay directly into your pension provider. HMRC adds basic rate (20%) relief automatically. Claim higher/additional rate relief via Self Assessment.</div>
                         </div>
                         <div class="action-step">
-                            <div class="as-num">2</div>
-                            <div><strong>Personal Pension Contribution (if salary sacrifice unavailable)</strong> — Pay directly into your pension provider. You pay from net income; HMRC adds basic rate (20%) relief automatically. Claim higher/additional rate relief via Self Assessment. Takes up to 2 months to process.</div>
+                            <div class="as-num">${(sacrificeYou > 0 ? 1 : 0) + (sacrificePartnerAmt > 0 ? 1 : 0) + 2}</div>
+                            <div><strong>Confirm adjusted net income</strong> — Adjusted net income = gross salary − pension contributions − Gift Aid donations. Must be below £100,000 to qualify.</div>
                         </div>
                         <div class="action-step">
-                            <div class="as-num">3</div>
-                            <div><strong>Confirm adjusted net income</strong> — Check your P60 or ask payroll for your projected gross salary. Adjusted net income = gross salary - pension contributions - Gift Aid donations. Must be below £100,000 to qualify.</div>
-                        </div>
-                        <div class="action-step">
-                            <div class="as-num">4</div>
-                            <div><strong>Apply for childcare schemes immediately after</strong> — Once pension is in place, apply for Tax-Free Childcare and 30 hours via childcarechoices.gov.uk. Do not wait until the next term — apply within days of confirming your adjusted net income.</div>
+                            <div class="as-num">${(sacrificeYou > 0 ? 1 : 0) + (sacrificePartnerAmt > 0 ? 1 : 0) + 3}</div>
+                            <div><strong>Apply for childcare schemes once pension is in place</strong> — Apply for Tax-Free Childcare and 30 hours via childcarechoices.gov.uk. Apply within days of confirming your adjusted net income.</div>
                         </div>
                     </div>
                 </div>
@@ -946,11 +968,11 @@
                         </div>
                         <div class="action-step">
                             <div class="as-num">2</div>
-                            <div><strong>Dividend timing management</strong> — Dividends count toward adjusted net income. If you are near the £100,000 threshold, consider whether dividends planned for Q1 can be deferred to next tax year (after April 5th). The saving from keeping adjusted net income below £100,000 can far exceed the benefit of taking the dividend now.</div>
+                            <div><strong>Dividend timing management</strong> — Dividends count toward adjusted net income. If you are near the £100,000 threshold, consider whether dividends can be deferred to the next tax year. The saving from keeping adjusted net income below £100,000 can far exceed the benefit of taking the dividend now.</div>
                         </div>
                         <div class="action-step">
                             <div class="as-num">3</div>
-                            <div><strong>Model your adjusted net income before April 5th</strong> — Adjusted net income = all income (salary + dividends + benefits) minus pension contributions minus Gift Aid. You need to know this number precisely to plan contributions. Your accountant should model this for you each February/March.</div>
+                            <div><strong>Model your adjusted net income before the tax year ends</strong> — Adjusted net income = all income (salary + dividends + benefits) minus pension contributions minus Gift Aid. You need to know this number precisely to plan contributions. Your accountant should model this for you each February/March.</div>
                         </div>
                         <div class="action-step">
                             <div class="as-num">4</div>
@@ -980,7 +1002,7 @@
                         ${hasUnder2 ? `<div class="ct-row"><span>Child turns 2</span><span>15 hours → 30 hours (if working)</span><span>Reapply — new code needed</span></div>` : ''}
                         ${hasUnder5 ? `<div class="ct-row"><span>Child starts school (age 4-5)</span><span>Free school hours replace nursery</span><span>Review childcare costs — may reduce TFC need</span></div>` : ''}
                         ${schoolAgeCount > 0 ? `<div class="ct-row"><span>School-age children (5-11)</span><span>Holiday club, after-school eligible for TFC</span><span>Continue TFC account for wraparound care</span></div>` : ''}
-                        <div class="ct-row"><span>Every April 5th</span><span>Tax year end — pension deadline</span><span>Confirm adjusted net income and top up pension if needed</span></div>
+                        <div class="ct-row"><span>Each tax year end</span><span>Pension deadline</span><span>Confirm adjusted net income and top up pension if needed</span></div>
                         <div class="ct-row"><span>Every 3 months</span><span>TFC and 30 hours reconfirmation</span><span>Confirm eligibility in Government Gateway</span></div>
                     </div>
                     <div class="alert blue"><strong>💡 Key insight:</strong> Tax-Free Childcare applies to wraparound childcare (after-school clubs, holiday camps) as well as nursery. As your children move into school, you can continue using TFC to pay for holiday childcare — many parents miss this and close their TFC accounts unnecessarily.</div>
@@ -1014,7 +1036,7 @@
             steps += `<div class="step-row"><div class="step-num">${stepNum++}</div><div><h4>Before January 31st — File Self Assessment</h4><p>If your income exceeds £60,000 and you receive Child Benefit, you must file a Self Assessment return to declare and pay the High Income Child Benefit Charge. Register at <strong>gov.uk/self-assessment</strong> if not already registered. Penalties apply for late filing.</p></div></div>`;
         }
 
-        steps += `<div class="step-row"><div class="step-num">${stepNum++}</div><div><h4>Before April 5th every year — Review adjusted net income</h4><p>Check your projected adjusted net income before the tax year ends. If you are near £60,000, £100,000, or £125,140, a pension top-up before April 5th can save significant money. Set a February reminder to review with your accountant or advisor.</p></div></div>`;
+        steps += `<div class="step-row"><div class="step-num">${stepNum++}</div><div><h4>Each year — Review adjusted net income before tax year end</h4><p>Check your projected adjusted net income before the tax year ends. If you are near £60,000, £100,000, or £125,140, a pension top-up can save significant money. Set a February reminder to review with your accountant or advisor.</p></div></div>`;
 
         if (tier === 'complete') {
             steps += `<div class="step-row priority-step"><div class="step-num">📞</div><div><h4>Book your 30-minute advisor call</h4><p>Your call with our financial advisor is included. They will review your specific adjusted net income position, confirm which strategies apply to your exact situation, model the pension contribution needed, and help you implement everything. Check your confirmation email for the booking link. <strong>Most clients save more from the call than the entire cost of the guide.</strong></p></div></div>`;
