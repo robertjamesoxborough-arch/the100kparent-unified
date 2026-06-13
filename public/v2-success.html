@@ -1037,7 +1037,7 @@ body { font-family:'Inter',sans-serif; color:#2D3748; font-size:13.5px; line-hei
 .cover-tier { display:inline-block; background:#093F72; color:white; padding:5px 14px; border-radius:20px; font-size:12px; font-weight:700; margin-right:8px; }
 .cover-urgency { display:inline-block; padding:5px 14px; border-radius:20px; font-size:12px; font-weight:700; background:${urgencyColor}20; color:${urgencyColor}; border:1px solid ${urgencyColor}40; }
 .cover-title { font-size:42px; font-weight:800; line-height:1.1; margin:20px 0 12px; }
-.cover-sub { font-size:17px; color:#718096; margin-bottom:28px; max-width:580px; }
+.cover-sub { font-size:13px; color:#718096; margin-bottom:28px; white-space:nowrap; }
 .cover-persona { background:white; border-radius:16px; padding:22px 26px; border-left:5px solid ${urgencyColor}; box-shadow:0 4px 20px rgba(0,0,0,0.08); margin-bottom:24px; }
 .cover-persona h3 { font-size:15px; color:${urgencyColor}; margin-bottom:8px; font-weight:700; }
 .cover-persona p { font-size:13.5px; color:#4A5568; line-height:1.7; }
@@ -1177,11 +1177,10 @@ h4 { font-size:14px; font-weight:700; margin-bottom:5px; color:#2D3748; }
 <div class="cover">
     <div class="cover-logo">The 100k Parent</div>
     <div>
-        <div><span class="cover-tier">${tierLabel}</span><span class="cover-urgency">${urgencyLabel}</span></div>
-        <h1 class="cover-title">Your Personalised<br>Childcare Savings Report</h1>
+        <div><span class="cover-tier">${tierLabel}</span></div>
+        <h1 class="cover-title">Your Personalised Childcare Savings Report</h1>
         <p class="cover-sub">Built specifically for your income, family setup and childcare situation — with real numbers, HMRC-accurate strategies and exact action steps.</p>
         <div class="cover-persona">
-            <h3>${personaTitle}</h3>
             <p>${personaDesc}</p>
         </div>
         <div class="cover-box">
