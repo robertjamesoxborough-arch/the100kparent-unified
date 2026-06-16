@@ -1460,16 +1460,11 @@ em { color:#637082; font-style:italic; }
     ${in60TrapZone ? `<div class="ifs-box">📊 <strong>IFS Research (2026):</strong> The combined 60% tax trap, lost childcare benefits, and lost personal allowance create one of the steepest cliff edges in the UK tax system. This report shows you how to navigate it.</div>` : ''}
 
     ${over100k ? `
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:16px;">
-        <div>
-            <div style="font-size:10.5px;font-weight:700;color:#991B1B;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid #FCA5A5;">You are currently not eligible for:</div>
-            <div class="elig no" style="margin-bottom:8px;"><span style="font-size:16px">❌</span><div><div class="elig-text">Tax-Free Childcare</div><div class="elig-sub">Blocked — pension contribution can unlock</div></div></div>
+    <div style="margin-top:16px;">
+        <div style="font-size:10.5px;font-weight:700;color:#991B1B;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid #FCA5A5;">You could be eligible for:</div>
+        <div class="elig-grid">
+            <div class="elig no"><span style="font-size:16px">❌</span><div><div class="elig-text">Tax-Free Childcare</div><div class="elig-sub">Blocked — pension contribution can unlock</div></div></div>
             <div class="elig no"><span style="font-size:16px">❌</span><div><div class="elig-text">${fundedHoursPerWeek} Hours Free Childcare</div><div class="elig-sub">Blocked — pension contribution can unlock</div></div></div>
-        </div>
-        <div>
-            <div style="font-size:10.5px;font-weight:700;color:#14532D;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid #86EFAC;">Need to check with your employer</div>
-            <div class="elig yes" style="margin-bottom:8px;"><span style="font-size:16px">✅</span><div><div class="elig-text">Salary Sacrifice</div><div class="elig-sub">${!bothSelfEmployed ? 'Available — speak to HR' : 'Not available — self-employed'}</div></div></div>
-            <div class="elig yes"><span style="font-size:16px">✅</span><div><div class="elig-text">Workplace Nursery Benefit</div><div class="elig-sub">Check with HR — avg £6,500/yr</div></div></div>
         </div>
     </div>
     ` : `
