@@ -592,8 +592,8 @@
         // ─ STRATEGY 1: PENSION SALARY SACRIFICE (if over threshold) ─────
         if (sacrificeYou > 0 || sacrificePartnerAmt > 0) {
             const bothNeedSacrifice = sacrificeYou > 0 && sacrificePartnerAmt > 0;
-            const childcareBenefitUnlocked = Math.round(r.tfc) + Math.round(r.thirtyHours);
-            const totalBenefit = taxSavedBySacrifice + childcareBenefitUnlocked;
+            const childcareBenefitUnlocked = pdfTfc + pdfThirtyHours;
+            const totalBenefit = taxSavedBySacrifice + pdfTfc + pdfThirtyHours + (in60TrapZone ? extraTaxFrom60Trap : 0);
 
             // For the action step email, use "your" individual amount
             const monthlyYou = Math.round(sacrificeYou / 12);
@@ -629,10 +629,10 @@
                     <div class="calc-table">
                         <div class="ct-row header"><span>Component</span><span>Amount</span><span>How</span></div>
                         <div class="ct-row"><span>Tax + NI saved on pension contribution</span><span class="green">£${taxSavedBySacrifice.toLocaleString()}</span><span>${Math.round(sacrificeTaxRate * 100)}% effective relief</span></div>
-                        <div class="ct-row"><span>Tax-Free Childcare unlocked</span><span class="green">£${Math.round(r.tfc).toLocaleString()}</span><span>20% top-up on £${Math.min(annualChildcare, 10000 * numChildren).toLocaleString()}</span></div>
-                        <div class="ct-row"><span>${fundedHoursPerWeek} hours free childcare unlocked</span><span class="green">£${Math.round(r.thirtyHours).toLocaleString()}</span><span>${fundedHoursPerWeek}hrs × 38wks × ${under5Count} child${under5Count > 1 ? 'ren' : ''}</span></div>
+                        <div class="ct-row"><span>Tax-Free Childcare available</span><span class="green">£${pdfTfc.toLocaleString()}</span><span>20% govt top-up, capped at £${(2000 * numChildren).toLocaleString()}/yr</span></div>
+                        <div class="ct-row"><span>${fundedHoursPerWeek} hours free childcare saving</span><span class="green">£${pdfThirtyHours.toLocaleString()}</span><span>${fundedHoursPerWeek}hrs × 38wks × ${under5Count} child${under5Count > 1 ? 'ren' : ''}</span></div>
                         ${in60TrapZone ? `<div class="ct-row"><span>Personal allowance restored (${personalAllowanceLost.toLocaleString()} of £12,570)</span><span class="green">£${extraTaxFrom60Trap.toLocaleString()}</span><span>End 60% trap</span></div>` : ''}
-                        <div class="ct-row total"><span>Total annual benefit</span><span class="green">£${totalBenefit.toLocaleString()}</span><span></span></div>
+                        <div class="ct-row total"><span>Total annual benefit</span><span class="green">£${totalBenefit.toLocaleString()}</span><span>${in60TrapZone ? '4 components' : '3 components'}</span></div>
                     </div>
 
                     <div class="alert amber">
