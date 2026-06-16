@@ -1461,10 +1461,10 @@ em { color:#637082; font-style:italic; }
 
     ${over100k ? `
     <div style="margin-top:16px;">
-        <div style="font-size:10.5px;font-weight:700;color:#991B1B;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid #FCA5A5;">You could be eligible for:</div>
+        <div style="font-size:10.5px;font-weight:700;color:#1E40AF;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid #BFDBFE;">You could be eligible for:</div>
         <div class="elig-grid">
-            <div class="elig no"><span style="font-size:16px">❌</span><div><div class="elig-text">Tax-Free Childcare</div><div class="elig-sub">Blocked — pension contribution can unlock</div></div></div>
-            <div class="elig no"><span style="font-size:16px">❌</span><div><div class="elig-text">${fundedHoursPerWeek} Hours Free Childcare</div><div class="elig-sub">Blocked — pension contribution can unlock</div></div></div>
+            <div class="elig" style="background:#EFF6FF;border:1px solid #BFDBFE;"><div><div class="elig-text">Tax-Free Childcare</div><div class="elig-sub">Pension contribution can unlock this</div></div></div>
+            <div class="elig" style="background:#EFF6FF;border:1px solid #BFDBFE;"><div><div class="elig-text">${fundedHoursPerWeek} Hours Free Childcare</div><div class="elig-sub">Pension contribution can unlock this</div></div></div>
         </div>
     </div>
     ` : `
