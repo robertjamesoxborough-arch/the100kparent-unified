@@ -1266,7 +1266,7 @@ h4 { font-size:13.5px; font-weight:700; margin-bottom:4px; color:#1C2B3A; }
 .intro { color:#637082; margin-bottom:18px; font-size:13px; line-height:1.7; }
 
 /* ── PROFILE GRID ────────────────────────────────────────────────── */
-.pgrid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:22px; }
+.pgrid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:22px; }
 .pitem { background:#F8FAFC; border-radius:10px; padding:13px 15px; border:1px solid #E8EDF2; }
 .plabel { font-size:9.5px; font-weight:700; color:#94A3B8; text-transform:uppercase; letter-spacing:.07em; margin-bottom:5px; }
 .pval { font-size:14.5px; font-weight:700; color:#0F2D52; }
@@ -1443,14 +1443,16 @@ em { color:#637082; font-style:italic; }
     <div class="section-heading"><div class="section-heading-bar"></div><h2>Your Family Profile</h2></div>
     <p class="intro">This report is built on the figures below. Recalculate at any time at the100kparent.com/v2 if your situation changes.</p>
     <div class="pgrid">
+        <!-- Row 1: Incomes | Children info -->
         <div class="pitem"><div class="plabel">Your Income</div><div class="pval">£${income1.toLocaleString()}</div></div>
         <div class="pitem"><div class="plabel">Partner's Income</div><div class="pval">${hasPartner ? '£' + income2.toLocaleString() : 'Not applicable'}</div></div>
-        <div class="pitem"><div class="plabel">Employment</div><div class="pval" style="text-transform:capitalize">${employment.replace('-',' ')}${hasPartner ? ' / ' + employment2.replace('-',' ') : ''}</div></div>
         <div class="pitem"><div class="plabel">Number of Children</div><div class="pval">${numChildren}</div></div>
+        <div class="pitem"><div class="plabel">Monthly Childcare</div><div class="pval">£${monthlyChildcare.toLocaleString()}/mo (£${annualChildcare.toLocaleString()}/yr)</div></div>
+        <!-- Row 2: Pensions under incomes | Ages & Employment -->
+        <div class="pitem"><div class="plabel">Your Monthly Pension</div><div class="pval">${r.pension1 ? '£' + r.pension1.toLocaleString() : 'Not provided'}</div></div>
+        <div class="pitem"><div class="plabel">Partner's Monthly Pension</div><div class="pval">${hasPartner ? (r.pension2 ? '£' + r.pension2.toLocaleString() : 'Not provided') : 'Not applicable'}</div></div>
         <div class="pitem"><div class="plabel">Children's Ages</div><div class="pval">${ages.map(a => a === 0 ? 'Under 1' : a + ' yrs').join(', ')}</div></div>
-        <div class="pitem"><div class="plabel">Monthly Childcare</div><div class="pval">£${monthlyChildcare.toLocaleString()} (£${annualChildcare.toLocaleString()}/yr)</div></div>
-        <div class="pitem"><div class="plabel">Your Monthly Pension Contribution</div><div class="pval">${r.pension1 ? '£' + r.pension1.toLocaleString() : 'Not provided'}</div></div>
-        ${hasPartner ? `<div class="pitem"><div class="plabel">Partner's Monthly Pension Contribution</div><div class="pval">${r.pension2 ? '£' + r.pension2.toLocaleString() : 'Not provided'}</div></div>` : ''}
+        <div class="pitem"><div class="plabel">Employment</div><div class="pval" style="text-transform:capitalize">${employment.replace('-',' ')}${hasPartner ? ' / ' + employment2.replace('-',' ') : ''}</div></div>
     </div>
 
     <div class="section-heading"><div class="section-heading-bar"></div><h2>Estimated Annual Savings</h2></div>
