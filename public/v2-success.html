@@ -1451,11 +1451,11 @@ em { color:#637082; font-style:italic; }
         <div class="pitem"><div class="plabel">Monthly Childcare</div><div class="pval">£${monthlyChildcare.toLocaleString()} (£${annualChildcare.toLocaleString()}/yr)</div></div>
     </div>
 
-    <div class="section-heading"><div class="section-heading-bar"></div><h2>Savings Summary</h2></div>
+    <div class="section-heading"><div class="section-heading-bar"></div><h2>Estimated Annual Savings</h2></div>
     <div class="sum-row ok"><div><div class="sum-label">Tax-Free Childcare</div><div class="sum-desc">20% govt top-up, max £${2000*numChildren}k/yr (${numChildren} child${numChildren>1?'ren':''})</div></div><div class="sum-amt green">£${pdfTfc.toLocaleString()}</div></div>
     <div class="sum-row ok"><div><div class="sum-label">${fundedHoursPerWeek} Hours Free Childcare</div><div class="sum-desc">Govt-funded nursery hours</div></div><div class="sum-amt green">£${pdfThirtyHours.toLocaleString()}</div></div>
     <div class="sum-row ok"><div><div class="sum-label">Salary Sacrifice / Pension</div><div class="sum-desc">Tax + NI savings at ${Math.round(sacrificeTaxRate*100)}% effective rate</div></div><div class="sum-amt ${r.salary > 0 ? 'green' : 'grey'}">£${Math.round(r.salary).toLocaleString()}</div></div>
-    <div class="tot-box"><div><div class="tot-label">Estimated annual saving</div></div><div class="tot-amount">£${avg.toLocaleString()}</div></div>
+    <div class="tot-box"><div><div class="tot-label">Total</div></div><div class="tot-amount">£${avg.toLocaleString()}</div></div>
 
     ${in60TrapZone ? `<div class="ifs-box">📊 <strong>IFS Research (2026):</strong> The combined 60% tax trap, lost childcare benefits, and lost personal allowance create one of the steepest cliff edges in the UK tax system. This report shows you how to navigate it.</div>` : ''}
 
