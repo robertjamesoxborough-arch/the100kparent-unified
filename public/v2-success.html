@@ -635,6 +635,14 @@
                         <div class="ct-row total"><span>Total annual benefit</span><span class="green">£${totalBenefit.toLocaleString()}</span><span></span></div>
                     </div>
 
+                    <div class="alert amber">
+                        <strong>⚠️ Critical first step — check your pension type before you do anything else</strong><br>
+                        Most people assume they're on salary sacrifice. Many aren't. There are two common pension arrangements:<br><br>
+                        <strong>Salary Sacrifice</strong> — Your employer reduces your gross salary and pays the equivalent into your pension. You save Income Tax <em>and</em> National Insurance automatically. No action needed with HMRC.<br><br>
+                        <strong>Relief at Source</strong> — You pay from your net salary and HMRC adds 20% basic rate relief automatically. But if you're a higher-rate taxpayer, you're entitled to a further 20–25% — and you only get it if you claim it yourself via Self Assessment. This means you may be owed between <strong>£700 and £15,000</strong> for contributions made over the last 4 tax years. After 4 years, the right to claim is lost permanently.<br><br>
+                        <strong>How to check:</strong> Email HR or your pension provider: <em>"Is my pension scheme set up as salary sacrifice, or does it operate under Relief at Source?"</em> Search your payslip for "Relief at Source", "Tax Relief", or "Government Top-Up" — if you see these, you likely have a Relief at Source pension and should be claiming higher rate relief via Self Assessment immediately.
+                    </div>
+
                     ${!sacrificeWithinAllowance ? `<div class="alert amber"><strong>⚠️ Annual Allowance:</strong> Your sacrifice may approach your pension annual allowance of £${annualAllowance.toLocaleString()}. Speak to a financial adviser about carry forward from previous years before proceeding.</div>` : ''}
 
                     ${in60TrapZone ? `<div class="alert red">
@@ -668,6 +676,66 @@
             </div>`;
         }
 
+        // ─ STRATEGY 1B: PENSION HIGHER RATE TAX RELIEF BACK-CLAIM ───────
+        if (higherIncome > 50270) {
+            const yearsToBackclaim = 4;
+            // Personalised estimate: assume a typical ~5% employee contribution, capped, at 20% extra relief
+            const estimatedAnnualRelief = Math.round(Math.min(higherIncome * 0.05, 10000) * 0.20);
+            const potentialBackclaim = estimatedAnnualRelief * yearsToBackclaim;
+            const additionalRateTaxpayer = higherIncome > 125140;
+            const extraReliefPct = additionalRateTaxpayer ? 25 : 20;
+
+            strategies += `
+            <div class="s-card priority">
+                <div class="s-header">
+                    <span class="s-icon">💰</span>
+                    <div class="s-title-block">
+                        <div class="s-title">The Pension Refund You May Already Be Owed</div>
+                        <div class="s-badge">4-Year Window Closing · Claim Before It Expires</div>
+                    </div>
+                    <div class="s-amount">~£${potentialBackclaim.toLocaleString()}<span>est. owed</span></div>
+                </div>
+                <div class="s-body">
+                    <p><strong>Read this first.</strong> Roughly half of higher-rate taxpayers who think they're getting full pension tax relief are not — and most never find out. If your workplace pension runs on <strong>Relief at Source</strong> rather than salary sacrifice, HMRC only adds the basic 20% automatically. As a ${additionalRateTaxpayer ? 'additional-rate' : 'higher-rate'} taxpayer you are owed a further <strong>${extraReliefPct}%</strong> on every contribution — but it sits unclaimed until <em>you</em> ask for it through Self Assessment. Most people never do.</p>
+
+                    <p>Here is exactly what happens to every £80 you put in:</p>
+                    <div class="calc-table">
+                        <div class="ct-row header"><span>Your £80 contribution</span><span>Amount</span><span>Who acts</span></div>
+                        <div class="ct-row"><span>You pay in from take-home pay</span><span>£80</span><span>You</span></div>
+                        <div class="ct-row"><span>HMRC adds 20% basic rate relief</span><span class="green">+ £20</span><span>Automatic — everyone gets this</span></div>
+                        <div class="ct-row"><span>Lands in your pension</span><span>£100</span><span>This is where most people stop</span></div>
+                        <div class="ct-row"><span>Higher rate relief you're entitled to</span><span class="green">+ £20</span><span class="red"><strong>Only if you claim it</strong></span></div>
+                        <div class="ct-row total"><span>Your true cost for £100 in your pension</span><span class="green">just £60</span><span>A 67% uplift on your money</span></div>
+                    </div>
+                    <p style="margin-top:10px;">In plain terms: if you don't claim, you are paying £80 for something that should cost you £60. That gap repeats on every single contribution, every month, for as long as you stay on Relief at Source.</p>
+
+                    <div class="alert red">
+                        <strong>⏰ The clock is the whole point. You can only go back 4 tax years — then it's gone for good.</strong><br>
+                        Based on a typical contribution at your income level, you could be owed in the region of <strong>£${potentialBackclaim.toLocaleString()}</strong> across the last four years (real figures range from £700 to £15,000+ depending on how much you've contributed). HMRC does not chase you for this — there is no letter, no reminder. The oldest year drops off the edge of the window every 5 April. ${hasPartner ? 'Both of you should check — if your partner is also a higher-rate taxpayer, they have a separate claim of their own.' : ''}
+                    </div>
+
+                    <div class="action-steps">
+                        <div class="action-step">
+                            <div class="as-num">1</div>
+                            <div><strong>Confirm your pension type — this decides everything.</strong> Send your HR or pension provider one line: <em>"Is my pension salary sacrifice, or Relief at Source?"</em> Can't wait for a reply? Check a payslip: if your gross (pre-tax) pay is <em>not</em> reduced by your pension contribution, you're almost certainly on Relief at Source. The words "Relief at Source", "Tax Relief" or "Government Top-Up" on a statement confirm it.</div>
+                        </div>
+                        <div class="action-step">
+                            <div class="as-num">2</div>
+                            <div><strong>Claim this year's relief via Self Assessment.</strong> If you're not registered, do it now at gov.uk/self-assessment using your Government Gateway login. On the return, enter your gross personal contributions in the pension relief box — HMRC calculates the extra ${extraReliefPct}% and either refunds it or adjusts your tax code.</div>
+                        </div>
+                        <div class="action-step">
+                            <div class="as-num">3</div>
+                            <div><strong>Back-claim the previous years before they expire.</strong> As of the ${taxYear} tax year you can still recover relief for <strong>2022/23, 2023/24 and 2024/25</strong> — but 2022/23 falls out of the window on 5 April 2027, so don't sit on it. Pull each year's contribution total from your provider's annual statement and write to HMRC (or amend each return). Refunds typically land within 4–6 weeks.</div>
+                        </div>
+                        <div class="action-step">
+                            <div class="as-num">4</div>
+                            <div><strong>Check every employer you've had — and ${hasPartner ? 'your partner' : 'your spouse if you have one'}.</strong> Each job has its own pension setup, so a scheme you left mid-window may owe you too. Changed jobs in the last four years? Email each old employer's HR to confirm the type. ${hasPartner ? 'Run your partner through steps 1–3 as well — their claim is entirely separate from yours.' : ''}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }
+
         // ─ STRATEGY 2: TAX-FREE CHILDCARE ──────────────────────────────
         const tfcEligible = !over100k;
         strategies += `
@@ -681,14 +749,14 @@
                 <div class="s-amount ${tfcEligible ? '' : 'red'}">£${Math.round(r.tfc).toLocaleString()}<span>/yr</span></div>
             </div>
             <div class="s-body">
-                <p>The government contributes <strong>20p for every 80p you pay</strong> into a Tax-Free Childcare account — equivalent to basic rate tax relief on childcare spending — up to £2,000 per child per year (£4,000 for disabled children).</p>
+                <p>For every 80p you pay into a Tax-Free Childcare account, the government adds 20p — free, on top. The cleanest way to picture it: <strong>up to £500 every three months, per child</strong> (£2,000 a year, or £4,000 for a disabled child). Pay £2,000 into the account in a quarter and £500 lands beside it automatically. It's basic-rate tax relief on your childcare bill, no strings.</p>
 
                 <div class="calc-table">
                     <div class="ct-row header"><span>Item</span><span>Amount</span><span>Detail</span></div>
                     <div class="ct-row"><span>Your monthly childcare spend</span><span>£${monthlyChildcare.toLocaleString()}</span><span>£${annualChildcare.toLocaleString()}/year</span></div>
                     <div class="ct-row"><span>Eligible spend (max £10k/child)</span><span>£${Math.min(annualChildcare, 10000 * numChildren).toLocaleString()}</span><span>£${Math.min(monthlyChildcare, Math.round(10000 * numChildren / 12)).toLocaleString()}/month</span></div>
-                    <div class="ct-row"><span>Government top-up (20%)</span><span class="green">£${Math.round(r.tfc).toLocaleString()}</span><span>£${Math.round(r.tfc / 12).toLocaleString()}/month free money</span></div>
-                    <div class="ct-row"><span>Maximum possible (£2k/child × ${numChildren})</span><span>£${2000 * numChildren}</span><span>${numChildren === 1 ? 'One child' : numChildren + ' children'}</span></div>
+                    <div class="ct-row"><span>Government top-up (20%)</span><span class="green">£${Math.round(r.tfc).toLocaleString()}</span><span>≈ £${Math.round(r.tfc / 4).toLocaleString()}/quarter free money</span></div>
+                    <div class="ct-row"><span>Maximum possible (£500/quarter × ${numChildren})</span><span>£${(2000 * numChildren).toLocaleString()}</span><span>${numChildren === 1 ? 'One child' : numChildren + ' children'}, £${(500 * numChildren).toLocaleString()}/quarter cap</span></div>
                     ${annualChildcare > 10000 * numChildren ? `<div class="ct-row"><span>Childcare above eligible cap</span><span class="red">£${(annualChildcare - 10000 * numChildren).toLocaleString()}</span><span>Not eligible for TFC top-up</span></div>` : ''}
                 </div>
 
@@ -722,6 +790,12 @@
 
         // ─ STRATEGY 3: WORKPLACE NURSERY BENEFIT ────────────────────────
         if (!bothSelfEmployed) {
+            // Personalised "break £100k" maths: WNB removes the nursery cost from income first,
+            // then a pension top-up closes whatever gap to £100k remains.
+            const incomeAfterWNB = higherIncome - annualChildcare;
+            const pensionTopUpAfterWNB = incomeAfterWNB > 99999 ? Math.round(incomeAfterWNB - 99999) : 0;
+            const wnbCanCross100k = higherIncome > 100000;
+            const wnbAlreadyUnder = incomeAfterWNB <= 99999;
             strategies += `
             <div class="s-card">
                 <div class="s-header">
@@ -767,6 +841,20 @@
                         </div>
                     </div>
 
+                    <div class="alert blue" style="margin-top:14px;">
+                        <strong>📋 How one parent turned £130k into a £100k tax position</strong><br><br>
+                        Sarah earns <strong>£130,000</strong> and was paying <strong>£15,000 a year</strong> in nursery fees out of her taxed salary — and getting nothing back from the government, because £130k locks you out of every childcare scheme. Three moves changed that:<br><br>
+                        <strong>1. She stopped paying the nursery from her bank account.</strong> Through the Workplace Nursery Benefit her employer pays the nursery directly and deducts £15,000 from her gross salary. Taxable income drops £130,000 → £115,000. Tax and NI saved: about <strong>£9,000</strong>. Same nursery, same child — just paid the smart way.<br><br>
+                        <strong>2. Her existing 5% pension was already working.</strong> The £6,500 she sacrifices into her pension each year pulls her down again: £115,000 → <strong>£108,500</strong>.<br><br>
+                        <strong>3. One deliberate top-up broke the £100k barrier.</strong> An extra <strong>£8,600</strong> into her pension dropped her adjusted net income to £99,900. That single step unlocked <strong>30 hours of free childcare</strong> and handed back her full <strong>£12,570 personal allowance</strong> — worth thousands more.<br><br>
+                        The result: a far smaller tax bill, free government childcare she previously couldn't touch, and roughly £15,000 more building up in her pension every year — all from money she was already spending. She can still run Tax-Free Childcare alongside it for after-school clubs and holiday camps.
+                    </div>
+
+                    ${wnbCanCross100k ? `<div class="alert green" style="margin-top:14px;">
+                        <strong>🎯 The same move, with your numbers</strong><br><br>
+                        You're at <strong>£${higherIncome.toLocaleString()}</strong> and paying <strong>£${annualChildcare.toLocaleString()}/year</strong> in childcare. Run it through the Workplace Nursery Benefit and that £${annualChildcare.toLocaleString()} comes off your gross pay first — taking your income to <strong>£${incomeAfterWNB.toLocaleString()}</strong>.${wnbAlreadyUnder ? ` That alone is already below £100,000 — meaning the nursery benefit by itself could restore your personal allowance and open up the childcare schemes, before you've touched your pension.` : ` From there you'd need a pension top-up of just <strong>£${pensionTopUpAfterWNB.toLocaleString()}</strong> to cross under £100,000 — far less than the £${sacrificeNeeded.toLocaleString()} it would take from pension alone, because the nursery benefit has done most of the heavy lifting.`} Either way you'd unlock 30 hours of free childcare and your full £12,570 personal allowance on top of the tax already saved.
+                    </div>` : ''}
+
                     <div class="action-steps">
                         <div class="action-step">
                             <div class="as-num">1</div>
@@ -774,11 +862,15 @@
                         </div>
                         <div class="action-step">
                             <div class="as-num">2</div>
-                            <div><strong>If not offered yet</strong> — Forward our employer guide (available in the Complete package) to your HR or benefits team. Employers save National Insurance (13.8%) on the sacrificed amount, making it financially beneficial for them too.</div>
+                            <div><strong>If your employer doesn't offer it yet</strong> — Third-party providers like <strong>workplacenursery.co.uk</strong> handle all the setup and admin for employers, making it straightforward to introduce. Employers also save NI (13.8%) on the sacrificed amount, so there's a direct financial incentive for them to set it up.</div>
                         </div>
                         <div class="action-step">
                             <div class="as-num">3</div>
-                            <div><strong>Compare with TFC</strong> — If your nursery bill exceeds £10,000/year per child, the Workplace Nursery Benefit will save you more than TFC above that threshold. Calculate both options before choosing.</div>
+                            <div><strong>Stack it with your pension to break £100k</strong> — The nursery benefit comes off your gross income, just like pension sacrifice does. ${wnbCanCross100k ? (wnbAlreadyUnder ? `In your case the £${annualChildcare.toLocaleString()} childcare sacrifice alone takes you to £${incomeAfterWNB.toLocaleString()} — already under the threshold.` : `In your case it leaves a gap of just £${pensionTopUpAfterWNB.toLocaleString()} to close with pension — versus £${sacrificeNeeded.toLocaleString()} from pension on its own.`) : 'If you sit close to £100,000, the two together can tip your adjusted net income under the threshold.'} Cross £100k and you unlock 30 hours free childcare and your full personal allowance in the same move.</div>
+                        </div>
+                        <div class="action-step">
+                            <div class="as-num">4</div>
+                            <div><strong>Note on Tax-Free Childcare</strong> — You cannot use TFC for the same nursery fees covered under the Workplace Nursery Benefit. However, TFC can still be used for other childcare: wraparound after-school clubs, holiday camps, and childminders. Use both schemes in parallel where possible.</div>
                         </div>
                     </div>
                 </div>
@@ -817,23 +909,45 @@
                     ${nextMilestone ? `<div class="alert blue"><strong>📅 Coming up:</strong> ${nextMilestone}</div>` : ''}
 
                     ${eligible30hrs ? `
+                    <div class="alert green" style="margin-top:0;margin-bottom:14px;">
+                        <strong>✅ Myth-bust: the "quarterly income check" will not strip your funding mid-year</strong><br>
+                        This is the single biggest source of panic among £100k parents — and it's based on a misunderstanding. The truth: <strong>HMRC assesses your eligibility once, when you apply.</strong> The quarterly checks you've read about are not a re-test of whether you qualified — they exist only <em>after</em> approval, as a reconfirmation that your circumstances still broadly hold. A pay rise mid-term does not retroactively cancel a place you were correctly granted. So the rule to live by is simple: <strong>get your income right at the point of application</strong>, then reconfirm on time. Don't let myth-driven fear stop you applying.
+                    </div>
+                    <div class="alert blue" style="margin-bottom:14px;">
+                        <strong>📅 The three funding gates — and why timing beats luck</strong><br>
+                        Funding opens in three windows a year — <strong>September, January and April</strong> — and applications go live roughly three months ahead of each. Treat the opening day as your deadline, not a suggestion: if your income is anywhere near £100,000, HMRC may pause to request extra evidence, and an application that lands late can cost you a full term of free hours you were entitled to.<br><br>
+                        <strong>The April trap that catches careful planners:</strong> September and January assess your <em>current</em> tax year's adjusted net income. April does not — because 1 April still falls inside the tax year that's running, it looks back at your <em>previous</em> year's ANI. So if you're engineering your income under £100k for an April start, the pension contribution that matters was the one you made <em>last</em> tax year. Plan an April place a full year ahead, or you'll be measured on numbers you can no longer change.
+                    </div>
+                    <div class="alert blue" style="margin-bottom:14px;">
+                        <strong>👶 The maternity-leave timing move</strong><br>
+                        Both parents must be "working" within 30 days of the term start (1 September, 1 January or 1 April). The catch for a parent on maternity leave: HMRC counts you as working only once leave ends — and if that lands a day after the window, you miss the term. The fix is mundane but reliable: <strong>book a short stretch of paid annual leave to bridge the start of term.</strong> You count as working from the first day of that paid leave, so the 30-day test is met without forcing a rushed return to full days.
+                    </div>
                     <div class="action-steps">
                         <div class="action-step">
                             <div class="as-num">1</div>
-                            <div><strong>Apply at childcarechoices.gov.uk</strong> — At least 3 months before your child's eligibility date. Do not apply on the date — places fill up and your provider needs the code in advance. Applications take 5-10 minutes.</div>
+                            <div><strong>Apply at childcarechoices.gov.uk</strong> — At least 3 months before your chosen term. Do not wait — places fill up and your provider needs the eligibility code in advance to secure your funded place.</div>
                         </div>
                         <div class="action-step">
                             <div class="as-num">2</div>
-                            <div><strong>Give your code to the provider</strong> — You will receive an 11-digit eligibility code. Give this to your childcare provider immediately. They must verify it before the term starts or they cannot claim the funding.</div>
+                            <div><strong>Give your 11-digit code to the provider immediately</strong> — Once HMRC approves you, share the code with your childcare provider without delay. They must verify it before the term starts or they cannot claim the funding on your behalf.</div>
                         </div>
                         <div class="action-step">
                             <div class="as-num">3</div>
-                            <div><strong>Reconfirm every 3 months — critical</strong> — HMRC sends a reminder email. You have a 2-week window to reconfirm. Miss it and you lose the term's entitlement with no appeal. Set 4 calendar reminders per year now.</div>
+                            <div><strong>Reconfirm every 3 months — non-negotiable</strong> — HMRC emails a reminder and gives you a 2-week window. Miss it and you forfeit that term with no appeal and no grace period. Set four recurring calendar alerts from your approval date and treat them exactly like a payroll deadline. (This reconfirmation is the only "quarterly check" that exists — see the myth-bust above for why it won't claw back a place you were correctly granted.)</div>
                         </div>
                         <div class="action-step">
                             <div class="as-num">4</div>
-                            <div><strong>Ask about the stretched offer</strong> — If your nursery offers it, 22.5 hours/week across 52 weeks can be more valuable than 30 hours across 38 weeks for full-time working parents. Calculate which works better for your schedule.</div>
+                            <div><strong>Consider the stretched offer</strong> — Some nurseries spread the 30 hours across 52 weeks (22.5 hours/week) rather than 38 weeks. For full-time working families, this is often worth more. Ask your provider whether they offer it and calculate which option better matches your schedule.</div>
                         </div>
+                    </div>
+                    <div class="alert red" style="margin-top:14px;">
+                        <strong>⚠️ Common mistakes that cost families their entitlement</strong>
+                        <ul style="margin-top:8px;margin-left:18px;line-height:1.8;">
+                            <li><strong>Waiting to apply when near £100k</strong> — HMRC may request extra documentation if your income is close to the threshold. Apply early to give time for any queries to be resolved before the term starts.</li>
+                            <li><strong>Missing the April ANI nuance</strong> — The April term uses your <em>previous</em> tax year's adjusted net income. If you're planning a pension contribution to bring you under £100k, make sure it falls in the right tax year for the term you're targeting.</li>
+                            <li><strong>Leaving pension top-ups too late</strong> — You can make a single one-off contribution near the tax year end, but earlier contributions spread the benefit and reduce stress. Don't leave it to the final days of the tax year.</li>
+                            <li><strong>Missing the reconfirmation window</strong> — There is no grace period and no appeal. Treat the reconfirmation reminder like a tax deadline.</li>
+                        </ul>
                     </div>` : `
                     <div class="alert red">
                         <strong>To unlock £${Math.round(thirtyHoursValue).toLocaleString()}/year:</strong>
@@ -1152,6 +1266,7 @@ h4 { font-size:14px; font-weight:700; margin-bottom:5px; color:#2D3748; }
 .alert.amber { background:#FFFBEB; border:1px solid #FCD34D; color:#78350F; }
 .alert.red { background:#FFF5F5; border:1px solid #FCA5A5; color:#7F1D1D; }
 .alert.blue { background:#EFF6FF; border:1px solid #BFDBFE; color:#1E40AF; }
+.alert.green { background:#F0FDF4; border:1px solid #86EFAC; color:#166534; }
 .alert ul { margin-left:16px; margin-top:6px; }
 .alert li { margin-bottom:4px; }
 
