@@ -1165,138 +1165,382 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Inter',sans-serif; color:#2D3748; font-size:13.5px; line-height:1.65; background:white; }
+body { font-family:'Inter',sans-serif; color:#1A202C; font-size:13.5px; line-height:1.65; background:white; }
 
-/* COVER */
-.cover { background:linear-gradient(135deg,#E1EFFC 0%,#F0EDFF 100%); padding:56px 50px; min-height:100vh; display:flex; flex-direction:column; justify-content:space-between; page-break-after:always; }
-.cover-logo { font-size:22px; font-weight:800; color:#062A4E; }
-.cover-tier { display:inline-block; background:#093F72; color:white; padding:5px 14px; border-radius:20px; font-size:12px; font-weight:700; margin-right:8px; }
-.cover-urgency { display:inline-block; padding:5px 14px; border-radius:20px; font-size:12px; font-weight:700; background:${urgencyColor}20; color:${urgencyColor}; border:1px solid ${urgencyColor}40; }
-.cover-title { font-size:42px; font-weight:800; line-height:1.1; margin:20px 0 12px; }
-.cover-sub { font-size:13px; color:#718096; margin-bottom:28px; white-space:nowrap; }
-.cover-persona { background:white; border-radius:16px; padding:22px 26px; border-left:5px solid ${urgencyColor}; box-shadow:0 4px 20px rgba(0,0,0,0.08); margin-bottom:24px; }
-.cover-persona h3 { font-size:15px; color:${urgencyColor}; margin-bottom:8px; font-weight:700; }
-.cover-persona p { font-size:13.5px; color:#4A5568; line-height:1.7; }
-.cover-box { background:white; border-radius:16px; padding:24px 28px; display:inline-block; box-shadow:0 4px 20px rgba(74,144,226,0.15); }
-.cover-label { font-size:10px; font-weight:700; color:#A0AEC0; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
-.cover-amount { font-size:54px; font-weight:800; color:#15803D; line-height:1; }
-.cover-range { font-size:12px; color:#718096; margin-top:6px; }
-.cover-meta { font-size:11px; color:#A0AEC0; }
+/* ── COVER ─────────────────────────────────────────────────────── */
+.cover {
+    background: linear-gradient(150deg, #062A4E 0%, #093F72 55%, #0D5490 100%);
+    padding: 52px 50px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    page-break-after: always;
+    position: relative;
+    overflow: hidden;
+}
+.cover::before {
+    content: '';
+    position: absolute;
+    top: -120px; right: -120px;
+    width: 420px; height: 420px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+}
+.cover::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: -80px;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.03);
+}
+.cover-logo { font-size:13px; font-weight:800; color:rgba(255,255,255,0.6); letter-spacing:.12em; text-transform:uppercase; }
+.cover-tier { display:inline-block; background:rgba(255,255,255,0.15); color:white; padding:5px 16px; border-radius:20px; font-size:11.5px; font-weight:700; margin-bottom:20px; border:1px solid rgba(255,255,255,0.25); }
+.cover-title { font-size:46px; font-weight:800; line-height:1.08; margin-bottom:14px; color:white; }
+.cover-sub { font-size:14px; color:rgba(255,255,255,0.7); margin-bottom:28px; line-height:1.6; }
+.cover-persona {
+    background: rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 20px 24px;
+    border-left: 4px solid rgba(255,255,255,0.35);
+    margin-bottom: 28px;
+    backdrop-filter: blur(4px);
+}
+.cover-persona p { font-size:13.5px; color:rgba(255,255,255,0.88); line-height:1.75; }
+.cover-saving-wrap { display:flex; align-items:stretch; gap:16px; }
+.cover-box {
+    background: white;
+    border-radius: 18px;
+    padding: 24px 30px;
+    flex: 1;
+}
+.cover-label { font-size:10px; font-weight:700; color:#A0AEC0; text-transform:uppercase; letter-spacing:.1em; margin-bottom:8px; }
+.cover-amount { font-size:60px; font-weight:800; color:#15803D; line-height:1; }
+.cover-range { font-size:11.5px; color:#718096; margin-top:8px; }
+.cover-stats { display:flex; flex-direction:column; gap:10px; flex:0 0 auto; }
+.cover-stat { background:rgba(255,255,255,0.12); border-radius:12px; padding:14px 18px; border:1px solid rgba(255,255,255,0.2); }
+.cover-stat-val { font-size:20px; font-weight:800; color:white; }
+.cover-stat-label { font-size:10px; color:rgba(255,255,255,0.6); margin-top:2px; }
+.cover-meta { font-size:10.5px; color:rgba(255,255,255,0.4); margin-top:20px; }
 
-/* PAGES */
-.page { padding:44px 50px; page-break-after:always; }
+/* ── PAGE CHROME ────────────────────────────────────────────────── */
+.page { padding:40px 48px; page-break-after:always; }
 .page:last-child { page-break-after:avoid; }
-.ph { display:flex; justify-content:space-between; align-items:center; padding-bottom:12px; border-bottom:2px solid #E1EFFC; margin-bottom:24px; }
+.ph {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 14px;
+    border-bottom: 3px solid #E1EFFC;
+    margin-bottom: 26px;
+}
+.ph-left { display:flex; align-items:center; gap:10px; }
+.ph-dot { width:8px; height:8px; border-radius:50%; background:#093F72; }
 .ph-logo { font-size:13px; font-weight:800; color:#062A4E; }
-.ph-page { font-size:11px; color:#A0AEC0; }
-h2 { font-size:21px; font-weight:800; margin-bottom:6px; color:#1A202C; }
+.ph-page { font-size:11px; color:#A0AEC0; background:#F7FAFC; padding:3px 10px; border-radius:20px; }
+.section-heading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+.section-heading-bar { width:4px; height:24px; background:#093F72; border-radius:2px; flex-shrink:0; }
+h2 { font-size:21px; font-weight:800; color:#062A4E; }
 h4 { font-size:14px; font-weight:700; margin-bottom:5px; color:#2D3748; }
 .intro { color:#718096; margin-bottom:20px; font-size:13.5px; line-height:1.7; }
 
-/* PROFILE GRID */
-.pgrid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:20px; }
-.pitem { background:#F7FAFC; border-radius:10px; padding:12px 14px; }
-.plabel { font-size:10px; font-weight:600; color:#A0AEC0; text-transform:uppercase; letter-spacing:.05em; margin-bottom:4px; }
-.pval { font-size:14px; font-weight:700; }
+/* ── PROFILE GRID ───────────────────────────────────────────────── */
+.pgrid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:24px; }
+.pitem {
+    background: linear-gradient(135deg, #F7FAFC, #EDF2F7);
+    border-radius: 12px;
+    padding: 14px 16px;
+    border: 1px solid #E2E8F0;
+}
+.plabel { font-size:10px; font-weight:700; color:#93A3B8; text-transform:uppercase; letter-spacing:.06em; margin-bottom:5px; }
+.pval { font-size:15px; font-weight:700; color:#062A4E; }
 
-/* SUMMARY TABLE */
-.sum-row { display:flex; justify-content:space-between; align-items:center; padding:12px 16px; border-radius:10px; margin-bottom:7px; }
-.sum-row.ok { background:#F0FDF4; }
-.sum-row.no { background:#FEF2F2; opacity:.75; }
-.sum-label { font-weight:600; font-size:13.5px; }
+/* ── SAVINGS SUMMARY ────────────────────────────────────────────── */
+.sum-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 13px 18px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    border: 1.5px solid transparent;
+}
+.sum-row.ok { background:#F0FDF4; border-color:#BBF7D0; }
+.sum-row.no { background:#FEF2F2; opacity:.8; border-color:#FECACA; }
+.sum-label { font-weight:700; font-size:13.5px; color:#1A202C; }
 .sum-desc { font-size:11px; color:#718096; margin-top:2px; }
-.sum-amt { font-weight:800; font-size:17px; }
+.sum-amt { font-weight:800; font-size:18px; }
 .sum-amt.green { color:#15803D; }
 .sum-amt.red { color:#EF4444; }
 .sum-amt.grey { color:#CBD5E0; }
-.tot-box { background:linear-gradient(135deg,#093F72,#062A4E); border-radius:14px; padding:20px 26px; color:white; display:flex; justify-content:space-between; align-items:center; margin:16px 0 8px; }
+.tot-box {
+    background: linear-gradient(135deg, #062A4E 0%, #093F72 100%);
+    border-radius: 16px;
+    padding: 22px 28px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 14px 0 10px;
+    position: relative;
+    overflow: hidden;
+}
+.tot-box::after { content:''; position:absolute; right:-30px; top:-30px; width:120px; height:120px; border-radius:50%; background:rgba(255,255,255,0.06); }
 .tot-label { font-size:13px; font-weight:600; opacity:.9; }
-.tot-range { font-size:11px; opacity:.7; margin-top:3px; }
-.tot-amount { font-size:36px; font-weight:800; }
-.elig-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:16px; }
-.elig { border-radius:10px; padding:12px 16px; display:flex; align-items:center; gap:10px; }
-.elig.yes { background:#DCFCE7; }
-.elig.no { background:#FEE2E2; }
-.elig.maybe { background:#FEF3C7; }
-.elig-text { font-size:12.5px; font-weight:600; }
+.tot-range { font-size:11px; opacity:.65; margin-top:4px; }
+.tot-amount { font-size:40px; font-weight:800; }
+
+/* ── ELIGIBILITY GRID ───────────────────────────────────────────── */
+.elig-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px; }
+.elig { border-radius:12px; padding:13px 16px; display:flex; align-items:center; gap:12px; border:1.5px solid transparent; }
+.elig.yes { background:#F0FDF4; border-color:#86EFAC; }
+.elig.no { background:#FEF2F2; border-color:#FCA5A5; }
+.elig.maybe { background:#FFFBEB; border-color:#FCD34D; }
+.elig-text { font-size:12.5px; font-weight:700; }
 .elig-sub { font-size:10.5px; color:#718096; margin-top:2px; }
 
-/* STRATEGY CARDS */
-.s-card { border:2px solid #E2E8F0; border-radius:14px; margin-bottom:18px; overflow:hidden; page-break-inside:avoid; }
-.s-card.priority { border-color:#093F72; }
+/* ── STRATEGY CARDS ─────────────────────────────────────────────── */
+.s-card {
+    border-radius: 16px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    page-break-inside: avoid;
+    border: 1.5px solid #E2E8F0;
+}
+.s-card.priority {
+    border-color: #093F72;
+    box-shadow: 0 4px 24px rgba(9,63,114,0.12);
+}
 .s-card.locked { border-color:#FCA5A5; }
-.s-header { display:flex; align-items:center; gap:12px; padding:14px 18px; background:#F7FAFC; border-bottom:1px solid #E2E8F0; }
-.s-card.priority .s-header { background:#E1EFFC; }
-.s-card.locked .s-header { background:#FFF5F5; }
-.s-icon { font-size:22px; flex-shrink:0; }
-.s-title-block { flex:1; }
-.s-title { font-weight:800; font-size:14px; color:#1A202C; }
-.s-badge { display:inline-block; font-size:10.5px; font-weight:700; padding:2px 9px; border-radius:20px; background:#E8F4F8; color:#2E5C8A; margin-top:3px; }
+
+.s-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 15px 20px;
+    background: #F8FAFC;
+    border-bottom: 2px solid #EDF2F7;
+}
+.s-card.priority .s-header {
+    background: linear-gradient(135deg, #EBF4FF 0%, #E1EFFC 100%);
+    border-bottom-color: #BFDBFE;
+}
+.s-card.locked .s-header { background:#FFF5F5; border-bottom-color:#FEE2E2; }
+
+.s-icon {
+    font-size: 22px;
+    width: 46px;
+    height: 46px;
+    background: #093F72;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.s-card.locked .s-icon { background:#EF4444; }
+.s-card:not(.priority):not(.locked) .s-icon { background:#E1EFFC; }
+
+.s-title-block { flex:1; min-width:0; }
+.s-title { font-weight:800; font-size:14.5px; color:#062A4E; }
+.s-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 20px;
+    background: #E1EFFC;
+    color: #093F72;
+    margin-top: 4px;
+    letter-spacing: .02em;
+}
 .s-badge.green { background:#DCFCE7; color:#14532D; }
 .s-badge.red { background:#FEE2E2; color:#991B1B; }
 .s-badge.amber { background:#FEF3C7; color:#92400E; }
 .s-badge.blue { background:#DBEAFE; color:#1E40AF; }
-.s-amount { font-size:20px; font-weight:800; color:#15803D; text-align:right; flex-shrink:0; white-space:nowrap; }
-.s-amount span { font-size:11px; font-weight:400; color:#718096; display:block; }
-.s-amount.red { color:#EF4444; }
-.s-body { padding:16px 18px; }
-.s-body p { margin-bottom:12px; color:#4A5568; line-height:1.7; }
 
-/* CALC TABLE */
-.calc-table { background:#F7FAFC; border-radius:10px; padding:12px 14px; margin:10px 0; }
-.ct-row { display:flex; justify-content:space-between; gap:8px; padding:5px 0; border-bottom:1px solid #E2E8F0; font-size:12.5px; }
+.s-amount {
+    font-size: 22px;
+    font-weight: 800;
+    color: #15803D;
+    text-align: right;
+    flex-shrink: 0;
+    white-space: nowrap;
+    background: #F0FDF4;
+    padding: 10px 16px;
+    border-radius: 12px;
+    border: 1.5px solid #86EFAC;
+    line-height: 1.2;
+}
+.s-amount span { font-size:10.5px; font-weight:500; color:#4ADE80; display:block; margin-top:2px; }
+.s-amount.red { color:#EF4444; background:#FEF2F2; border-color:#FCA5A5; }
+.s-amount.red span { color:#F87171; }
+.s-body { padding:18px 20px; }
+.s-body p { margin-bottom:12px; color:#374151; line-height:1.75; }
+
+/* ── CALCULATION TABLE ──────────────────────────────────────────── */
+.calc-table {
+    background: #F8FAFC;
+    border-radius: 12px;
+    padding: 4px 16px 8px;
+    margin: 12px 0;
+    border: 1px solid #E2E8F0;
+}
+.ct-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid #EDF2F7;
+    font-size: 12.5px;
+}
 .ct-row:last-child { border-bottom:none; }
-.ct-row.header { font-weight:700; font-size:11px; color:#A0AEC0; text-transform:uppercase; letter-spacing:.04em; padding-bottom:8px; }
-.ct-row.total { font-weight:700; border-top:2px solid #CBD5E0; border-bottom:none; padding-top:8px; margin-top:3px; }
-.ct-row span:first-child { flex:2; }
-.ct-row span:nth-child(2) { flex:1; text-align:right; font-weight:600; }
-.ct-row span:nth-child(3) { flex:1.5; text-align:right; color:#718096; font-size:11.5px; }
+.ct-row.header {
+    font-weight: 700;
+    font-size: 10.5px;
+    color: #94A3B8;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    padding-bottom: 8px;
+}
+.ct-row.total {
+    font-weight: 800;
+    border-top: 2px solid #CBD5E0;
+    border-bottom: none;
+    padding-top: 10px;
+    margin-top: 4px;
+    background: none;
+}
+.ct-row span:first-child { flex:2; color:#374151; }
+.ct-row span:nth-child(2) { flex:1; text-align:right; font-weight:700; }
+.ct-row span:nth-child(3) { flex:1.5; text-align:right; color:#94A3B8; font-size:11.5px; }
 .green { color:#15803D; }
 .red { color:#EF4444; }
 
-/* ACTION STEPS */
-.action-steps { margin-top:14px; display:flex; flex-direction:column; gap:10px; }
-.action-step { display:flex; gap:12px; align-items:flex-start; background:#F7FAFC; border-radius:10px; padding:12px 14px; }
-.as-num { width:26px; height:26px; background:#093F72; color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; flex-shrink:0; }
-.action-step div { font-size:12.5px; color:#4A5568; line-height:1.65; }
-.action-step strong { color:#2D3748; }
+/* ── ACTION STEPS ───────────────────────────────────────────────── */
+.action-steps { margin-top:16px; display:flex; flex-direction:column; gap:0; }
+.action-step {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 14px 0;
+    border-bottom: 1px solid #EDF2F7;
+}
+.action-step:last-child { border-bottom:none; }
+.as-num {
+    width: 30px;
+    height: 30px;
+    background: linear-gradient(135deg, #093F72, #0D5490);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 13px;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+.action-step > div { font-size:12.5px; color:#374151; line-height:1.7; }
+.action-step strong { color:#062A4E; }
+em { color:#4A5568; font-style:italic; }
 
-/* ALERTS */
-.alert { border-radius:10px; padding:12px 15px; margin:10px 0; font-size:12.5px; line-height:1.65; }
-.alert.amber { background:#FFFBEB; border:1px solid #FCD34D; color:#78350F; }
-.alert.red { background:#FFF5F5; border:1px solid #FCA5A5; color:#7F1D1D; }
-.alert.blue { background:#EFF6FF; border:1px solid #BFDBFE; color:#1E40AF; }
-.alert.green { background:#F0FDF4; border:1px solid #86EFAC; color:#166534; }
-.alert ul { margin-left:16px; margin-top:6px; }
-.alert li { margin-bottom:4px; }
+/* ── ALERT BOXES ────────────────────────────────────────────────── */
+.alert {
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin: 12px 0;
+    font-size: 12.5px;
+    line-height: 1.7;
+    border-left: 5px solid;
+}
+.alert.amber { background:#FFFBEB; border-color:#F59E0B; color:#78350F; }
+.alert.red { background:#FFF5F5; border-color:#EF4444; color:#7F1D1D; }
+.alert.blue { background:#EFF6FF; border-color:#3B82F6; color:#1E3A8A; }
+.alert.green { background:#F0FDF4; border-color:#22C55E; color:#14532D; }
+.alert ul { margin-left:16px; margin-top:8px; }
+.alert li { margin-bottom:5px; }
+.alert strong { font-weight:700; }
 
-/* TWO COL */
-.two-col { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:12px 0; }
-.col-box { border-radius:10px; padding:12px 14px; font-size:12px; }
-.col-box.green-bg { background:#F0FDF4; }
-.col-box.amber-bg { background:#FFFBEB; }
-.col-box { background:#F7FAFC; }
-.col-title { font-weight:700; margin-bottom:6px; color:#2D3748; font-size:12.5px; }
+/* ── TWO COLUMN ─────────────────────────────────────────────────── */
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:14px 0; }
+.col-box { border-radius:12px; padding:14px 16px; font-size:12px; border:1.5px solid transparent; }
+.col-box.green-bg { background:#F0FDF4; border-color:#86EFAC; }
+.col-box.amber-bg { background:#FFFBEB; border-color:#FCD34D; }
+.col-box:not(.green-bg):not(.amber-bg) { background:#F8FAFC; border-color:#E2E8F0; }
+.col-title { font-weight:800; margin-bottom:8px; color:#062A4E; font-size:12.5px; }
 .col-box ul { margin-left:14px; }
-.col-box li { margin-bottom:4px; color:#4A5568; }
+.col-box li { margin-bottom:5px; color:#374151; line-height:1.6; }
 
-/* NEXT STEPS */
-.step-row { display:flex; gap:14px; margin-bottom:16px; page-break-inside:avoid; align-items:flex-start; }
-.step-row.priority-step { background:#E1EFFC; border-radius:12px; padding:14px; border:2px solid #093F72; }
-.step-num { width:30px; height:30px; background:#093F72; color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; flex-shrink:0; margin-top:2px; }
-.step-row h4 { color:#062A4E; margin-bottom:5px; }
-.step-row p { font-size:12.5px; color:#4A5568; line-height:1.7; }
+/* ── NEXT STEPS PAGE ────────────────────────────────────────────── */
+.step-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 0;
+    page-break-inside: avoid;
+    align-items: flex-start;
+    padding: 16px 0;
+    border-bottom: 1px solid #EDF2F7;
+}
+.step-row:last-child { border-bottom:none; }
+.step-row.priority-step {
+    background: linear-gradient(135deg, #EBF4FF, #E1EFFC);
+    border-radius: 14px;
+    padding: 16px 18px;
+    border: 2px solid #093F72;
+    margin-bottom: 12px;
+}
+.step-num {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #062A4E, #093F72);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+.step-row h4 { color:#062A4E; margin-bottom:6px; font-size:14px; }
+.step-row p { font-size:12.5px; color:#374151; line-height:1.75; }
 
-/* IFS CALLOUT */
-.ifs-box { background:#FFFBEB; border:1px solid #FCD34D; border-radius:12px; padding:14px 18px; margin:14px 0; font-size:12.5px; color:#78350F; }
-
-/* DISCLAIMER */
-.disclaimer { background:#F7FAFC; border-left:4px solid #CBD5E0; padding:12px 16px; border-radius:0 8px 8px 0; margin-top:20px; font-size:11.5px; color:#718096; line-height:1.6; }
-
-/* FOOTER */
-.rfooter { text-align:center; padding:28px 50px; background:#F7FAFC; border-top:2px solid #E2E8F0; }
-.rfooter-logo { font-size:17px; font-weight:800; color:#062A4E; margin-bottom:5px; }
-.rfooter p { font-size:11px; color:#A0AEC0; }
+/* ── MISC ───────────────────────────────────────────────────────── */
+.ifs-box {
+    background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+    border: 1.5px solid #FCD34D;
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin: 14px 0;
+    font-size: 12.5px;
+    color: #78350F;
+}
+.disclaimer {
+    background: #F8FAFC;
+    border-left: 4px solid #CBD5E0;
+    padding: 14px 18px;
+    border-radius: 0 10px 10px 0;
+    margin-top: 24px;
+    font-size: 11px;
+    color: #94A3B8;
+    line-height: 1.65;
+}
+.rfooter {
+    text-align: center;
+    padding: 28px 48px;
+    background: linear-gradient(135deg, #062A4E, #093F72);
+    border-top: none;
+}
+.rfooter-logo { font-size:17px; font-weight:800; color:white; margin-bottom:6px; }
+.rfooter p { font-size:11px; color:rgba(255,255,255,0.5); }
 
 @media print {
     body { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
@@ -1312,30 +1556,45 @@ h4 { font-size:14px; font-weight:700; margin-bottom:5px; color:#2D3748; }
 
 <!-- COVER -->
 <div class="cover">
-    <div class="cover-logo">The 100k Parent</div>
+    <div class="cover-logo">THE 100K PARENT</div>
     <div>
-        <div><span class="cover-tier">${tierLabel}</span></div>
-        <h1 class="cover-title">Your Personalised Childcare Savings Report</h1>
-        <p class="cover-sub">Built specifically for your income, family setup and childcare situation — with real numbers, HMRC-accurate strategies and exact action steps.</p>
+        <div style="margin-bottom:20px;"><span class="cover-tier">${tierLabel} &bull; ${taxYear}</span></div>
+        <h1 class="cover-title">Your Personalised<br>Childcare Savings Report</h1>
+        <p class="cover-sub">Built around your exact income, family and childcare costs — with HMRC-accurate strategies and step-by-step action plans.</p>
         <div class="cover-persona">
             <p>${personaDesc}</p>
         </div>
-        <div class="cover-box">
-            <div class="cover-label">Estimated annual saving</div>
-            <div class="cover-amount">£${avg.toLocaleString()}</div>
-            <div class="cover-range">Range: £${Math.round(r.minSaving).toLocaleString()} — £${Math.round(r.maxSaving).toLocaleString()} per year &bull; Tax year ${taxYear}</div>
+        <div class="cover-saving-wrap">
+            <div class="cover-box">
+                <div class="cover-label">Your estimated annual saving</div>
+                <div class="cover-amount">£${avg.toLocaleString()}</div>
+                <div class="cover-range">Range: £${Math.round(r.minSaving).toLocaleString()} — £${Math.round(r.maxSaving).toLocaleString()} per year</div>
+            </div>
+            <div class="cover-stats">
+                <div class="cover-stat">
+                    <div class="cover-stat-val">£${monthlyChildcare.toLocaleString()}</div>
+                    <div class="cover-stat-label">Monthly childcare</div>
+                </div>
+                <div class="cover-stat">
+                    <div class="cover-stat-val">${numChildren}</div>
+                    <div class="cover-stat-label">Child${numChildren > 1 ? 'ren' : ''}</div>
+                </div>
+                <div class="cover-stat">
+                    <div class="cover-stat-val">£${income1.toLocaleString()}${hasPartner ? '+' : ''}</div>
+                    <div class="cover-stat-label">Household income</div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="cover-meta">
-        <p>Prepared: ${date} &bull; The 100k Parent &bull; the100kparent.com</p>
-        <p>This report is personalised to: Income £${income1.toLocaleString()}${hasPartner ? ` + partner £${income2.toLocaleString()}` : ''} &bull; ${numChildren} child${numChildren > 1 ? 'ren' : ''} &bull; £${monthlyChildcare.toLocaleString()}/month childcare</p>
+        <p>Prepared ${date} &bull; The 100k Parent &bull; the100kparent.com &bull; For personal use only</p>
     </div>
 </div>
 
 <!-- PAGE 2: PROFILE & SUMMARY -->
 <div class="page">
-    <div class="ph"><div class="ph-logo">The 100k Parent</div><div class="ph-page">Your Profile & Summary &bull; ${taxYear}</div></div>
-    <h2>Your Family Profile</h2>
+    <div class="ph"><div class="ph-left"><div class="ph-dot"></div><div class="ph-logo">The 100k Parent</div></div><div class="ph-page">Your Profile &amp; Summary &bull; ${taxYear}</div></div>
+    <div class="section-heading"><div class="section-heading-bar"></div><h2>Your Family Profile</h2></div>
     <p class="intro">This report is built on the figures below. Recalculate at any time at the100kparent.com/v2 if your situation changes.</p>
     <div class="pgrid">
         <div class="pitem"><div class="plabel">Your Income</div><div class="pval">£${income1.toLocaleString()}</div></div>
@@ -1346,7 +1605,7 @@ h4 { font-size:14px; font-weight:700; margin-bottom:5px; color:#2D3748; }
         <div class="pitem"><div class="plabel">Monthly Childcare</div><div class="pval">£${monthlyChildcare.toLocaleString()} (£${annualChildcare.toLocaleString()}/yr)</div></div>
     </div>
 
-    <h2>Savings Summary</h2>
+    <div class="section-heading"><div class="section-heading-bar"></div><h2>Savings Summary</h2></div>
     <div class="sum-row ok"><div><div class="sum-label">Tax-Free Childcare</div><div class="sum-desc">20% govt top-up, max £${2000*numChildren}k/yr (${numChildren} child${numChildren>1?'ren':''})</div></div><div class="sum-amt green">£${pdfTfc.toLocaleString()}</div></div>
     <div class="sum-row ok"><div><div class="sum-label">${fundedHoursPerWeek} Hours Free Childcare</div><div class="sum-desc">Govt-funded nursery hours</div></div><div class="sum-amt green">£${pdfThirtyHours.toLocaleString()}</div></div>
     <div class="sum-row ok"><div><div class="sum-label">Salary Sacrifice / Pension</div><div class="sum-desc">Tax + NI savings at ${Math.round(sacrificeTaxRate*100)}% effective rate</div></div><div class="sum-amt ${r.salary > 0 ? 'green' : 'grey'}">£${Math.round(r.salary).toLocaleString()}</div></div>
@@ -1381,7 +1640,7 @@ h4 { font-size:14px; font-weight:700; margin-bottom:5px; color:#2D3748; }
 
 <!-- PAGE 3+: STRATEGIES -->
 <div class="page">
-    <div class="ph"><div class="ph-logo">The 100k Parent</div><div class="ph-page">Your Strategies &bull; ${taxYear}</div></div>
+    <div class="ph"><div class="ph-left"><div class="ph-dot"></div><div class="ph-logo">The 100k Parent</div></div><div class="ph-page">Your Strategies &bull; ${taxYear}</div></div>
     <h2>Your Personalised Strategies</h2>
     <p class="intro">Ordered by impact for your specific situation. Each strategy includes your exact numbers, a clear explanation of how it works, and specific action steps.</p>
     ${strategies}
@@ -1390,7 +1649,7 @@ h4 { font-size:14px; font-weight:700; margin-bottom:5px; color:#2D3748; }
 
 <!-- NEXT STEPS -->
 <div class="page">
-    <div class="ph"><div class="ph-logo">The 100k Parent</div><div class="ph-page">Your Action Plan &bull; ${taxYear}</div></div>
+    <div class="ph"><div class="ph-left"><div class="ph-dot"></div><div class="ph-logo">The 100k Parent</div></div><div class="ph-page">Your Action Plan &bull; ${taxYear}</div></div>
     <h2>Your Action Plan</h2>
     <p class="intro">These are your specific next steps, ordered by urgency and financial impact. Each one has a direct action you can take today.</p>
     ${steps}
