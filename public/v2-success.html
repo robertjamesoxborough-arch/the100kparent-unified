@@ -414,10 +414,10 @@
                             win.document.write(html);
                             win.document.close();
 
-                            // Trigger print after fonts load
+                            // Open report without triggering print
                             setTimeout(() => {
-                                try { win.focus(); win.print(); } catch(e) {}
-                                setProgress(100, '✅ Done! In the new tab — save as PDF.');
+                                try { win.focus(); } catch(e) {}
+                                setProgress(100, '✅ Your report is open in a new tab.');
                                 document.getElementById('downloadBtn').textContent = '⬇️ Download Again';
                                 document.getElementById('downloadBtn').disabled = false;
                                 document.getElementById('popupWarning').classList.remove('visible');
