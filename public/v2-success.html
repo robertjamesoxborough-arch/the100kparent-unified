@@ -1449,6 +1449,8 @@ em { color:#637082; font-style:italic; }
         <div class="pitem"><div class="plabel">Number of Children</div><div class="pval">${numChildren}</div></div>
         <div class="pitem"><div class="plabel">Children's Ages</div><div class="pval">${ages.map(a => a === 0 ? 'Under 1' : a + ' yrs').join(', ')}</div></div>
         <div class="pitem"><div class="plabel">Monthly Childcare</div><div class="pval">£${monthlyChildcare.toLocaleString()} (£${annualChildcare.toLocaleString()}/yr)</div></div>
+        <div class="pitem"><div class="plabel">Your Monthly Pension Contribution</div><div class="pval">${r.pension1 ? '£' + r.pension1.toLocaleString() : 'Not provided'}</div></div>
+        ${hasPartner ? `<div class="pitem"><div class="plabel">Partner's Monthly Pension Contribution</div><div class="pval">${r.pension2 ? '£' + r.pension2.toLocaleString() : 'Not provided'}</div></div>` : ''}
     </div>
 
     <div class="section-heading"><div class="section-heading-bar"></div><h2>Estimated Annual Savings</h2></div>

@@ -11,7 +11,9 @@ class V2Calculator {
             numChildren: document.getElementById('numChildren'),
             childcare: document.getElementById('childcare'),
             employment: document.getElementById('employment'),
-            employment2: document.getElementById('employment2')
+            employment2: document.getElementById('employment2'),
+            pension1: document.getElementById('pension1'),
+            pension2: document.getElementById('pension2')
         };
 
         this.secondIncomeYes = document.getElementById('secondIncomeYes');
@@ -29,15 +31,20 @@ class V2Calculator {
     }
 
     init() {
+        const pension2Group = document.getElementById('pension2Group');
+
         this.secondIncomeYes.addEventListener('change', () => {
             this.income2Group.style.display = 'block';
             this.employment2Group.style.display = 'block';
+            if (pension2Group) pension2Group.style.display = 'block';
         });
 
         this.secondIncomeNo.addEventListener('change', () => {
             this.income2Group.style.display = 'none';
             this.employment2Group.style.display = 'none';
+            if (pension2Group) pension2Group.style.display = 'none';
             this.inputs.income2.value = '0';
+            if (this.inputs.pension2) this.inputs.pension2.value = '';
         });
 
         this.inputs.numChildren.addEventListener('input', () => {
@@ -119,11 +126,14 @@ class V2Calculator {
         const minSaving = tfc + salary;
         const maxSaving = tfc + salary + splitting + thirtyHours;
 
+        const pension1 = parseFloat(this.inputs.pension1?.value) || 0;
+        const pension2 = this.secondIncomeYes.checked ? (parseFloat(this.inputs.pension2?.value) || 0) : 0;
+
         // Store results for PDF
         this.lastResults = {
             income1, income2, numChildren, monthlyChildcare, employment, employment2,
             ages, over100k, has30Hours, tfc, salary, splitting,
-            thirtyHours, minSaving, maxSaving
+            thirtyHours, minSaving, maxSaving, pension1, pension2
         };
 
         // Save to localStorage so success page can read them
@@ -178,18 +188,13 @@ class V2Calculator {
     displayResults(minSaving, maxSaving, over100k, has30Hours) {
         this.resultsPanel.style.opacity = '1';
 
-        const avg = Math.round((minSaving + maxSaving) / 2);
-        document.getElementById('totalSaving').textContent = `£${avg.toLocaleString()}`;
+        const monthlyChildcare = parseFloat(this.inputs.childcare.value) || 0;
+        const estimatedSaving = Math.round(0.4 * monthlyChildcare * 12);
+        document.getElementById('totalSaving').textContent = `£${estimatedSaving.toLocaleString()}`;
 
-        // Saving range
+        // Hide saving range — using simplified formula
         const rangeEl = document.getElementById('savingsRange');
-        if (maxSaving > minSaving) {
-            rangeEl.style.display = 'block';
-            document.getElementById('rangeMin').textContent = `£${Math.round(minSaving).toLocaleString()}`;
-            document.getElementById('rangeMax').textContent = `£${Math.round(maxSaving).toLocaleString()}`;
-        } else {
-            rangeEl.style.display = 'none';
-        }
+        rangeEl.style.display = 'none';
 
         // £100k warning
         document.getElementById('over100kWarning').style.display = over100k ? 'block' : 'none';
@@ -198,6 +203,7 @@ class V2Calculator {
         document.getElementById('eligibilityWarning').style.display = (!has30Hours && !over100k) ? 'block' : 'none';
 
         // Show paywall gate
+        const { tfc, salary, splitting, thirtyHours } = this.lastResults;
         this.showPaywall(minSaving, maxSaving, tfc, salary, splitting, thirtyHours);
 
         this.resultsPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -233,7 +239,7 @@ class V2Calculator {
                 <div class="paywall-content">
                     <div class="paywall-lock">🔒</div>
                     <h3 class="paywall-title">Your full breakdown is ready</h3>
-                    <p class="paywall-subtitle">You could save between <strong>£${Math.round(minSaving).toLocaleString()}</strong> and <strong>£${Math.round(maxSaving).toLocaleString()}</strong> per year.</p>
+                    <p class="paywall-subtitle">You could save up to <strong>£${Math.round(0.4 * (parseFloat(this.inputs.childcare.value) || 0) * 12).toLocaleString()}</strong> a year.</p>
 
                     <div class="paywall-recommended">
                         <div class="paywall-recommended-badge">Recommended for you</div>
