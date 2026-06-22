@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 
-export const config = {
-  api: { bodyParser: false },
-}
-
 async function getRawBody(req: NextRequest): Promise<string> {
   const buf = await req.arrayBuffer()
   return Buffer.from(buf).toString('utf-8')
@@ -73,8 +69,8 @@ export async function POST(req: NextRequest) {
             eventName: 'purchase_complete',
             eventProperties: {
               firstName,
-              dashboardUrl: 'https://the100kparent-unified.vercel.app/dashboard.html',
-              pdfUrl: 'https://the100kparent-unified.vercel.app/success.html',
+              dashboardUrl: 'https://the100kparent-unified.vercel.app/v2-success.html',
+              pdfUrl: 'https://the100kparent-unified.vercel.app/v2-success.html',
               purchaseDate: new Date().toLocaleDateString('en-GB'),
             },
           }),

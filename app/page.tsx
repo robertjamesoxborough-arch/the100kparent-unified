@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 
-// Serve the existing static homepage
+// Serve the v2 site as the main homepage
 export default function RootPage() {
-  redirect('/index.html')
+  redirect('/v2.html')
 }

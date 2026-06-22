@@ -129,11 +129,22 @@ class V2Calculator {
         const pension1 = parseFloat(this.inputs.pension1?.value) || 0;
         const pension2 = this.secondIncomeYes.checked ? (parseFloat(this.inputs.pension2?.value) || 0) : 0;
 
+        // Canonical headline saving — single source of truth shared by the results
+        // panel, the success page and the PDF so all three show the same figure.
+        // Funded hours only apply to children aged 9 months–4 years, so the 30-hours
+        // saving is only counted when there's an eligible-age child.
+        const hasEligibleAgeChild = ages.some(a => a >= 0 && a <= 4);
+        const displayTfc = Math.round(Math.min(annualChildcare * 0.20, 2000 * numChildren));
+        const displaySalary = Math.round(salary);
+        const displayThirtyHours = hasEligibleAgeChild ? Math.round(0.55 * annualChildcare) : 0;
+        const displayTotal = displayTfc + displaySalary + displayThirtyHours;
+
         // Store results for PDF
         this.lastResults = {
             income1, income2, numChildren, monthlyChildcare, employment, employment2,
             ages, over100k, has30Hours, tfc, salary, splitting,
-            thirtyHours, minSaving, maxSaving, pension1, pension2
+            thirtyHours, minSaving, maxSaving, pension1, pension2,
+            displayTfc, displaySalary, displayThirtyHours, displayTotal
         };
 
         // Save to localStorage so success page can read them
@@ -188,8 +199,7 @@ class V2Calculator {
     displayResults(minSaving, maxSaving, over100k, has30Hours) {
         this.resultsPanel.style.opacity = '1';
 
-        const monthlyChildcare = parseFloat(this.inputs.childcare.value) || 0;
-        const estimatedSaving = Math.round(0.4 * monthlyChildcare * 12);
+        const estimatedSaving = this.lastResults.displayTotal;
         document.getElementById('totalSaving').textContent = `£${estimatedSaving.toLocaleString()}`;
 
         // Hide saving range — using simplified formula
@@ -206,7 +216,12 @@ class V2Calculator {
         const { tfc, salary, splitting, thirtyHours } = this.lastResults;
         this.showPaywall(minSaving, maxSaving, tfc, salary, splitting, thirtyHours);
 
-        this.resultsPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        // Scroll the results panel to the top of the viewport so the "Your Estimated
+        // Saving" wording is immediately visible, allowing for the sticky nav height.
+        const nav = document.querySelector('.nav');
+        const navHeight = nav ? nav.offsetHeight : 0;
+        const top = this.resultsPanel.getBoundingClientRect().top + window.pageYOffset - navHeight - 16;
+        window.scrollTo({ top, behavior: 'smooth' });
     }
 
     showPaywall(minSaving, maxSaving, tfc, salary, splitting, thirtyHours) {
@@ -239,7 +254,7 @@ class V2Calculator {
                 <div class="paywall-content">
                     <div class="paywall-lock">🔒</div>
                     <h3 class="paywall-title">Your full breakdown is ready</h3>
-                    <p class="paywall-subtitle">You could save up to <strong>£${Math.round(0.4 * (parseFloat(this.inputs.childcare.value) || 0) * 12).toLocaleString()}</strong> a year.</p>
+                    <p class="paywall-subtitle">You could save up to <strong>£${this.lastResults.displayTotal.toLocaleString()}</strong> a year.</p>
 
                     <div class="paywall-recommended">
                         <div class="paywall-recommended-badge">Recommended for you</div>
@@ -270,6 +285,10 @@ class V2Calculator {
 
         document.getElementById('resultsActions').style.display = 'none';
         this.resultsPanel.appendChild(gate);
+
+        // Move the £100k warning (red box) to sit below the breakdown gate.
+        const over100kWarning = document.getElementById('over100kWarning');
+        if (over100kWarning) this.resultsPanel.appendChild(over100kWarning);
     }
 }
 
@@ -295,7 +314,7 @@ class PDFReportGenerator {
     buildReportHTML(tier) {
         const r = this.r;
         const date = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-        const avg = Math.round((r.minSaving + r.maxSaving) / 2);
+        const avg = r.displayTotal ?? Math.round((r.minSaving + r.maxSaving) / 2);
 
         return `<!DOCTYPE html>
 <html lang="en">
