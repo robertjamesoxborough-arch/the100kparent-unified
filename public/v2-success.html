@@ -288,7 +288,7 @@
                         <div class="saving-label">Salary Sacrifice</div>
                         <div class="saving-desc">Income Tax + National Insurance savings</div>
                     </div>
-                    <div class="saving-amount ${r.salary === 0 ? 'zero' : ''}">£${Math.round(r.salary).toLocaleString()}</div>
+                    <div class="saving-amount ${potentialSalary === 0 ? 'zero' : ''}">£${potentialSalary.toLocaleString()}</div>
                 </div>
 
                 <div class="saving-row">
@@ -471,7 +471,8 @@
     function generatePDFHTML(r, tier) {
         const pdfTfc = r.displayTfc ?? Math.round(Math.min((r.monthlyChildcare * 12) * 0.20, 2000 * r.numChildren));
         const pdfThirtyHours = r.displayThirtyHours ?? ((r.ages || []).some(a => a >= 0 && a <= 4) ? Math.round(0.55 * (r.monthlyChildcare || 0) * 12) : 0);
-        const avg = r.displayTotal ?? (pdfTfc + pdfThirtyHours + Math.round(r.salary || 0));
+        // NOTE: `avg` (the headline/grand total) is defined below, after the pension
+        // relief figure is calculated, so every page uses the same number.
         const date = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
         const tierLabel = tier === 'complete' ? 'Complete Guide' : 'Essential Report';
         const taxYear = '2025/26';
@@ -526,12 +527,22 @@
         const pensionPartnerAnnual = Math.round((r.pension2 || 0) * 12);
         const extraSacrificeYou = Math.max(0, sacrificeYou - pensionYouAnnual);
         const extraSacrificePartner = Math.max(0, sacrificePartnerAmt - pensionPartnerAnnual);
-        const higherEarnerPensionAnnual = income1 >= income2 ? pensionYouAnnual : pensionPartnerAnnual;
-        const extraSacrificeNeeded = Math.max(0, sacrificeNeeded - higherEarnerPensionAnnual);
+        // Combined extra pension top-up the household needs to get under £100k.
+        const extraSacrificeCombined = extraSacrificeYou + extraSacrificePartner;
 
         // Tax rate for sacrifice
         const sacrificeTaxRate = in60TrapZone ? 0.62 : higherIncome > 50270 ? 0.42 : 0.32;
-        const taxSavedBySacrifice = Math.round(extraSacrificeNeeded * sacrificeTaxRate);
+        const taxSavedBySacrifice = Math.round(extraSacrificeCombined * sacrificeTaxRate);
+        // The salary-sacrifice / pension figure shown on the summary page and headline:
+        //  • Over £100k: the real pension top-up relief that breaks the £100k threshold.
+        //  • Under £100k: a generic estimate of redirecting ~30% of childcare spend
+        //    (capped at £5,000/yr) into pension salary sacrifice at the marginal rate.
+        const genericSalarySacrifice = Math.round(Math.min(5000, annualChildcare * 0.3) * sacrificeTaxRate);
+        const salaryPensionSaving = over100k ? taxSavedBySacrifice : genericSalarySacrifice;
+        // Single consistent PDF total: childcare benefits + the salary-sacrifice/pension saving.
+        // (The 62% effective rate already includes the personal-allowance restoration,
+        // so it is NOT added again separately — see totalBenefit below.)
+        const avg = pdfTfc + pdfThirtyHours + salaryPensionSaving;
 
         // 60% trap
         const personalAllowanceLost = in60TrapZone ? Math.min(12570, Math.round((higherIncome - 100000) / 2)) : 0;
@@ -548,20 +559,17 @@
 
         // Workplace Nursery Benefit (new - average saving £6,500/yr)
         const workplaceNurseryEligible = !isSelfEmployed1 && annualChildcare > 0;
-        const workplaceNurserySaving = Math.round(annualChildcare * (higherIncome > 50270 ? 0.42 : 0.32));
+        const workplaceNurserySaving = Math.round(annualChildcare * sacrificeTaxRate);
 
         // Annual childcare cost context
         const avgNurseryCostUnder2 = 12430; // England average 2025 (£238.95/wk × 52)
         const avgNurseryCostOver2 = 11737; // England average 2025 (£225.7/wk × 52)
         const londonPremium = 1.6; // London ~60% more expensive
 
-        // 30 hours value — updated 2025/26 rates. From September 2025 the full
+        // Funded childcare hours — 2025/26. From September 2025 the full
         // 30 funded hours apply to all eligible children from 9 months.
-        const nurseryRatePerHour = 15.00;
-        const marketRatePerHour = 15.00;
+        // (The £/year saving itself is taken from pdfThirtyHours = 0.55 × annual cost.)
         const fundedHoursPerWeek = 30;
-        const fundedWeeksPerYear = 38;
-        const thirtyHoursValue = under5Count * marketRatePerHour * fundedHoursPerWeek * fundedWeeksPerYear;
 
         // Pension annual allowance check
         const annualAllowance = higherIncome > 260000 ? Math.max(10000, 60000 - Math.round((higherIncome - 260000) / 2)) : 60000;
@@ -627,11 +635,23 @@
         if (sacrificeYou > 0 || sacrificePartnerAmt > 0) {
             const bothNeedSacrifice = sacrificeYou > 0 && sacrificePartnerAmt > 0;
             const childcareBenefitUnlocked = pdfTfc + pdfThirtyHours;
-            const totalBenefit = taxSavedBySacrifice + pdfTfc + pdfThirtyHours + (in60TrapZone ? extraTaxFrom60Trap : 0);
+            // The personal-allowance restoration is already inside the 62% effective
+            // rate used by taxSavedBySacrifice, so it is not added a second time here.
+            const totalBenefit = taxSavedBySacrifice + pdfTfc + pdfThirtyHours;
 
             // For the action step email, use "your" individual EXTRA amount
             const monthlyYou = Math.round(extraSacrificeYou / 12);
             const monthlyPartner = Math.round(extraSacrificePartner / 12);
+
+            // Per-parent 60% tax trap position (£100,000–£125,140) so the alert below
+            // can address each parent who is individually caught in it.
+            const youInTrap = income1 > 100000 && income1 <= 125140;
+            const partnerInTrap = income2 > 100000 && income2 <= 125140;
+            const youPALost = youInTrap ? Math.min(12570, Math.round((income1 - 100000) / 2)) : 0;
+            const partnerPALost = partnerInTrap ? Math.min(12570, Math.round((income2 - 100000) / 2)) : 0;
+            const youTrapTax = Math.round(youPALost * 0.40);
+            const partnerTrapTax = Math.round(partnerPALost * 0.40);
+            const bothInTrap = youInTrap && partnerInTrap;
 
             // Cleanly formatted "estimated pension contribution required" card per earner
             const contribCard = (who, existing, yearly, monthly) => `
@@ -666,32 +686,31 @@
 
                     <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-left:4px solid #2563EB;border-radius:10px;padding:14px 16px;margin:4px 0 14px;">
                         <div style="font-weight:800;font-size:13.5px;color:#1E3A8A;margin-bottom:5px;">🔑 Right now you're paying for childcare with money you've already been taxed on</div>
-                        <div style="font-size:12.5px;color:#1E293B;line-height:1.6;">Every pound of nursery fees today comes out of income you've already paid up to 40–60% tax on — once it's spent, it's gone. Redirecting that money into your pension turns a <strong>cost</strong> into <strong>wealth you still own</strong>: the cash stays part of your net worth, grows free of Income Tax and Capital Gains Tax inside the pension, and is only taxed — often at a lower rate — when you choose to draw on it later. You are not spending the money; you are moving it from the taxman back to your own future.</div>
+                        <div style="font-size:12.5px;color:#1E293B;line-height:1.6;">Nursery fees come out of income you've already paid up to 40–60% tax on — once spent, it's gone. Redirect that money into your pension and a <strong>cost</strong> becomes <strong>wealth you still own</strong>: it grows free of Income and Capital Gains Tax, and is only taxed (often at a lower rate) when you draw on it. You're not spending the money — you're moving it from the taxman to your own future.</div>
                     </div>
 
                     <p>This single action triggers a cascade of benefits:</p>
                     <div class="calc-table">
                         <div class="ct-row header"><span>Component</span><span>Amount</span><span>How</span></div>
-                        <div class="ct-row"><span>Tax + NI saved on pension contribution</span><span class="green">£${taxSavedBySacrifice.toLocaleString()}</span><span>${Math.round(sacrificeTaxRate * 100)}% effective relief</span></div>
                         <div class="ct-row"><span>Tax-Free Childcare available</span><span class="green">£${pdfTfc.toLocaleString()}</span><span>20% govt top-up, capped at £${(2000 * numChildren).toLocaleString()}/yr</span></div>
                         <div class="ct-row"><span>${fundedHoursPerWeek} hours free childcare saving</span><span class="green">£${pdfThirtyHours.toLocaleString()}</span><span>Government-funded nursery hours${under5Count > 0 ? ` — ${under5Count} eligible child${under5Count > 1 ? 'ren' : ''}` : ''}</span></div>
-                        ${in60TrapZone ? `<div class="ct-row"><span>Personal allowance restored (${personalAllowanceLost.toLocaleString()} of £12,570)</span><span class="green">£${extraTaxFrom60Trap.toLocaleString()}</span><span>End 60% trap</span></div>` : ''}
-                        <div class="ct-row total"><span>Total annual benefit</span><span class="green">£${totalBenefit.toLocaleString()}</span><span>${in60TrapZone ? '4 components' : '3 components'}</span></div>
+                        <div class="ct-row"><span>Tax + NI saved on pension contribution</span><span class="green">£${taxSavedBySacrifice.toLocaleString()}</span><span>${Math.round(sacrificeTaxRate * 100)}% effective relief${in60TrapZone ? ' — incl. personal allowance restored' : ''}</span></div>
+                        <div class="ct-row total"><span>Total annual benefit</span><span class="green">£${totalBenefit.toLocaleString()}</span><span>3 components</span></div>
                     </div>
 
                     <div class="alert amber">
-                        <strong>⚠️ Critical first step — check your pension type before you do anything else</strong><br>
-                        Most people assume they're on salary sacrifice. Many aren't. There are two common pension arrangements:<br><br>
-                        <strong>Salary Sacrifice</strong> — Your employer reduces your gross salary and pays the equivalent into your pension. You save Income Tax <em>and</em> National Insurance automatically. No action needed with HMRC.<br><br>
-                        <strong>Relief at Source</strong> — You pay from your net salary and HMRC adds 20% basic rate relief automatically. But if you're a higher-rate taxpayer, you're entitled to a further 20–25% — and you only get it if you claim it yourself via Self Assessment. This means you may be owed between <strong>£700 and £15,000</strong> for contributions made over the last 4 tax years. After 4 years, the right to claim is lost permanently.<br><br>
-                        <strong>How to check:</strong> Email HR or your pension provider: <em>"Is my pension scheme set up as salary sacrifice, or does it operate under Relief at Source?"</em> Search your payslip for "Relief at Source", "Tax Relief", or "Government Top-Up" — if you see these, you likely have a Relief at Source pension and should be claiming higher rate relief via Self Assessment immediately.
+                        <strong>⚠️ Critical first step — check your pension type</strong><br>
+                        Most people assume they're on salary sacrifice; many aren't. There are two arrangements:<br><br>
+                        <strong>Salary Sacrifice</strong> — Your employer cuts your gross salary and pays it into your pension. You save Income Tax <em>and</em> National Insurance automatically; nothing to claim.<br><br>
+                        <strong>Relief at Source</strong> — You pay from net salary and HMRC adds 20% basic-rate relief. As a higher-rate taxpayer you're owed a further 20–25%, but only if you claim it via Self Assessment — potentially <strong>£700–£15,000</strong> across the last 4 tax years. After 4 years it's lost for good.<br><br>
+                        <strong>How to check:</strong> Ask HR <em>"Is my pension salary sacrifice or Relief at Source?"</em> — or look for "Relief at Source", "Tax Relief" or "Government Top-Up" on your payslip, which signal Relief at Source (claim your higher-rate relief now).
                     </div>
 
                     ${!sacrificeWithinAllowance ? `<div class="alert amber"><strong>⚠️ Annual Allowance:</strong> Your sacrifice may approach your pension annual allowance of £${annualAllowance.toLocaleString()}. Speak to a financial adviser about carry forward from previous years before proceeding.</div>` : ''}
 
-                    ${in60TrapZone ? `<div class="alert red">
-                        <strong>⚠️ You Are Currently in the 60% Tax Trap</strong><br>
-                        Your income between £100,000 and £125,140 is taxed at an effective 62% marginal rate (40% income tax + removing £1 of personal allowance per £2 earned above £100k). You have currently lost £${personalAllowanceLost.toLocaleString()} of your £12,570 personal allowance, costing you an extra £${extraTaxFrom60Trap.toLocaleString()} in tax this year. A pension contribution restores this immediately.
+                    ${(youInTrap || partnerInTrap) ? `<div class="alert red">
+                        <strong>⚠️ ${bothInTrap ? 'You Are Both Currently in the 60% Tax Trap' : youInTrap ? 'You Are Currently in the 60% Tax Trap' : 'Your Partner Is Currently in the 60% Tax Trap'}</strong><br>
+                        Income between £100,000 and £125,140 is taxed at an effective 62% marginal rate (40% income tax + removing £1 of personal allowance per £2 earned above £100k). ${bothInTrap ? `You have currently lost £${youPALost.toLocaleString()} of your £12,570 personal allowance (an extra £${youTrapTax.toLocaleString()} in tax this year), and your partner has lost £${partnerPALost.toLocaleString()} of theirs (an extra £${partnerTrapTax.toLocaleString()}). Pension contributions restore both immediately.` : youInTrap ? `You have currently lost £${youPALost.toLocaleString()} of your £12,570 personal allowance, costing you an extra £${youTrapTax.toLocaleString()} in tax this year. A pension contribution restores this immediately.` : `Your partner has currently lost £${partnerPALost.toLocaleString()} of their £12,570 personal allowance, costing them an extra £${partnerTrapTax.toLocaleString()} in tax this year. A pension contribution restores this immediately.`}
                     </div>` : ''}
 
                     <div class="action-steps">
@@ -717,9 +736,58 @@
                         </div>
                     </div>
                     <div class="alert amber" style="margin-top:14px;">
-                        <strong>💡 Good to know — other ways to reduce your adjusted net income</strong><br><br>
-                        <strong>Personal pension contributions:</strong> If salary sacrifice is not available through your employer, a personal pension contribution achieves the same reduction in adjusted net income. You pay into your pension directly; HMRC adds 20% basic rate relief automatically, and higher or additional rate relief is reclaimed through Self Assessment. The contribution counts in full against your adjusted net income, making you eligible for the same childcare benefits as salary sacrifice would provide.<br><br>
-                        <strong>Gift Aid donations:</strong> Charitable donations made under Gift Aid also reduce your adjusted net income by the grossed-up value of the donation (the amount you give divided by 0.80). This is worth noting if you already give to charity regularly, as those amounts contribute toward bringing your income below £100,000 — though for most people the sums involved are modest compared to the pension contribution required.
+                        <strong>💡 Other ways to reduce your adjusted net income</strong><br><br>
+                        <strong>Personal pension:</strong> No salary sacrifice at work? Pay into a pension directly — HMRC adds 20% relief automatically and you reclaim higher/additional-rate relief via Self Assessment. The gross contribution reduces your ANI just the same.<br><br>
+                        <strong>Gift Aid:</strong> Gift-Aided donations also cut your ANI by their grossed-up value (what you give ÷ 0.80). Useful if you already give regularly, though the sums are usually modest next to the pension contribution needed.
+                    </div>
+
+                    <div class="alert blue" style="margin-top:14px;">
+                        <strong>📋 How one parent earning £130k annual salary was able to claim 30 hours childcare</strong><br><br>
+                        Sarah earns <strong>£130,000</strong> and was paying <strong>£15,000 a year</strong> in nursery fees out of her taxed salary — and getting nothing back from the government, because £130k locks you out of every childcare scheme. Two moves changed that:<br><br>
+                        <strong>1. Her existing 5% pension was already working.</strong> The £6,500 she sacrifices into her pension each year pulls her taxable income down: £130,000 → <strong>£123,500</strong>.<br><br>
+                        <strong>2. One deliberate top-up broke the £100k barrier.</strong> An extra <strong>£23,600</strong> into her pension dropped her adjusted net income to £99,900. That single step unlocked <strong>30 hours of free childcare</strong> and handed back her full <strong>£12,570 personal allowance</strong> — worth over <strong>£5,000 in tax</strong> on its own.<br><br>
+                        The result: a far smaller tax bill, free government childcare she previously couldn't touch, and roughly <strong>£30,100</strong> more building up in her pension every year — money that would otherwise have been lost to the 60% tax trap. On top of that she can run <strong>Tax-Free Childcare</strong> — worth up to £2,000 per child a year — toward her nursery fees, plus after-school clubs and holiday camps.
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // ─ STRATEGY 2: PENSION SALARY SACRIFICE (under £100k) ───────────
+        // Backs the "Salary Sacrifice / Pension" line on the summary page for families
+        // already below £100k, where there is no £100k threshold to break.
+        if (!over100k && !bothSelfEmployed && genericSalarySacrifice > 0) {
+            const ssAmount = Math.round(Math.min(5000, annualChildcare * 0.3));
+            strategies += `
+            <div class="s-card">
+                <div class="s-header">
+                    <span class="s-icon">💷</span>
+                    <div class="s-title-block">
+                        <div class="s-title">Pension Salary Sacrifice</div>
+                        <div class="s-badge green">Tax + NI saving — available now</div>
+                    </div>
+                    <div class="s-amount">£${salaryPensionSaving.toLocaleString()}<span>/yr est.</span></div>
+                </div>
+                <div class="s-body">
+                    <p>You are already below £100,000, so your childcare eligibility is secure. The next saving to capture is on the tax you pay on your own income. By redirecting part of what you spend from already-taxed income into your pension via <strong>salary sacrifice</strong>, you save both Income Tax and National Insurance on every pound — at your marginal rate of <strong>${Math.round(sacrificeTaxRate * 100)}%</strong>.</p>
+                    <div class="calc-table">
+                        <div class="ct-row header"><span>Component</span><span>Amount</span><span>How</span></div>
+                        <div class="ct-row"><span>Illustrative amount sacrificed</span><span>£${ssAmount.toLocaleString()}/yr</span><span>≈ 30% of your childcare spend, capped at £5,000</span></div>
+                        <div class="ct-row total"><span>Tax + NI saved</span><span class="green">£${salaryPensionSaving.toLocaleString()}/yr</span><span>${Math.round(sacrificeTaxRate * 100)}% effective relief</span></div>
+                    </div>
+                    <p style="margin-top:10px;font-size:13px;color:#475569;">This is an illustration based on a typical sacrifice amount — your actual saving depends on how much you choose to contribute. Every extra pound you sacrifice saves a further ${Math.round(sacrificeTaxRate * 100)}p, and the money stays yours, growing inside your pension rather than going to the taxman.</p>
+                    <div class="action-steps">
+                        <div class="action-step">
+                            <div class="as-num">1</div>
+                            <div><strong>Check your pension runs on salary sacrifice</strong> — Email HR: <em>"Is my pension salary sacrifice, and can I adjust my contribution?"</em> Salary sacrifice saves Income Tax and NI automatically; Relief at Source saves the tax but you must claim higher-rate relief yourself.</div>
+                        </div>
+                        <div class="action-step">
+                            <div class="as-num">2</div>
+                            <div><strong>Decide an amount you can comfortably redirect</strong> — Even a modest monthly increase reduces your tax bill from the next payroll and compounds over time.</div>
+                        </div>
+                        <div class="action-step">
+                            <div class="as-num">3</div>
+                            <div><strong>Keep an eye on the £100,000 line</strong> — If a pay rise or bonus pushes you toward £100,000, increasing this contribution is what protects your childcare benefits and personal allowance.${higherIncome > 50270 ? ' See also the higher-rate pension relief you may already be owed, below.' : ''}</div>
+                        </div>
                     </div>
                 </div>
             </div>`;
@@ -734,7 +802,7 @@
             <div class="s-header">
                 <span class="s-icon">🏛️</span>
                 <div class="s-title-block">
-                    <div class="s-title">Government Childcare Benefits</div>
+                    <div class="s-title">Government funded childcare could save you:</div>
                     <div class="s-badge ${tfcEligible ? 'green' : 'blue'}">${tfcEligible ? `You Qualify — Worth £${combinedChildcareBenefit.toLocaleString()}/year` : `Available Once Priority Action Is Complete — Worth £${combinedChildcareBenefit.toLocaleString()}/year`}</div>
                 </div>
                 <div class="s-amount">£${combinedChildcareBenefit.toLocaleString()}<span>/yr combined</span></div>
@@ -787,7 +855,7 @@
                     ${eligible30hrs ? `
                     <div class="alert green" style="margin-top:10px;">
                         <strong>✅ Myth-bust: quarterly income checks will not strip your place mid-year</strong><br>
-                        This is the most common source of panic among parents near £100,000 — and it is based on a misunderstanding. HMRC assesses your eligibility once, at the point of application. The quarterly reconfirmations that follow are not a re-test of your income — they exist only to confirm your circumstances still broadly hold. A pay rise mid-term does not retroactively cancel a place you were correctly granted. <strong>Get your income right at the point of application, then reconfirm on time. That is all.</strong>
+                        The biggest panic for parents near £100,000 is a misunderstanding. HMRC assesses your income once, at application. The quarterly reconfirmations only check your circumstances still broadly hold — they're not a re-test of income, and a mid-term pay rise won't cancel a place you were correctly granted. <strong>Get your income right at the point of application, then reconfirm on time. That's all.</strong>
                     </div>
                     <div class="alert blue" style="margin-top:10px;">
                         <strong>📅 The three funding gates — and why timing beats luck</strong><br>
@@ -796,15 +864,25 @@
                     </div>
                     <div class="alert blue" style="margin-top:10px;">
                         <strong>👶 The maternity-leave timing move</strong><br>
-                        Both parents must be "working" within 30 days of the term start. The catch for a parent on maternity leave: HMRC counts you as working only once leave ends — and if that lands a day after the window, you miss the term. The fix: <strong>book a short stretch of paid annual leave to bridge the start of term.</strong> You count as working from the first day of that paid leave, so the 30-day test is met without forcing a rushed return.
+                        Both parents must be "working" within 30 days of term start. The catch on maternity leave: HMRC counts you as working only once leave ends, so if that falls just after the window you miss the term. The fix: <strong>book a short stretch of paid annual leave to bridge term start</strong> — you count as working from its first day, meeting the 30-day test without a rushed return.
                     </div>` : `
                     <div class="alert red" style="margin-top:10px;">
                         <strong>To unlock the ${fundedHoursPerWeek} funded hours:</strong>
+                        ${over100k ? `
+                        <p style="margin:8px 0;">Eligibility is lost while ${income1 > 100000 && income2 > 100000 ? 'either parent’s' : 'your'} <strong>adjusted net income</strong> (ANI) is £100,000 or more. ANI = your gross taxable income − pension contributions (counted gross) − Gift-Aided donations (grossed up). ${extraSacrificeCombined > 0 ? `Based on your figures you need to reduce ${income1 > 100000 && income2 > 100000 ? 'both incomes' : 'the relevant income'} below £100,000 — an estimated <strong>£${extraSacrificeCombined.toLocaleString()}/year</strong> of extra contributions in total, on top of what you already pay. ` : ''}There are four ways to get there, and you can combine them:</p>
+                        <ol style="margin-top:8px;margin-left:20px;">
+                            <li style="margin-bottom:7px;"><strong>Salary sacrifice into your workplace pension</strong> — The simplest route for most employees. Email HR: <em>"Please increase my salary-sacrifice pension contribution by £X/month from next payroll."</em> Your gross salary is reduced by the contribution, so your ANI falls by the same amount and you save both Income Tax and NI automatically.</li>
+                            <li style="margin-bottom:7px;"><strong>Salary sacrifice into a workplace benefit scheme</strong> — Ask HR whether you can swap part of your gross salary for a non-cash benefit, such as a <strong>Workplace Nursery scheme</strong>, additional pension, cycle-to-work or an electric-car lease. Because the amount comes off your <em>gross</em> pay before tax, it lowers your ANI pound-for-pound and also saves National Insurance.</li>
+                            <li style="margin-bottom:7px;"><strong>Pay into a private or personal pension</strong> — If salary sacrifice isn't available, contribute directly to a SIPP or personal pension. HMRC adds 20% basic-rate relief automatically, and you reclaim the higher/additional-rate relief through Self Assessment. The <em>gross</em> contribution (what you pay ÷ 0.80) is what reduces your ANI.</li>
+                            <li style="margin-bottom:7px;"><strong>Gift Aid charitable donations</strong> — Donations made under Gift Aid also reduce your ANI by their grossed-up value (the amount you give ÷ 0.80). If you already give to charity regularly, include these in your calculation — they count toward getting you below £100,000.</li>
+                        </ol>
+                        <p style="margin:8px 0 0;font-size:12.5px;">Whichever routes you use, make the contributions <strong>within the tax year</strong> you are claiming for, confirm your projected ANI is below £100,000, then apply within days at childcarechoices.gov.uk.</p>
+                        ` : ''}
+                        ${(!hasPartner || (hasPartner && Math.min(income1, income2) < 2379)) ? `
                         <ul style="margin-top:8px;margin-left:20px;">
-                            ${over100k ? `<li>Reduce adjusted net income below £100,000 via pension contribution (see Priority Action above)</li>` : ''}
-                            ${!hasPartner ? `<li>Both partners must be working — single income households qualify for 15 universal hours at age 3 only, not the extended hours</li>` : ''}
-                            ${hasPartner && Math.min(income1, income2) < 2379 ? `<li>Both partners must earn at least £2,379/year (equivalent to 16 hours/week at minimum wage)</li>` : ''}
-                        </ul>
+                            ${!hasPartner ? `<li>Both parents must be working — single-income households qualify for 15 universal hours at age 3 only, not the extended hours</li>` : ''}
+                            ${hasPartner && Math.min(income1, income2) < 2379 ? `<li>Both parents must earn at least £2,379/year (equivalent to 16 hours/week at minimum wage)</li>` : ''}
+                        </ul>` : ''}
                     </div>`}
                 </div>` : ''}
 
@@ -855,7 +933,7 @@
                     <div class="s-amount">~£${potentialBackclaim.toLocaleString()}<span>est. owed</span></div>
                 </div>
                 <div class="s-body">
-                    <p><strong>Read this first.</strong> Roughly half of higher-rate taxpayers who think they're getting full pension tax relief are not — and most never find out. If your workplace pension runs on <strong>Relief at Source</strong> rather than salary sacrifice, HMRC only adds the basic 20% automatically. As a ${additionalRateTaxpayer ? 'additional-rate' : 'higher-rate'} taxpayer you are owed a further <strong>${extraReliefPct}%</strong> on every contribution — but it sits unclaimed until <em>you</em> ask for it through Self Assessment. Most people never do.</p>
+                    <p><strong>Read this first.</strong> Many higher-rate taxpayers who think they're getting full pension tax relief aren't — and never find out. If your workplace pension runs on <strong>Relief at Source</strong> rather than salary sacrifice, HMRC only adds the basic 20% automatically. As a ${additionalRateTaxpayer ? 'additional-rate' : 'higher-rate'} taxpayer you're owed a further <strong>${extraReliefPct}%</strong> on every contribution — but it sits unclaimed until <em>you</em> ask for it through Self Assessment.</p>
 
                     <p>Here is exactly what happens to every £80 you put in:</p>
                     <div class="calc-table">
@@ -866,11 +944,11 @@
                         <div class="ct-row"><span>Higher rate relief you're entitled to</span><span class="green">+ £20</span><span class="red"><strong>Only if you claim it</strong></span></div>
                         <div class="ct-row total"><span>Your true cost for £100 in your pension</span><span class="green">just £60</span><span>A 67% uplift on your money</span></div>
                     </div>
-                    <p style="margin-top:10px;">In plain terms: if you don't claim, you are paying £80 for something that should cost you £60. That gap repeats on every single contribution, every month, for as long as you stay on Relief at Source.</p>
+                    <p style="margin-top:10px;">Put plainly: don't claim and you're paying £80 for what should cost £60 — on every contribution, every month, for as long as you're on Relief at Source.</p>
 
                     <div class="alert red">
                         <strong>⏰ The clock is the whole point. You can only go back 4 tax years — then it's gone for good.</strong><br>
-                        Based on a typical contribution at your income level, you could be owed in the region of <strong>£${potentialBackclaim.toLocaleString()}</strong> across the last four years (real figures range from £700 to £15,000+ depending on how much you've contributed). HMRC does not chase you for this — there is no letter, no reminder. The oldest year drops off the edge of the window every 5 April. ${hasPartner ? 'Both of you should check — if your partner is also a higher-rate taxpayer, they have a separate claim of their own.' : ''}
+                        Based on a typical contribution at your income level, you could be owed around <strong>£${potentialBackclaim.toLocaleString()}</strong> across four years (real figures range £700–£15,000+). HMRC won't chase you — no letter, no reminder — and the oldest year drops off the window every 5 April.${hasPartner ? ' Your partner should check too — their claim is entirely separate.' : ''}
                     </div>
 
                     <div class="action-steps">
@@ -903,12 +981,18 @@
             const pensionTopUpAfterWNB = incomeAfterWNB > 99999 ? Math.round(incomeAfterWNB - 99999) : 0;
             const wnbCanCross100k = higherIncome > 100000;
             const wnbAlreadyUnder = incomeAfterWNB <= 99999;
+            // Per-parent figures so the "with your numbers" box can address both parents.
+            const youOver100kWNB = income1 > 100000;
+            const partnerOver100kWNB = income2 > 100000;
+            const bothOver100kWNB = youOver100kWNB && partnerOver100kWNB;
+            const youAfterWNB = income1 - annualChildcare;
+            const youTopUpAfterWNB = youAfterWNB > 99999 ? Math.round(youAfterWNB - 99999) : 0;
             strategies += `
             <div class="s-card">
                 <div class="s-header">
                     <span class="s-icon">🏢</span>
                     <div class="s-title-block">
-                        <div class="s-title">Workplace Nursery Benefit — A Possible Hidden Gem</div>
+                        <div class="s-title">Workplace Nursery Benefit — A Possible Hidden Gem if available through your employer</div>
                         <div class="s-badge blue">Worth checking · Average saving £6,500/yr if available · No cap</div>
                     </div>
                     <div class="s-amount">£${workplaceNurserySaving.toLocaleString()}<span>/yr if available</span></div>
@@ -916,18 +1000,18 @@
                 <div class="s-body">
                     <div class="alert amber" style="margin-bottom:14px;">
                         <strong>⚠️ Not widely available — but worth a quick check</strong><br>
-                        The Workplace Nursery Benefit is not offered by most employers. It requires your employer to have a formal scheme in place, and many simply do not. However, it takes one email to HR to find out — and if your employer does offer it, the saving can be substantial. It is well worth asking before ruling it out.
+                        Most employers don't offer this — it needs a formal scheme in place. But it takes one email to HR to find out, and the saving can be substantial, so ask before ruling it out.
                     </div>
                     <p>If your employer does offer this scheme, the Workplace Nursery Benefit is the most tax-efficient childcare relief available in the UK. Unlike Tax-Free Childcare (capped at £2,000/child), <strong>there is no cap on the saving</strong> — you sacrifice your entire nursery cost from pre-tax salary, saving Income Tax and National Insurance on every pound.</p>
 
                     <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-left:4px solid #2563EB;border-radius:10px;padding:14px 16px;margin:14px 0;">
                         <div style="font-weight:800;font-size:13.5px;color:#1E3A8A;margin-bottom:5px;">🔑 This lets you pay for childcare with pre-tax income</div>
-                        <div style="font-size:12.5px;color:#1E293B;line-height:1.6;">Right now your nursery fees are paid from your take-home pay — money you've already been taxed on at up to 40–60%. The Workplace Nursery Benefit flips that: the fees come out of your <strong>gross (pre-tax) salary</strong> before any Income Tax or National Insurance is taken, so every pound of childcare costs you the full pound instead of the £1.60–£2.00 of gross earnings it takes today. Same nursery, same child — paid from untaxed income rather than taxed income.</div>
+                        <div style="font-size:12.5px;color:#1E293B;line-height:1.6;">Today your nursery fees come from take-home pay you've already been taxed on at up to 40–60%. The Workplace Nursery Benefit takes them from your <strong>gross (pre-tax) salary</strong> instead — so a pound of childcare costs a pound, not the £1.60–£2.00 of gross earnings it takes today. Same nursery, same child, paid from untaxed income.</div>
                     </div>
 
                     <div class="calc-table">
-                        <div class="ct-row header"><span>Scenario</span><span>Monthly saving</span><span>Annual saving</span></div>
-                        <div class="ct-row"><span>Your nursery cost (£${monthlyChildcare.toLocaleString()}/month)</span><span></span><span></span></div>
+                        <div class="ct-row header"><span>Scenario</span><span>Monthly</span><span>Annual</span></div>
+                        <div class="ct-row"><span>Current costs</span><span>£${monthlyChildcare.toLocaleString()}</span><span>£${annualChildcare.toLocaleString()}</span></div>
                         <div class="ct-row"><span>Saving at ${Math.round(sacrificeTaxRate * 100)}% effective rate</span><span class="green">£${Math.round(monthlyChildcare * sacrificeTaxRate).toLocaleString()}</span><span class="green">£${workplaceNurserySaving.toLocaleString()}</span></div>
                         <div class="ct-row total"><span>Your net nursery cost after benefit</span><span>£${Math.round(monthlyChildcare * (1 - sacrificeTaxRate)).toLocaleString()}</span><span>£${Math.round(annualChildcare * (1 - sacrificeTaxRate)).toLocaleString()}</span></div>
                     </div>
@@ -952,23 +1036,14 @@
                                 <li>Employer must offer the scheme</li>
                                 <li>Nursery must be Ofsted registered</li>
                                 <li>May reduce Statutory Maternity Pay — pause before qualifying period</li>
-                                <li>Salary must stay above National Minimum Wage (£12.21/hr)</li>
+                                <li>Salary must stay above National Minimum Wage</li>
                             </ul>
                         </div>
                     </div>
 
-                    <div class="alert blue" style="margin-top:14px;">
-                        <strong>📋 How one parent turned £130k into a £100k tax position</strong><br><br>
-                        Sarah earns <strong>£130,000</strong> and was paying <strong>£15,000 a year</strong> in nursery fees out of her taxed salary — and getting nothing back from the government, because £130k locks you out of every childcare scheme. Three moves changed that:<br><br>
-                        <strong>1. She stopped paying the nursery from her bank account.</strong> Through the Workplace Nursery Benefit her employer pays the nursery directly and deducts £15,000 from her gross salary. Taxable income drops £130,000 → £115,000. Tax and NI saved: about <strong>£9,000</strong>. Same nursery, same child — just paid the smart way.<br><br>
-                        <strong>2. Her existing 5% pension was already working.</strong> The £6,500 she sacrifices into her pension each year pulls her down again: £115,000 → <strong>£108,500</strong>.<br><br>
-                        <strong>3. One deliberate top-up broke the £100k barrier.</strong> An extra <strong>£8,600</strong> into her pension dropped her adjusted net income to £99,900. That single step unlocked <strong>30 hours of free childcare</strong> and handed back her full <strong>£12,570 personal allowance</strong> — worth thousands more.<br><br>
-                        The result: a far smaller tax bill, free government childcare she previously couldn't touch, and roughly £15,000 more building up in her pension every year — all from money she was already spending. She can still run Tax-Free Childcare alongside it for after-school clubs and holiday camps.
-                    </div>
-
                     ${wnbCanCross100k ? `<div class="alert green" style="margin-top:14px;">
                         <strong>🎯 The same move, with your numbers</strong><br><br>
-                        You're at <strong>£${higherIncome.toLocaleString()}</strong> and paying <strong>£${annualChildcare.toLocaleString()}/year</strong> in childcare. Run it through the Workplace Nursery Benefit and that £${annualChildcare.toLocaleString()} comes off your gross pay first — taking your income to <strong>£${incomeAfterWNB.toLocaleString()}</strong>.${wnbAlreadyUnder ? ` That alone is already below £100,000 — meaning the nursery benefit by itself could restore your personal allowance and open up the childcare schemes, before you've touched your pension.` : ` From there you'd need a pension top-up of just <strong>£${pensionTopUpAfterWNB.toLocaleString()}</strong> to cross under £100,000 — far less than the £${sacrificeNeeded.toLocaleString()} it would take from pension alone, because the nursery benefit has done most of the heavy lifting.`} Either way you'd unlock 30 hours of free childcare and your full £12,570 personal allowance on top of the tax already saved.
+                        ${bothOver100kWNB ? `You're at <strong>£${income1.toLocaleString()}</strong> and your partner is at <strong>£${income2.toLocaleString()}</strong>, and you're paying <strong>£${annualChildcare.toLocaleString()}/year</strong> in childcare. The Workplace Nursery Benefit comes off the gross salary of whichever of you has access to a scheme — the childcare cost can only be run through one salary. Say you run it through yours: your income drops <strong>£${income1.toLocaleString()} → £${youAfterWNB.toLocaleString()}</strong>${youAfterWNB <= 99999 ? `, already below £100,000` : `, and a pension top-up of just <strong>£${youTopUpAfterWNB.toLocaleString()}</strong> takes you the rest of the way under £100,000`}. Because eligibility is assessed <strong>per parent</strong>, your partner must come under £100,000 too — the cleanest route for them is a pension contribution or Gift Aid (see the four routes above)${extraSacrificePartner > 0 ? `, an estimated <strong>£${extraSacrificePartner.toLocaleString()}/year</strong> on top of their existing contributions` : ''}. With Gift Aid, it is the <strong>grossed-up</strong> value of the donation that reduces adjusted net income (what you give ÷ 0.80) — but bear in mind this gifting is typically only in the tens or hundreds of pounds, not thousands, so on its own it rarely shifts a six-figure income below £100,000. With both incomes below £100,000 you unlock 30 hours of free childcare and each restore your full £12,570 personal allowance.` : `You're at <strong>£${higherIncome.toLocaleString()}</strong> and paying <strong>£${annualChildcare.toLocaleString()}/year</strong> in childcare. Run it through the Workplace Nursery Benefit and that £${annualChildcare.toLocaleString()} comes off your gross pay first — taking your income to <strong>£${incomeAfterWNB.toLocaleString()}</strong>.${wnbAlreadyUnder ? ` That alone is already below £100,000 — meaning the nursery benefit by itself could restore your personal allowance and open up the childcare schemes, before you've touched your pension.` : ` From there you'd need a pension top-up of just <strong>£${pensionTopUpAfterWNB.toLocaleString()}</strong> to cross under £100,000 — far less than the £${sacrificeNeeded.toLocaleString()} it would take from pension alone, because the nursery benefit has done most of the heavy lifting.`} Either way you'd unlock 30 hours of free childcare and your full £12,570 personal allowance on top of the tax already saved.`}
                     </div>` : ''}
 
                     <div class="action-steps">
@@ -1155,12 +1230,12 @@
 
                     <div style="margin-top:18px;">
                         <h3 style="font-size:15px;font-weight:800;color:#0F172A;margin-bottom:6px;">Beyond childcare — how an adviser helps you plan the next 20 years</h3>
-                        <p style="font-size:12.5px;color:#475569;line-height:1.6;margin-bottom:12px;">${tier === 'complete' ? 'Your included 30-minute call with a qualified financial adviser' : 'A qualified financial adviser'} is about far more than this year's childcare. Your family's biggest costs are still ahead — and the families who plan early consistently end up better off than those who leave it. Here is where advice pays for itself:</p>
+                        <p style="font-size:12.5px;color:#475569;line-height:1.6;margin-bottom:12px;">${tier === 'complete' ? 'Your included 30-minute call with a qualified financial adviser' : 'A qualified financial adviser'} is about far more than this year's childcare. Your family's biggest costs are still ahead, and families who plan early consistently end up better off. Here's where advice pays for itself:</p>
 
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
                             <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:12px 14px;">
                                 <div style="font-weight:700;font-size:13px;color:#0F172A;margin-bottom:3px;">🎓 School & university fees</div>
-                                <div style="font-size:11.5px;color:#64748B;line-height:1.5;">Private day school now averages around £18,000/yr (£42,000+ boarding), and three years at university typically costs £60,000+ once living costs are included. An adviser builds a tax-efficient plan — Junior ISAs, ISAs and the right investment timeline — so the money is ready when the bills arrive.</div>
+                                <div style="font-size:11.5px;color:#64748B;line-height:1.5;">Private day school now averages around £35,000/yr (£50,000+ boarding), and three years at university typically costs £50,000+ once living costs are included. An adviser builds a tax-efficient plan — Junior ISAs, ISAs and the right investment timeline — so the money is ready when the bills arrive.</div>
                             </div>
                             <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:12px 14px;">
                                 <div style="font-weight:700;font-size:13px;color:#0F172A;margin-bottom:3px;">🏠 Deposits for a first home</div>
@@ -1194,8 +1269,8 @@
         let steps = '';
         let stepNum = 1;
 
-        if (extraSacrificeNeeded > 0) {
-            steps += `<div class="step-row"><div class="step-num">${stepNum++}</div><div><h4>This week — Set up your pension contribution</h4><p>If salary sacrifice is available through your employer, email HR today: <em>"Please increase my salary sacrifice pension contributions by £${Math.round(extraSacrificeNeeded / 12).toLocaleString()}/month from next payroll."</em> This is on top of your existing contributions. If salary sacrifice is not available, make a personal pension contribution of the same amount directly to your pension provider — HMRC will add 20% basic rate relief automatically. This is your highest-priority action: every month you delay costs you £${Math.round((taxSavedBySacrifice + pdfTfc + pdfThirtyHours) / 12).toLocaleString()} in combined tax savings and childcare benefits.</p></div></div>`;
+        if (extraSacrificeCombined > 0) {
+            steps += `<div class="step-row"><div class="step-num">${stepNum++}</div><div><h4>This week — Set up your pension contribution</h4><p>If salary sacrifice is available through your employer, email HR today. ${extraSacrificeYou > 0 ? `Ask to increase your salary sacrifice pension contributions by <strong>£${Math.round(extraSacrificeYou / 12).toLocaleString()}/month</strong> from next payroll.` : ''}${extraSacrificeYou > 0 && extraSacrificePartner > 0 ? ' ' : ''}${extraSacrificePartner > 0 ? `Your partner should do the same for <strong>£${Math.round(extraSacrificePartner / 12).toLocaleString()}/month</strong>${extraSacrificeYou > 0 ? ' — both incomes must come below £100,000' : ''}.` : ''} This is on top of your existing contributions. If salary sacrifice is not available, make a personal pension contribution of the same amount directly to your pension provider — HMRC will add 20% basic rate relief automatically. This is your highest-priority action: every month you delay costs you £${Math.round((taxSavedBySacrifice + pdfTfc + pdfThirtyHours) / 12).toLocaleString()} in combined tax savings and childcare benefits.</p></div></div>`;
         }
 
         if (!over100k && annualChildcare > 0) {
@@ -1203,7 +1278,7 @@
         }
 
         if (over100k && annualChildcare > 0) {
-            steps += `<div class="step-row"><div class="step-num">${stepNum++}</div><div><h4>Once pension is confirmed — Apply for government childcare benefits</h4><p>Within days of confirming your adjusted net income is below £100,000, go to <strong>childcarechoices.gov.uk</strong> and apply for Tax-Free Childcare${hasUnder5 ? ` and your ${fundedHoursPerWeek} funded hours` : ''}. Do not wait until the next term — apply immediately. Set four recurring calendar reminders to reconfirm eligibility every 3 months.</p></div></div>`;
+            steps += `<div class="step-row"><div class="step-num">${stepNum++}</div><div><h4>Once pension is confirmed — Apply for government funded childcare</h4><p>Within days of confirming your adjusted net income is below £100,000, go to <strong>childcarechoices.gov.uk</strong> and apply for Tax-Free Childcare${hasUnder5 ? ` and your ${fundedHoursPerWeek} funded hours` : ''}. Do not wait until the next term — apply immediately. Set four recurring calendar reminders to reconfirm eligibility every 3 months.</p></div></div>`;
         }
 
         if (!bothSelfEmployed) {
@@ -1353,16 +1428,16 @@ h4 { font-size:13.5px; font-weight:700; margin-bottom:4px; color:#1C2B3A; }
 .tot-box {
     background: #0F2D52;
     border-radius: 12px;
-    padding: 20px 24px;
+    padding: 12px 24px;
     color: white;
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin: 12px 0 8px;
 }
-.tot-label { font-size:12.5px; font-weight:600; opacity:.85; }
+.tot-label { font-size:30px; font-weight:800; letter-spacing:-1px; }
 .tot-range { font-size:10.5px; opacity:.55; margin-top:3px; }
-.tot-amount { font-size:38px; font-weight:800; letter-spacing:-1px; }
+.tot-amount { font-size:30px; font-weight:800; letter-spacing:-1px; }
 
 /* ── ELIGIBILITY GRID ────────────────────────────────────────────── */
 .elig-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:14px; }
@@ -1505,6 +1580,14 @@ em { color:#637082; font-style:italic; }
         <div class="pitem"><div class="plabel">Children's Ages</div><div class="pval">${ages.map(a => a === 0 ? 'Under 1' : a + ' yrs').join(', ')}</div></div>
         <div class="pitem"><div class="plabel">Employment</div><div class="pval" style="text-transform:capitalize">${employment.replace('-',' ')}${hasPartner ? ' / ' + employment2.replace('-',' ') : ''}</div></div>
     </div>
+    ${over100k ? `
+    <div style="margin-top:16px;">
+        <div style="font-size:10.5px;font-weight:700;color:#1E40AF;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid #BFDBFE;">You could be eligible for:</div>
+        <div class="elig-grid">
+            <div class="elig" style="background:#EFF6FF;border:1px solid #BFDBFE;"><div><div class="elig-text">Tax-Free Childcare</div><div class="elig-sub">Pension contribution can unlock this</div></div></div>
+            <div class="elig" style="background:#EFF6FF;border:1px solid #BFDBFE;"><div><div class="elig-text">${fundedHoursPerWeek} Hours Free Childcare</div><div class="elig-sub">Pension contribution can unlock this</div></div></div>
+        </div>
+    </div>` : ''}
 </div>
 
 <!-- COVER -->
@@ -1527,18 +1610,10 @@ em { color:#637082; font-style:italic; }
     <div class="section-heading"><div class="section-heading-bar"></div><h2>Estimated Annual Savings</h2></div>
     <div class="sum-row ok"><div><div class="sum-label">Tax-Free Childcare</div><div class="sum-desc">20% govt top-up, max £${(2000*numChildren).toLocaleString()}/yr (${numChildren} child${numChildren>1?'ren':''})</div></div><div class="sum-amt green">£${pdfTfc.toLocaleString()}</div></div>
     <div class="sum-row ok"><div><div class="sum-label">${fundedHoursPerWeek} Hours Free Childcare</div><div class="sum-desc">Govt-funded nursery hours</div></div><div class="sum-amt green">£${pdfThirtyHours.toLocaleString()}</div></div>
-    <div class="sum-row ok"><div><div class="sum-label">Salary Sacrifice / Pension</div><div class="sum-desc">Tax + NI savings at ${Math.round(sacrificeTaxRate*100)}% effective rate</div></div><div class="sum-amt ${r.salary > 0 ? 'green' : 'grey'}">£${Math.round(r.salary).toLocaleString()}</div></div>
-    <div class="tot-box"><div><div class="tot-label">Total</div></div><div class="tot-amount">£${avg.toLocaleString()}</div></div>
+    <div class="sum-row ok"><div><div class="sum-label">Salary Sacrifice / Pension</div><div class="sum-desc">Tax + NI savings at ${Math.round(sacrificeTaxRate*100)}% effective rate</div></div><div class="sum-amt ${salaryPensionSaving > 0 ? 'green' : 'grey'}">£${salaryPensionSaving.toLocaleString()}</div></div>
+    <div class="tot-box"><div><div class="tot-label">Estimated Savings</div></div><div class="tot-amount">£${avg.toLocaleString()}</div></div>
 
-    ${over100k ? `
-    <div style="margin-top:16px;">
-        <div style="font-size:10.5px;font-weight:700;color:#1E40AF;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid #BFDBFE;">You could be eligible for:</div>
-        <div class="elig-grid">
-            <div class="elig" style="background:#EFF6FF;border:1px solid #BFDBFE;"><div><div class="elig-text">Tax-Free Childcare</div><div class="elig-sub">Pension contribution can unlock this</div></div></div>
-            <div class="elig" style="background:#EFF6FF;border:1px solid #BFDBFE;"><div><div class="elig-text">${fundedHoursPerWeek} Hours Free Childcare</div><div class="elig-sub">Pension contribution can unlock this</div></div></div>
-        </div>
-    </div>
-    ` : `
+    ${over100k ? '' : `
     <div class="elig-grid">
         <div class="elig yes"><span style="font-size:16px">✅</span><div><div class="elig-text">Tax-Free Childcare</div><div class="elig-sub">Eligible — apply now</div></div></div>
         <div class="elig ${r.has30Hours ? 'yes' : 'no'}"><span style="font-size:16px">${r.has30Hours ? '✅' : '❌'}</span><div><div class="elig-text">${fundedHoursPerWeek} Hours Childcare</div><div class="elig-sub">${r.has30Hours ? 'Eligible — claim code now' : 'Check eligibility'}</div></div></div>

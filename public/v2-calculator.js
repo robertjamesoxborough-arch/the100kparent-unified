@@ -129,13 +129,28 @@ class V2Calculator {
         const pension1 = parseFloat(this.inputs.pension1?.value) || 0;
         const pension2 = this.secondIncomeYes.checked ? (parseFloat(this.inputs.pension2?.value) || 0) : 0;
 
+        // Pension tax + NI relief from contributing enough to bring adjusted net
+        // income below £100,000. This is the SAME figure the PDF reports as
+        // "Tax + NI saved on pension contribution" (taxSavedBySacrifice) — replicated
+        // here so the results panel, paywall, success page and PDF all show one number.
+        // (Zero for households already under £100k, where there is no £100k pension play.)
+        const higherIncome = Math.max(income1, income2);
+        const extraSacrificeYou = Math.max(0, (income1 > 100000 ? income1 - 99999 : 0) - Math.round(pension1 * 12));
+        const extraSacrificePartner = Math.max(0, (income2 > 100000 ? income2 - 99999 : 0) - Math.round(pension2 * 12));
+        const pensionReliefRate = (higherIncome > 100000 && higherIncome <= 125140) ? 0.62 : higherIncome > 50270 ? 0.42 : 0.32;
+        const pensionRelief = Math.round((extraSacrificeYou + extraSacrificePartner) * pensionReliefRate);
+
         // Canonical headline saving — single source of truth shared by the results
         // panel, the success page and the PDF so all three show the same figure.
         // Funded hours only apply to children aged 9 months–4 years, so the 30-hours
         // saving is only counted when there's an eligible-age child.
         const hasEligibleAgeChild = ages.some(a => a >= 0 && a <= 4);
         const displayTfc = Math.round(Math.min(annualChildcare * 0.20, 2000 * numChildren));
-        const displaySalary = Math.round(salary);
+        // Over £100k: real pension relief to break the threshold. Under £100k: a generic
+        // salary-sacrifice estimate (≈30% of childcare, capped at £5,000) at the marginal
+        // rate — mirrors the PDF's salaryPensionSaving so all figures agree.
+        const genericSalarySacrifice = Math.round(Math.min(5000, annualChildcare * 0.3) * pensionReliefRate);
+        const displaySalary = over100k ? pensionRelief : genericSalarySacrifice;
         const displayThirtyHours = hasEligibleAgeChild ? Math.round(0.55 * annualChildcare) : 0;
         const displayTotal = displayTfc + displaySalary + displayThirtyHours;
 
@@ -245,12 +260,6 @@ class V2Calculator {
         gate.id = 'paywallGate';
         gate.innerHTML = `
             <div class="paywall-gate">
-                <div class="paywall-blur-preview">
-                    <div class="paywall-blur-row"><span>Tax-Free Childcare saving</span><span class="blur-amount">£${Math.round(tfc).toLocaleString()}</span></div>
-                    <div class="paywall-blur-row"><span>Salary sacrifice saving</span><span class="blur-amount">£${Math.round(salary).toLocaleString()}</span></div>
-                    <div class="paywall-blur-row"><span>Income splitting saving</span><span class="blur-amount">£${Math.round(splitting).toLocaleString()}</span></div>
-                    <div class="paywall-blur-row"><span>30 hours childcare value</span><span class="blur-amount">£${Math.round(thirtyHours).toLocaleString()}</span></div>
-                </div>
                 <div class="paywall-content">
                     <div class="paywall-lock">🔒</div>
                     <h3 class="paywall-title">Your full breakdown is ready</h3>
