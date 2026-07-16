@@ -2,7 +2,6 @@
   "framework": "nextjs",
   "buildCommand": "npm run build",
   "rewrites": [
-    { "source": "/v2", "destination": "/v2.html" },
     { "source": "/privacy", "destination": "/privacy.html" },
     { "source": "/refund", "destination": "/refund.html" },
     { "source": "/terms-old", "destination": "/terms.html" }
