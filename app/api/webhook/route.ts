@@ -51,7 +51,8 @@ export async function POST(req: NextRequest) {
     const name = session.customer_details?.name || session.metadata?.firstName || email?.split('@')[0] || 'there'
     const firstName = name.split(' ')[0]
 
-    console.log(`Payment completed: ${email} (${firstName})`)
+    // Avoid logging PII (email/name) to server logs. Log a non-identifying marker only.
+    console.log('Payment completed: checkout.session.completed received')
 
     if (email) {
       try {

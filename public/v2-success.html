@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Report is Ready | The 100k Parent</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="fonts/fonts.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: #F7FAFC; color: #2D3748; min-height: 100vh; }
@@ -227,7 +226,7 @@
 <script>
     // Read URL params
     const params = new URLSearchParams(window.location.search);
-    const tier = params.get('tier') || 'essential';
+    const tier = params.get('tier') || 'complete';
     const tierLabel = tier === 'complete' ? 'Complete Guide' : 'Essential Report';
     const tierPrice = tier === 'complete' ? '£49' : '£19';
 
@@ -250,6 +249,14 @@
         const potentialTfc = r.displayTfc ?? Math.round(Math.min((r.monthlyChildcare * 12) * 0.20, 2000 * r.numChildren));
         const potentialThirtyHours = r.displayThirtyHours ?? ((r.ages || []).some(a => a >= 0 && a <= 4) ? Math.round(0.55 * (r.monthlyChildcare || 0) * 12) : 0);
         const potentialSalary = r.displaySalary ?? Math.round(r.salary || 0);
+        // Fully self-employed households can't salary sacrifice — the figure comes from
+        // personal pension contributions instead, so the line is labelled accordingly.
+        const summaryBothSelfEmployed = r.employment === 'self-employed'
+            && (r.employment2 === 'self-employed' || !(r.income2 > 0));
+        const salaryLabel = summaryBothSelfEmployed ? 'Pension contributions' : 'Salary Sacrifice';
+        const salaryDesc = summaryBothSelfEmployed
+            ? 'Income Tax relief + personal-allowance restoration'
+            : 'Income Tax + National Insurance savings';
         const avg = r.displayTotal ?? (potentialTfc + potentialThirtyHours + potentialSalary);
         const rangeMin = Math.min(potentialTfc, potentialThirtyHours, potentialSalary);
         const rangeMax = avg;
@@ -285,8 +292,8 @@
 
                 <div class="saving-row">
                     <div>
-                        <div class="saving-label">Salary Sacrifice</div>
-                        <div class="saving-desc">Income Tax + National Insurance savings</div>
+                        <div class="saving-label">${salaryLabel}</div>
+                        <div class="saving-desc">${salaryDesc}</div>
                     </div>
                     <div class="saving-amount ${potentialSalary === 0 ? 'zero' : ''}">£${potentialSalary.toLocaleString()}</div>
                 </div>
@@ -306,6 +313,8 @@
                     </div>
                     <div class="total-amount">£${avg.toLocaleString()}</div>
                 </div>
+
+                ${r.over100k ? `<p style="margin-top:12px;font-size:13px;color:#92400E;background:#FFF7ED;border-left:3px solid #F59E0B;padding:10px 12px;border-radius:0 8px 8px 0;line-height:1.55;">ℹ️ Because your income is over £100,000, the Tax-Free Childcare and 30-hours figures above become claimable once you bring your adjusted net income under £100,000 — usually via a pension contribution, whose own tax relief is also part of this total. Your report shows exactly how.</p>` : ''}
 
                 <button class="download-btn" id="downloadBtn" onclick="downloadPDF()">
                     ⬇️ Download your full PDF Report
@@ -495,6 +504,9 @@
         const isSelfEmployed1 = employment === 'self-employed';
         const isSelfEmployed2 = employment2 === 'self-employed';
         const bothSelfEmployed = isSelfEmployed1 && (isSelfEmployed2 || !hasPartner);
+        // Employees reduce adjusted net income via salary sacrifice; the self-employed
+        // use personal pension contributions. Keeps the narrative accurate for each.
+        const sacrificeMechanism = bothSelfEmployed ? 'personal pension contributions' : 'salary sacrifice';
 
         // ── CHILD ANALYSIS ──────────────────────────────────────────────
         const hasUnder1 = ages.some(a => a === 0);
@@ -538,11 +550,16 @@
         //  • Under £100k: a generic estimate of redirecting ~30% of childcare spend
         //    (capped at £5,000/yr) into pension salary sacrifice at the marginal rate.
         const genericSalarySacrifice = Math.round(Math.min(5000, annualChildcare * 0.3) * sacrificeTaxRate);
-        const salaryPensionSaving = over100k ? taxSavedBySacrifice : genericSalarySacrifice;
+        // Use the canonical figure the calculator stored, so the PDF's salary line
+        // matches the on-screen summary exactly — including £0 for households that
+        // can't salary sacrifice (e.g. everyone self-employed). Fall back to a live
+        // recompute only for older saved results without the display fields.
+        const salaryPensionSaving = r.displaySalary ?? (bothSelfEmployed ? 0 : (over100k ? taxSavedBySacrifice : genericSalarySacrifice));
         // Single consistent PDF total: childcare benefits + the salary-sacrifice/pension saving.
         // (The 62% effective rate already includes the personal-allowance restoration,
         // so it is NOT added again separately — see totalBenefit below.)
-        const avg = pdfTfc + pdfThirtyHours + salaryPensionSaving;
+        // Headline total = the single canonical figure shared with the summary page.
+        const avg = r.displayTotal ?? (pdfTfc + pdfThirtyHours + salaryPensionSaving);
 
         // 60% trap
         const personalAllowanceLost = in60TrapZone ? Math.min(12570, Math.round((higherIncome - 100000) / 2)) : 0;
@@ -698,13 +715,16 @@
                         <div class="ct-row total"><span>Total annual benefit</span><span class="green">£${totalBenefit.toLocaleString()}</span><span>3 components</span></div>
                     </div>
 
-                    <div class="alert amber">
+                    ${bothSelfEmployed ? `<div class="alert amber">
+                        <strong>How to contribute (self-employed)</strong><br>
+                        You can't use salary sacrifice, but paying into a personal pension or SIPP lowers your adjusted net income just the same. HMRC adds 20% basic-rate relief automatically; you reclaim higher-rate relief via Self Assessment. The gross contribution (what you pay ÷ 0.80) is what counts toward getting below £100,000.
+                    </div>` : `<div class="alert amber">
                         <strong>⚠️ Critical first step — check your pension type</strong><br>
                         Most people assume they're on salary sacrifice; many aren't. There are two arrangements:<br><br>
                         <strong>Salary Sacrifice</strong> — Your employer cuts your gross salary and pays it into your pension. You save Income Tax <em>and</em> National Insurance automatically; nothing to claim.<br><br>
                         <strong>Relief at Source</strong> — You pay from net salary and HMRC adds 20% basic-rate relief. As a higher-rate taxpayer you're owed a further 20–25%, but only if you claim it via Self Assessment — potentially <strong>£700–£15,000</strong> across the last 4 tax years. After 4 years it's lost for good.<br><br>
                         <strong>How to check:</strong> Ask HR <em>"Is my pension salary sacrifice or Relief at Source?"</em> — or look for "Relief at Source", "Tax Relief" or "Government Top-Up" on your payslip, which signal Relief at Source (claim your higher-rate relief now).
-                    </div>
+                    </div>`}
 
                     ${!sacrificeWithinAllowance ? `<div class="alert amber"><strong>⚠️ Annual Allowance:</strong> Your sacrifice may approach your pension annual allowance of £${annualAllowance.toLocaleString()}. Speak to a financial adviser about carry forward from previous years before proceeding.</div>` : ''}
 
@@ -716,11 +736,15 @@
                     <div class="action-steps">
                         ${extraSacrificeYou > 0 ? `<div class="action-step">
                             <div class="as-num">1</div>
-                            <div><strong>You — Email your HR:</strong> <em>"I would like to increase my pension contributions via salary sacrifice by £${monthlyYou.toLocaleString()}/month effective from next payroll. Please adjust my salary sacrifice arrangement accordingly."</em> Takes one payroll cycle. Saves Income Tax AND National Insurance.</div>
+                            <div>${isSelfEmployed1
+                                ? `<strong>You — contribute extra into your pension:</strong> Pay an additional <em>£${monthlyYou.toLocaleString()}/month</em> into a personal pension or SIPP to bring your adjusted net income below £100,000. HMRC adds 20% relief automatically; claim higher-rate relief via Self Assessment.`
+                                : `<strong>You — Email your HR:</strong> <em>"I would like to increase my pension contributions via salary sacrifice by £${monthlyYou.toLocaleString()}/month effective from next payroll. Please adjust my salary sacrifice arrangement accordingly."</em> Takes one payroll cycle. Saves Income Tax AND National Insurance.`}</div>
                         </div>` : ''}
                         ${extraSacrificePartner > 0 ? `<div class="action-step">
                             <div class="as-num">${extraSacrificeYou > 0 ? 2 : 1}</div>
-                            <div><strong>Your partner — Email their HR:</strong> <em>"I would like to increase my pension contributions via salary sacrifice by £${monthlyPartner.toLocaleString()}/month effective from next payroll. Please adjust my salary sacrifice arrangement accordingly."</em></div>
+                            <div>${isSelfEmployed2
+                                ? `<strong>Your partner — contribute extra into their pension:</strong> Pay an additional <em>£${monthlyPartner.toLocaleString()}/month</em> into a personal pension or SIPP to bring their adjusted net income below £100,000. HMRC adds 20% relief automatically; higher-rate relief is claimed via Self Assessment.`
+                                : `<strong>Your partner — Email their HR:</strong> <em>"I would like to increase my pension contributions via salary sacrifice by £${monthlyPartner.toLocaleString()}/month effective from next payroll. Please adjust my salary sacrifice arrangement accordingly."</em>`}</div>
                         </div>` : ''}
                         <div class="action-step">
                             <div class="as-num">${(extraSacrificeYou > 0 ? 1 : 0) + (extraSacrificePartner > 0 ? 1 : 0) + 1}</div>
@@ -848,10 +872,11 @@
                     <div class="calc-table">
                         <div class="ct-row header"><span>Monthly Childcare Cost</span><span>Amount</span><span></span></div>
                         <div class="ct-row"><span>Current monthly spend</span><span>£${monthlyChildcare.toLocaleString()}</span><span>Before government-funded hours</span></div>
-                        <div class="ct-row"><span>Monthly spend with ${fundedHoursPerWeek} free hours</span><span>£${Math.max(0, monthlyChildcare - Math.round(pdfThirtyHours / 12)).toLocaleString()}</span><span>After applying funded hours entitlement</span></div>
+                        <div class="ct-row"><span>Monthly spend with ${fundedHoursPerWeek} free hours*</span><span>£${Math.max(0, monthlyChildcare - Math.round(pdfThirtyHours / 12)).toLocaleString()}</span><span>After applying funded hours entitlement</span></div>
                         <div class="ct-row total"><span>Monthly saving</span><span class="green">£${Math.round(pdfThirtyHours / 12).toLocaleString()}</span><span>≈ £${pdfThirtyHours.toLocaleString()}/year</span></div>
                     </div>
                     <p style="margin-top:10px;font-size:13px;color:#475569;"><strong>Note:</strong> Many providers charge a top-up for meals and consumables (typically £3–8/day), so your net saving may be slightly lower. Some offer a 'stretched offer' spreading hours across 52 weeks instead of 38 — better for full-time working families.</p>
+                    <p style="margin-top:8px;font-size:12px;color:#64748B;">*Indicative saving based on average of a range of nursery providers</p>
                     ${eligible30hrs ? `
                     <div class="alert green" style="margin-top:10px;">
                         <strong>✅ Myth-bust: quarterly income checks will not strip your place mid-year</strong><br>
@@ -871,10 +896,15 @@
                         ${over100k ? `
                         <p style="margin:8px 0;">Eligibility is lost while ${income1 > 100000 && income2 > 100000 ? 'either parent’s' : 'your'} <strong>adjusted net income</strong> (ANI) is £100,000 or more. ANI = your gross taxable income − pension contributions (counted gross) − Gift-Aided donations (grossed up). ${extraSacrificeCombined > 0 ? `Based on your figures you need to reduce ${income1 > 100000 && income2 > 100000 ? 'both incomes' : 'the relevant income'} below £100,000 — an estimated <strong>£${extraSacrificeCombined.toLocaleString()}/year</strong> of extra contributions in total, on top of what you already pay. ` : ''}There are four ways to get there, and you can combine them:</p>
                         <ol style="margin-top:8px;margin-left:20px;">
+                            ${bothSelfEmployed ? `
+                            <li style="margin-bottom:7px;"><strong>Contribute extra into a personal pension or SIPP</strong> — As you're self-employed, this is your main route. Pay in directly; HMRC adds 20% basic-rate relief automatically and you reclaim higher/additional-rate relief through Self Assessment. The <em>gross</em> contribution (what you pay ÷ 0.80) reduces your ANI pound-for-pound.</li>
+                            <li style="margin-bottom:7px;"><strong>Gift Aid charitable donations</strong> — Donations made under Gift Aid also reduce your ANI by their grossed-up value (the amount you give ÷ 0.80). If you already give to charity regularly, include these — they count toward getting you below £100,000.</li>
+                            ` : `
                             <li style="margin-bottom:7px;"><strong>Salary sacrifice into your workplace pension</strong> — The simplest route for most employees. Email HR: <em>"Please increase my salary-sacrifice pension contribution by £X/month from next payroll."</em> Your gross salary is reduced by the contribution, so your ANI falls by the same amount and you save both Income Tax and NI automatically.</li>
                             <li style="margin-bottom:7px;"><strong>Salary sacrifice into a workplace benefit scheme</strong> — Ask HR whether you can swap part of your gross salary for a non-cash benefit, such as a <strong>Workplace Nursery scheme</strong>, additional pension, cycle-to-work or an electric-car lease. Because the amount comes off your <em>gross</em> pay before tax, it lowers your ANI pound-for-pound and also saves National Insurance.</li>
                             <li style="margin-bottom:7px;"><strong>Pay into a private or personal pension</strong> — If salary sacrifice isn't available, contribute directly to a SIPP or personal pension. HMRC adds 20% basic-rate relief automatically, and you reclaim the higher/additional-rate relief through Self Assessment. The <em>gross</em> contribution (what you pay ÷ 0.80) is what reduces your ANI.</li>
                             <li style="margin-bottom:7px;"><strong>Gift Aid charitable donations</strong> — Donations made under Gift Aid also reduce your ANI by their grossed-up value (the amount you give ÷ 0.80). If you already give to charity regularly, include these in your calculation — they count toward getting you below £100,000.</li>
+                            `}
                         </ol>
                         <p style="margin:8px 0 0;font-size:12.5px;">Whichever routes you use, make the contributions <strong>within the tax year</strong> you are claiming for, confirm your projected ANI is below £100,000, then apply within days at childcarechoices.gov.uk.</p>
                         ` : ''}
@@ -954,7 +984,7 @@
                     <div class="action-steps">
                         <div class="action-step">
                             <div class="as-num">1</div>
-                            <div><strong>Confirm your pension type — this decides everything.</strong> Send your HR or pension provider one line: <em>"Is my pension salary sacrifice, or Relief at Source?"</em> Can't wait for a reply? Check a payslip: if your gross (pre-tax) pay is <em>not</em> reduced by your pension contribution, you're almost certainly on Relief at Source. The words "Relief at Source", "Tax Relief" or "Government Top-Up" on a statement confirm it.</div>
+                            <div><strong>Confirm your pension type — this decides everything.</strong> ${bothSelfEmployed ? `A personal pension or SIPP is Relief at Source — HMRC adds 20% basic-rate relief automatically and you claim the rest via Self Assessment.` : `Send your HR or pension provider one line: <em>"Is my pension salary sacrifice, or Relief at Source?"</em> Can't wait for a reply? Check a payslip: if your gross (pre-tax) pay is <em>not</em> reduced by your pension contribution, you're almost certainly on Relief at Source. The words "Relief at Source", "Tax Relief" or "Government Top-Up" on a statement confirm it.`}</div>
                         </div>
                         <div class="action-step">
                             <div class="as-num">2</div>
@@ -966,7 +996,9 @@
                         </div>
                         <div class="action-step">
                             <div class="as-num">4</div>
-                            <div><strong>Check every employer you've had — and ${hasPartner ? 'your partner' : 'your spouse if you have one'}.</strong> Each job has its own pension setup, so a scheme you left mid-window may owe you too. Changed jobs in the last four years? Email each old employer's HR to confirm the type. ${hasPartner ? 'Run your partner through steps 1–3 as well — their claim is entirely separate from yours.' : ''}</div>
+                            <div>${bothSelfEmployed
+                                ? `<strong>Check any earlier workplace pensions${hasPartner ? ' — and your partner' : ''}.</strong> If you were employed at any point in the last four years, a workplace scheme you left mid-window may still owe you relief — pull its annual statement and include those contributions in your claim. ${hasPartner ? 'Run your partner through steps 1–3 as well — their claim is entirely separate from yours.' : ''}`
+                                : `<strong>Check every employer you've had — and ${hasPartner ? 'your partner' : 'your spouse if you have one'}.</strong> Each job has its own pension setup, so a scheme you left mid-window may owe you too. Changed jobs in the last four years? Email each old employer's HR to confirm the type. ${hasPartner ? 'Run your partner through steps 1–3 as well — their claim is entirely separate from yours.' : ''}`}</div>
                         </div>
                     </div>
                 </div>
@@ -1205,6 +1237,82 @@
             </div>`;
         }
 
+        // ─ THE EFFECTS OF THESE CHANGES ──────────────────────────────────
+        // Before vs After comparison using the client's own figures. Only shown
+        // when there is an over-£100k earner whose income can be brought down via
+        // salary sacrifice (otherwise there is no change to illustrate).
+        if (income1 > 100000 || income2 > 100000) {
+            // ── UK take-home pay (2025/26): salary sacrifice reduces taxable pay ──
+            const paFor = (taxable) => taxable > 100000 ? Math.max(0, 12570 - Math.floor((taxable - 100000) / 2)) : 12570;
+            const incomeTaxFor = (taxable) => {
+                const pa = paFor(taxable);
+                const b20 = Math.max(0, Math.min(taxable, pa + 37700) - pa);
+                const b40 = Math.max(0, Math.min(taxable, 125140) - (pa + 37700));
+                const b45 = Math.max(0, taxable - 125140);
+                return b20 * 0.20 + b40 * 0.40 + b45 * 0.45;
+            };
+            const niFor = (pay) => pay > 50270 ? (50270 - 12570) * 0.08 + (pay - 50270) * 0.02 : (pay > 12570 ? (pay - 12570) * 0.08 : 0);
+            const taxNiFor = (taxable) => incomeTaxFor(taxable) + niFor(taxable);
+            const takeHomeFor = (gross, pension) => Math.round(Math.max(0, gross - pension) - taxNiFor(Math.max(0, gross - pension)));
+
+            // Pension each parent needs to bring their own income below £100,000.
+            // Income tax is individual, so take-home is computed per parent then summed.
+            const pension1After = income1 > 100000 ? Math.max(pensionYouAnnual, income1 - 99999) : pensionYouAnnual;
+            const pension2After = income2 > 100000 ? Math.max(pensionPartnerAnnual, income2 - 99999) : pensionPartnerAnnual;
+
+            // ── COMBINED HOUSEHOLD FIGURES (both parents) ──
+            const effSalary = income1 + income2;
+            const effPensionExisting = pensionYouAnnual + pensionPartnerAnnual;
+            const effPensionAfter = pension1After + pension2After;
+            const extraPension = effPensionAfter - effPensionExisting;
+
+            const thBefore = takeHomeFor(income1, pensionYouAnnual) + (hasPartner ? takeHomeFor(income2, pensionPartnerAnnual) : 0);
+            const thAfter = takeHomeFor(income1, pension1After) + (hasPartner ? takeHomeFor(income2, pension2After) : 0);
+            const taxNiBefore = taxNiFor(Math.max(0, income1 - pensionYouAnnual)) + (hasPartner ? taxNiFor(Math.max(0, income2 - pensionPartnerAnnual)) : 0);
+            const taxNiAfter = taxNiFor(Math.max(0, income1 - pension1After)) + (hasPartner ? taxNiFor(Math.max(0, income2 - pension2After)) : 0);
+            const taxNiSaved = Math.round(taxNiBefore - taxNiAfter);
+
+            const childcareAfter = Math.max(0, annualChildcare - (hasUnder5 ? pdfThirtyHours : 0));
+            const childcareSaving = (hasUnder5 ? pdfThirtyHours : 0) + pdfTfc;
+            const betterOff = taxNiSaved + childcareSaving;
+            // Apples-to-apples bottom line: cash left after paying for childcare.
+            const disposableBefore = thBefore - annualChildcare;
+            const disposableAfter = thAfter - childcareAfter;
+
+            const whoLabel = hasPartner ? 'your household comes' : 'you come';
+            const pensionWord = hasPartner ? 'pensions' : 'pension';
+            const ownWord = hasPartner ? 'your own' : 'your own';
+
+            strategies += `
+            <div class="s-card">
+                <div class="s-header">
+                    <span class="s-icon">🔄</span>
+                    <div class="s-title-block">
+                        <div class="s-title">The Effects of These Changes</div>
+                        <div class="s-badge green">Before vs After</div>
+                    </div>
+                </div>
+                <div class="s-body">
+                    <p>Here is the difference these changes make for ${hasPartner ? 'your household, using your combined figures' : 'you, using your own figures'}. The <strong>after</strong> column redirects pension contributions via <strong>${sacrificeMechanism}</strong> to bring ${hasPartner ? "each parent's" : 'your'} adjusted net income below £100,000, then adjusts the nursery fees using the funded-hours formula.</p>
+                    <div class="calc-table">
+                        <div class="ct-row header"><span>&nbsp;</span><span>Before</span><span>After</span></div>
+                        <div class="ct-row"><span>${hasPartner ? 'Combined annual salary' : 'Annual salary'}</span><span>£${effSalary.toLocaleString()}</span><span style="color:#1C2B3A;font-weight:700;font-size:12px;">£${effSalary.toLocaleString()}</span></div>
+                        <div class="ct-row"><span>${hasPartner ? 'Combined pension' : 'Pension'} contribution</span><span>£${effPensionExisting.toLocaleString()}</span><span style="color:#1C2B3A;font-weight:700;font-size:12px;">£${effPensionAfter.toLocaleString()} (${sacrificeMechanism})</span></div>
+                        <div class="ct-row"><span>Childcare costs</span><span>£${annualChildcare.toLocaleString()}</span><span style="color:#1C2B3A;font-weight:700;font-size:12px;">£${childcareAfter.toLocaleString()}</span></div>
+                        <div class="ct-row"><span>${hasPartner ? 'Combined take-home pay' : 'Take-home pay'}</span><span>£${thBefore.toLocaleString()}</span><span style="color:#1C2B3A;font-weight:700;font-size:12px;">£${thAfter.toLocaleString()}</span></div>
+                        <div class="ct-row total"><span>Money in your pocket after childcare costs</span><span>£${disposableBefore.toLocaleString()}</span><span style="color:#1C2B3A;font-weight:700;font-size:12px;">£${disposableAfter.toLocaleString()}</span></div>
+                    </div>
+                    <p style="margin-top:10px;font-size:12.5px;color:#475569;line-height:1.6;">${disposableAfter >= disposableBefore
+                        ? `The bottom row is what counts: after these changes ${hasPartner ? 'your household keeps' : 'you keep'} <strong>£${disposableAfter.toLocaleString()}</strong> once childcare is paid for — <strong>£${(disposableAfter - disposableBefore).toLocaleString()} more</strong> than the £${disposableBefore.toLocaleString()} before.${extraPension > 0 ? ` Take-home pay shows a little lower only because <strong>£${extraPension.toLocaleString()}</strong> more is now paid into ${ownWord} ${pensionWord} via salary sacrifice — your own savings, not money lost. So you end up with more cash in hand <em>and</em> a bigger pension.` : ''}`
+                        : `Take-home pay is lower in the after column because <strong>£${extraPension.toLocaleString()}</strong> more is paid into ${ownWord} ${pensionWord} via salary sacrifice — savings kept, not money lost — and that contribution is what unlocks <strong>£${childcareSaving.toLocaleString()}</strong> of government childcare support.`}</p>
+                    <div class="alert green" style="margin-top:12px;">
+                        <strong>✅ Overall, ${hasPartner ? 'your household is' : 'you are'} better off.</strong><br><br>
+                        Bringing income below £100,000 unlocks <strong>£${childcareSaving.toLocaleString()}</strong> of government childcare support${pdfTfc > 0 ? ` (including £${pdfTfc.toLocaleString()} of Tax-Free Childcare)` : ''}, and routing the pension through salary sacrifice keeps <strong>£${taxNiSaved.toLocaleString()}</strong> in Income Tax and National Insurance out of HMRC's hands.${extraPension > 0 ? ` The <strong>£${extraPension.toLocaleString()}</strong> now going into ${ownWord} ${pensionWord} isn't a cost — it's wealth you keep.` : ''} That is roughly <strong>£${betterOff.toLocaleString()}/year</strong> in childcare and tax savings${extraPension > 0 ? `, plus £${extraPension.toLocaleString()} more in ${ownWord} ${pensionWord}` : ''}.
+                    </div>
+                </div>
+            </div>`;
+        }
+
         // ─ FUTURE PLANNING ───────────────────────────────────────────────
         // Future Planning — always shown (universally useful; includes adviser planning)
         {
@@ -1305,7 +1413,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Your Childcare Savings Report — The 100k Parent</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="${location.origin}/fonts/fonts.css" rel="stylesheet">
 <style>
 /* ── PALETTE ────────────────────────────────────────────────────────
    Navy    #0F2D52   Teal     #0C7A8A   Forest   #166534
@@ -1610,10 +1718,14 @@ em { color:#637082; font-style:italic; }
     <div class="section-heading"><div class="section-heading-bar"></div><h2>Estimated Annual Savings</h2></div>
     <div class="sum-row ok"><div><div class="sum-label">Tax-Free Childcare</div><div class="sum-desc">20% govt top-up, max £${(2000*numChildren).toLocaleString()}/yr (${numChildren} child${numChildren>1?'ren':''})</div></div><div class="sum-amt green">£${pdfTfc.toLocaleString()}</div></div>
     <div class="sum-row ok"><div><div class="sum-label">${fundedHoursPerWeek} Hours Free Childcare</div><div class="sum-desc">Govt-funded nursery hours</div></div><div class="sum-amt green">£${pdfThirtyHours.toLocaleString()}</div></div>
-    <div class="sum-row ok"><div><div class="sum-label">Salary Sacrifice / Pension</div><div class="sum-desc">Tax + NI savings at ${Math.round(sacrificeTaxRate*100)}% effective rate</div></div><div class="sum-amt ${salaryPensionSaving > 0 ? 'green' : 'grey'}">£${salaryPensionSaving.toLocaleString()}</div></div>
+    <div class="sum-row ok"><div><div class="sum-label">${bothSelfEmployed ? 'Pension Contributions' : 'Salary Sacrifice / Pension'}</div><div class="sum-desc">${bothSelfEmployed ? `Income Tax relief + personal-allowance restoration` : `Tax + NI savings at ${Math.round(sacrificeTaxRate*100)}% effective rate`}</div></div><div class="sum-amt ${salaryPensionSaving > 0 ? 'green' : 'grey'}">£${salaryPensionSaving.toLocaleString()}</div></div>
     <div class="tot-box"><div><div class="tot-label">Estimated Savings</div></div><div class="tot-amount">£${avg.toLocaleString()}</div></div>
 
-    ${over100k ? '' : `
+    ${over100k ? `
+    <div class="alert amber" style="margin-top:14px;">
+        <strong>How these become claimable:</strong> With income over £100,000 you don't qualify for Tax-Free Childcare or the funded hours <em>yet</em>. The figures above are what you unlock once a pension contribution brings your adjusted net income under £100,000 — see the Priority Action that follows. The relief on that contribution is the third line above.
+    </div>
+    ` : `
     <div class="elig-grid">
         <div class="elig yes"><span style="font-size:16px">✅</span><div><div class="elig-text">Tax-Free Childcare</div><div class="elig-sub">Eligible — apply now</div></div></div>
         <div class="elig ${r.has30Hours ? 'yes' : 'no'}"><span style="font-size:16px">${r.has30Hours ? '✅' : '❌'}</span><div><div class="elig-text">${fundedHoursPerWeek} Hours Childcare</div><div class="elig-sub">${r.has30Hours ? 'Eligible — claim code now' : 'Check eligibility'}</div></div></div>

@@ -100,11 +100,32 @@ class V2Calculator {
         const income2 = this.secondIncomeYes.checked ? (parseFloat(this.inputs.income2.value) || 0) : 0;
         const numChildren = parseInt(this.inputs.numChildren.value) || 0;
         const monthlyChildcare = parseFloat(this.inputs.childcare.value) || 0;
+        const pension1 = parseFloat(this.inputs.pension1?.value) || 0;
+        const pension2 = this.secondIncomeYes.checked ? (parseFloat(this.inputs.pension2?.value) || 0) : 0;
         const employment = this.inputs.employment.value;
         const employment2 = this.secondIncomeYes.checked ? this.inputs.employment2.value : employment;
 
-        if (income1 === 0 || numChildren === 0 || monthlyChildcare === 0) {
+        // Required fields must be present and positive.
+        if (income1 <= 0 || numChildren <= 0 || monthlyChildcare <= 0) {
             alert('Please fill in your income, number of children and monthly childcare cost.');
+            return;
+        }
+
+        // Reject negative / non-sensical amounts.
+        if (income2 < 0 || pension1 < 0 || pension2 < 0) {
+            alert('Please enter positive amounts only — negative values aren\'t valid.');
+            return;
+        }
+
+        // If a second income is selected, it must actually be entered.
+        if (this.secondIncomeYes.checked && income2 <= 0) {
+            alert('Please enter your partner\'s income, or choose "No (single parent)".');
+            return;
+        }
+
+        // Annual pension contributions can't exceed the matching income.
+        if (pension1 * 12 > income1 || (income2 > 0 && pension2 * 12 > income2)) {
+            alert('Monthly pension contributions can\'t be more than the matching income.');
             return;
         }
 
@@ -126,9 +147,6 @@ class V2Calculator {
         const minSaving = tfc + salary;
         const maxSaving = tfc + salary + splitting + thirtyHours;
 
-        const pension1 = parseFloat(this.inputs.pension1?.value) || 0;
-        const pension2 = this.secondIncomeYes.checked ? (parseFloat(this.inputs.pension2?.value) || 0) : 0;
-
         // Pension tax + NI relief from contributing enough to bring adjusted net
         // income below £100,000. This is the SAME figure the PDF reports as
         // "Tax + NI saved on pension contribution" (taxSavedBySacrifice) — replicated
@@ -137,21 +155,47 @@ class V2Calculator {
         const higherIncome = Math.max(income1, income2);
         const extraSacrificeYou = Math.max(0, (income1 > 100000 ? income1 - 99999 : 0) - Math.round(pension1 * 12));
         const extraSacrificePartner = Math.max(0, (income2 > 100000 ? income2 - 99999 : 0) - Math.round(pension2 * 12));
+        const extraSacrificeCombined = extraSacrificeYou + extraSacrificePartner;
+        // Employees save Income Tax + NI via pension salary sacrifice.
         const pensionReliefRate = (higherIncome > 100000 && higherIncome <= 125140) ? 0.62 : higherIncome > 50270 ? 0.42 : 0.32;
-        const pensionRelief = Math.round((extraSacrificeYou + extraSacrificePartner) * pensionReliefRate);
+        // The self-employed can't salary sacrifice, but a personal pension contribution
+        // still cuts Income Tax and restores the personal allowance in the £100k–£125,140
+        // band — it just doesn't save National Insurance, so a lower relief rate applies.
+        const selfEmployedReliefRate = (higherIncome > 100000 && higherIncome <= 125140) ? 0.60 : higherIncome > 50270 ? 0.40 : 0.20;
+        const pensionRelief = Math.round(extraSacrificeCombined * pensionReliefRate);
+        const selfEmployedPensionRelief = Math.round(extraSacrificeCombined * selfEmployedReliefRate);
 
         // Canonical headline saving — single source of truth shared by the results
-        // panel, the success page and the PDF so all three show the same figure.
-        // Funded hours only apply to children aged 9 months–4 years, so the 30-hours
-        // saving is only counted when there's an eligible-age child.
-        const hasEligibleAgeChild = ages.some(a => a >= 0 && a <= 4);
-        const displayTfc = Math.round(Math.min(annualChildcare * 0.20, 2000 * numChildren));
-        // Over £100k: real pension relief to break the threshold. Under £100k: a generic
-        // salary-sacrifice estimate (≈30% of childcare, capped at £5,000) at the marginal
-        // rate — mirrors the PDF's salaryPensionSaving so all figures agree.
+        // panel, the success page and the PDF. Tax-Free Childcare and the 30 funded hours
+        // are shown as ACHIEVABLE savings: households already under £100k get them now, and
+        // over-£100k families unlock them once the pension action below brings adjusted net
+        // income under the line. The eligibility badges/warnings (driven by has30Hours and
+        // over100k) make that "you qualify now" vs "available once under £100k" distinction.
+        const bothSelfEmployed = employment === 'self-employed' && employment2 === 'self-employed';
+
+        // Working-parent income test (single parent: the one parent; couple: both).
+        const minIncome = 10158; // 2025/26 min-income test — see check30HoursEligibility().
+        const eligibleAgeChild = ages.some(a => a >= 0 && a <= 4);
+        const meetsWorkTest = income2 === 0 ? income1 >= minIncome : (income1 >= minIncome && income2 >= minIncome);
+
+        // 30 funded hours: an eligible-age child plus the working-parent test. Applied to
+        // the bill BEFORE Tax-Free Childcare, since funded hours reduce what you actually pay.
+        const displayThirtyHours = (eligibleAgeChild && meetsWorkTest) ? Math.round(0.55 * annualChildcare) : 0;
+
+        // Tax-Free Childcare: 20% top-up (capped £2,000/child) on the childcare you still
+        // pay AFTER funded hours, for any household that meets the working-parent test.
+        const childcareAfterFundedHours = Math.max(0, annualChildcare - displayThirtyHours);
+        const displayTfc = meetsWorkTest ? Math.round(Math.min(childcareAfterFundedHours * 0.20, 2000 * numChildren)) : 0;
+
+        // Pension route to break the £100k threshold: salary sacrifice for employees
+        // (Income Tax + NI), or personal pension contributions for the self-employed
+        // (Income Tax + personal-allowance restoration only, no NI). Under £100k, only
+        // employees get the generic salary-sacrifice estimate (≈30% of childcare, capped £5,000).
         const genericSalarySacrifice = Math.round(Math.min(5000, annualChildcare * 0.3) * pensionReliefRate);
-        const displaySalary = over100k ? pensionRelief : genericSalarySacrifice;
-        const displayThirtyHours = hasEligibleAgeChild ? Math.round(0.55 * annualChildcare) : 0;
+        const displaySalary = over100k
+            ? (bothSelfEmployed ? selfEmployedPensionRelief : pensionRelief)
+            : (bothSelfEmployed ? 0 : genericSalarySacrifice);
+
         const displayTotal = displayTfc + displaySalary + displayThirtyHours;
 
         // Store results for PDF
@@ -169,11 +213,23 @@ class V2Calculator {
     }
 
     check30HoursEligibility(income1, income2, ages) {
-        if (income2 === 0) return false;
-        const minIncome = 2379;
-        if (income1 < minIncome || income2 < minIncome) return false;
-        if (income1 > 100000 || income2 > 100000) return false;
-        return ages.some(a => a >= 0 && a <= 4);
+        // 2025/26 min-income test: each working parent must earn at least the equivalent
+        // of 16 hrs/wk at minimum wage — NMW £12.21 × 16 × 52 ≈ £10,158/year.
+        const minIncome = 10158;
+
+        // Funded hours only apply to children aged 9 months–4 years.
+        if (!ages.some(a => a >= 0 && a <= 4)) return false;
+
+        // Single-parent household (no second income): the one working parent must
+        // earn at least the minimum and no more than £100k. Single parents ARE
+        // eligible — the previous logic wrongly excluded them.
+        if (income2 === 0) {
+            return income1 >= minIncome && income1 <= 100000;
+        }
+
+        // Couple: both parents must earn at least the minimum, neither over £100k.
+        return income1 >= minIncome && income2 >= minIncome
+            && income1 <= 100000 && income2 <= 100000;
     }
 
     calculateTFC(annualChildcare, numChildren, over100k) {
@@ -243,11 +299,14 @@ class V2Calculator {
         const existing = document.getElementById('paywallGate');
         if (existing) existing.remove();
 
-        // Determine plan based on income — over £90k gets Complete
+        // Only the Complete report is live for now, so every visitor is routed to
+        // it regardless of income. When the Essential report is relaunched, restore
+        // the income-based routing below:
+        //   const highestIncome = Math.max(income1, income2);
+        //   const isComplete = highestIncome >= 90000;
         const income1 = parseFloat(this.inputs.income1.value) || 0;
         const income2 = this.secondIncomeYes.checked ? (parseFloat(this.inputs.income2.value) || 0) : 0;
-        const highestIncome = Math.max(income1, income2);
-        const isComplete = highestIncome >= 90000;
+        const isComplete = true;
 
         const tier = isComplete ? 'complete' : 'essential';
         const price = isComplete ? '£49' : '£19';
@@ -301,602 +360,8 @@ class V2Calculator {
     }
 }
 
-// ─── PDF REPORT GENERATOR ───────────────────────────────────────────────────
-
-class PDFReportGenerator {
-    constructor(results) {
-        this.r = results;
-    }
-
-    generate(tier) {
-        // Build the HTML content of the report
-        const html = this.buildReportHTML(tier);
-
-        // Open in new tab and trigger print/save as PDF
-        const win = window.open('', '_blank');
-        win.document.write(html);
-        win.document.close();
-        win.focus();
-        setTimeout(() => { win.print(); }, 500);
-    }
-
-    buildReportHTML(tier) {
-        const r = this.r;
-        const date = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-        const avg = r.displayTotal ?? Math.round((r.minSaving + r.maxSaving) / 2);
-
-        return `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Your Childcare Savings Report - The 100k Parent</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    font-family: 'Inter', sans-serif;
-    color: #2D3748;
-    background: #FFFFFF;
-    font-size: 14px;
-    line-height: 1.6;
-  }
-
-  /* COVER */
-  .cover {
-    background: linear-gradient(135deg, #E8F4F8 0%, #F0EDFF 100%);
-    padding: 60px 50px;
-    min-height: 297mm;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    page-break-after: always;
-  }
-
-  .cover-logo {
-    font-size: 22px;
-    font-weight: 800;
-    color: #2E5C8A;
-  }
-
-  .cover-badge {
-    display: inline-block;
-    background: #4A90E2;
-    color: white;
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    margin-bottom: 24px;
-  }
-
-  .cover-title {
-    font-size: 40px;
-    font-weight: 800;
-    color: #2D3748;
-    line-height: 1.1;
-    margin-bottom: 16px;
-  }
-
-  .cover-subtitle {
-    font-size: 18px;
-    color: #718096;
-    margin-bottom: 40px;
-  }
-
-  .cover-saving-box {
-    background: white;
-    border-radius: 20px;
-    padding: 32px 40px;
-    display: inline-block;
-    box-shadow: 0 4px 24px rgba(74,144,226,0.15);
-    margin-bottom: 40px;
-  }
-
-  .cover-saving-label {
-    font-size: 13px;
-    font-weight: 600;
-    color: #718096;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 8px;
-  }
-
-  .cover-saving-amount {
-    font-size: 56px;
-    font-weight: 800;
-    color: #10B981;
-    line-height: 1;
-  }
-
-  .cover-saving-sub {
-    font-size: 14px;
-    color: #718096;
-    margin-top: 8px;
-  }
-
-  .cover-range {
-    background: #E8F4F8;
-    border-radius: 12px;
-    padding: 16px 24px;
-    margin-top: 16px;
-    display: inline-block;
-  }
-
-  .cover-range p {
-    font-size: 13px;
-    color: #2E5C8A;
-  }
-
-  .cover-range strong {
-    font-size: 16px;
-  }
-
-  .cover-meta {
-    font-size: 13px;
-    color: #A0AEC0;
-  }
-
-  /* CONTENT PAGES */
-  .page {
-    padding: 50px;
-    page-break-after: always;
-  }
-
-  .page:last-child { page-break-after: avoid; }
-
-  .page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 20px;
-    border-bottom: 2px solid #E8F4F8;
-    margin-bottom: 32px;
-  }
-
-  .page-logo { font-size: 16px; font-weight: 800; color: #2E5C8A; }
-  .page-number { font-size: 12px; color: #A0AEC0; }
-
-  h2 {
-    font-size: 24px;
-    font-weight: 700;
-    color: #2D3748;
-    margin-bottom: 8px;
-  }
-
-  h3 {
-    font-size: 16px;
-    font-weight: 700;
-    color: #2D3748;
-    margin-bottom: 8px;
-  }
-
-  .section-intro {
-    color: #718096;
-    margin-bottom: 28px;
-    font-size: 14px;
-  }
-
-  /* PROFILE BOX */
-  .profile-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 32px;
-  }
-
-  .profile-item {
-    background: #F7FAFC;
-    border-radius: 12px;
-    padding: 16px 20px;
-  }
-
-  .profile-label {
-    font-size: 11px;
-    font-weight: 600;
-    color: #A0AEC0;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 4px;
-  }
-
-  .profile-value {
-    font-size: 16px;
-    font-weight: 700;
-    color: #2D3748;
-  }
-
-  /* SAVINGS BREAKDOWN */
-  .saving-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px 24px;
-    border-radius: 12px;
-    margin-bottom: 12px;
-    background: #F7FAFC;
-  }
-
-  .saving-row.highlight {
-    background: #E8F4F8;
-    border: 2px solid #4A90E2;
-  }
-
-  .saving-row-left h3 { margin-bottom: 4px; }
-  .saving-row-left p { font-size: 12px; color: #718096; }
-
-  .saving-amount {
-    font-size: 24px;
-    font-weight: 800;
-    color: #10B981;
-    white-space: nowrap;
-  }
-
-  .saving-amount.zero { color: #A0AEC0; }
-
-  /* TOTAL BOX */
-  .total-box {
-    background: linear-gradient(135deg, #4A90E2 0%, #2E5C8A 100%);
-    border-radius: 16px;
-    padding: 28px 32px;
-    color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 24px 0;
-  }
-
-  .total-box-label { font-size: 14px; font-weight: 600; opacity: 0.85; }
-  .total-box-amount { font-size: 40px; font-weight: 800; }
-
-  /* HOW IT'S CALCULATED */
-  .calc-box {
-    background: #F0EDFF;
-    border-radius: 12px;
-    padding: 20px 24px;
-    margin-bottom: 16px;
-  }
-
-  .calc-box h3 { color: #7B68EE; margin-bottom: 8px; }
-  .calc-box p { font-size: 13px; color: #4A5568; line-height: 1.6; }
-
-  /* ELIGIBILITY */
-  .eligibility-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin: 20px 0;
-  }
-
-  .eligibility-item {
-    border-radius: 12px;
-    padding: 16px 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .eligibility-item.yes { background: #D1FAE5; }
-  .eligibility-item.no { background: #FEE2E2; }
-
-  .eligibility-icon { font-size: 20px; }
-  .eligibility-text { font-size: 13px; font-weight: 600; color: #2D3748; }
-
-  /* NEXT STEPS */
-  .step-item {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 20px;
-    align-items: flex-start;
-  }
-
-  .step-num {
-    width: 36px;
-    height: 36px;
-    background: #4A90E2;
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    font-size: 16px;
-    flex-shrink: 0;
-  }
-
-  .step-text h3 { margin-bottom: 4px; }
-  .step-text p { font-size: 13px; color: #718096; }
-
-  /* DISCLAIMER */
-  .disclaimer {
-    background: #FFF9F0;
-    border-left: 4px solid #F59E0B;
-    padding: 16px 20px;
-    border-radius: 0 8px 8px 0;
-    margin-top: 24px;
-    font-size: 12px;
-    color: #718096;
-    line-height: 1.6;
-  }
-
-  /* FOOTER */
-  .report-footer {
-    text-align: center;
-    padding: 40px 50px;
-    background: #F7FAFC;
-    border-top: 2px solid #E8F4F8;
-  }
-
-  .report-footer-logo { font-size: 20px; font-weight: 800; color: #2E5C8A; margin-bottom: 8px; }
-  .report-footer p { font-size: 12px; color: #A0AEC0; }
-
-  @media print {
-    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .cover { min-height: auto; }
-  }
-</style>
-</head>
-<body>
-
-<!-- COVER PAGE -->
-<div class="cover">
-  <div>
-    <div class="cover-logo">The 100k Parent</div>
-  </div>
-
-  <div>
-    <div class="cover-badge">${tier === 'essential' ? 'Essential Report' : 'Complete Guide'}</div>
-    <h1 class="cover-title">Your Childcare<br>Savings Report</h1>
-    <p class="cover-subtitle">Personalised for your family's situation</p>
-
-    <div class="cover-saving-box">
-      <div class="cover-saving-label">Your estimated annual saving</div>
-      <div class="cover-saving-amount">£${avg.toLocaleString()}</div>
-      <div class="cover-saving-sub">across all HMRC-compliant strategies</div>
-    </div>
-
-    <div class="cover-range">
-      <p>Potential saving range: <strong>£${Math.round(r.minSaving).toLocaleString()}</strong> — <strong>£${Math.round(r.maxSaving).toLocaleString()}</strong> per year</p>
-    </div>
-  </div>
-
-  <div class="cover-meta">
-    <p>Prepared for your family • ${date}</p>
-    <p>The 100k Parent | the100kparent.com</p>
-  </div>
-</div>
-
-<!-- PAGE 2: YOUR PROFILE -->
-<div class="page">
-  <div class="page-header">
-    <div class="page-logo">The 100k Parent</div>
-    <div class="page-number">Page 2</div>
-  </div>
-
-  <h2>Your Family Profile</h2>
-  <p class="section-intro">Based on the information you provided, here is your household summary.</p>
-
-  <div class="profile-grid">
-    <div class="profile-item">
-      <div class="profile-label">Your Annual Income</div>
-      <div class="profile-value">£${r.income1.toLocaleString()}</div>
-    </div>
-    <div class="profile-item">
-      <div class="profile-label">Partner's Annual Income</div>
-      <div class="profile-value">${r.income2 > 0 ? '£' + r.income2.toLocaleString() : 'Single income household'}</div>
-    </div>
-    <div class="profile-item">
-      <div class="profile-label">Number of Children</div>
-      <div class="profile-value">${r.numChildren} ${r.numChildren === 1 ? 'child' : 'children'}</div>
-    </div>
-    <div class="profile-item">
-      <div class="profile-label">Monthly Childcare Cost</div>
-      <div class="profile-value">£${r.monthlyChildcare.toLocaleString()}/month</div>
-    </div>
-    <div class="profile-item">
-      <div class="profile-label">Annual Childcare Spend</div>
-      <div class="profile-value">£${(r.monthlyChildcare * 12).toLocaleString()}/year</div>
-    </div>
-    <div class="profile-item">
-      <div class="profile-label">Employment Type</div>
-      <div class="profile-value" style="text-transform: capitalize;">${r.employment.replace('-', ' ')}</div>
-    </div>
-  </div>
-
-  <h2>Eligibility Summary</h2>
-  <p class="section-intro">Which government schemes your family qualifies for.</p>
-
-  <div class="eligibility-grid">
-    <div class="eligibility-item ${!r.over100k ? 'yes' : 'no'}">
-      <div class="eligibility-icon">${!r.over100k ? '✅' : '❌'}</div>
-      <div class="eligibility-text">Tax-Free Childcare</div>
-    </div>
-    <div class="eligibility-item ${r.has30Hours ? 'yes' : 'no'}">
-      <div class="eligibility-icon">${r.has30Hours ? '✅' : '❌'}</div>
-      <div class="eligibility-text">30 Hours Free Childcare</div>
-    </div>
-    <div class="eligibility-item ${r.employment !== 'self-employed' ? 'yes' : 'no'}">
-      <div class="eligibility-icon">${r.employment !== 'self-employed' ? '✅' : '❌'}</div>
-      <div class="eligibility-text">Salary Sacrifice</div>
-    </div>
-    <div class="eligibility-item ${r.income2 > 0 ? 'yes' : 'no'}">
-      <div class="eligibility-icon">${r.income2 > 0 ? '✅' : '❌'}</div>
-      <div class="eligibility-text">Income Splitting</div>
-    </div>
-  </div>
-</div>
-
-<!-- PAGE 3: SAVINGS BREAKDOWN -->
-<div class="page">
-  <div class="page-header">
-    <div class="page-logo">The 100k Parent</div>
-    <div class="page-number">Page 3</div>
-  </div>
-
-  <h2>Your Savings Breakdown</h2>
-  <p class="section-intro">Here is how your estimated saving of £${avg.toLocaleString()} per year is made up.</p>
-
-  <div class="saving-row highlight">
-    <div class="saving-row-left">
-      <h3>Tax-Free Childcare</h3>
-      <p>20% government top-up on eligible childcare costs (max £2,000 per child)</p>
-    </div>
-    <div class="saving-amount ${r.tfc === 0 ? 'zero' : ''}">£${Math.round(r.tfc).toLocaleString()}</div>
-  </div>
-
-  <div class="saving-row">
-    <div class="saving-row-left">
-      <h3>Salary Sacrifice</h3>
-      <p>Income tax and National Insurance savings via pension contributions</p>
-    </div>
-    <div class="saving-amount ${r.salary === 0 ? 'zero' : ''}">£${Math.round(r.salary).toLocaleString()}</div>
-  </div>
-
-  <div class="saving-row">
-    <div class="saving-row-left">
-      <h3>Income Splitting</h3>
-      <p>Optimising how income is distributed between partners across tax bands</p>
-    </div>
-    <div class="saving-amount ${r.splitting === 0 ? 'zero' : ''}">£${Math.round(r.splitting).toLocaleString()}</div>
-  </div>
-
-  <div class="saving-row">
-    <div class="saving-row-left">
-      <h3>30 Hours Free Childcare</h3>
-      <p>Value of government-funded hours for eligible children aged 9 months to 4 years</p>
-    </div>
-    <div class="saving-amount ${r.thirtyHours === 0 ? 'zero' : ''}">£${Math.round(r.thirtyHours).toLocaleString()}</div>
-  </div>
-
-  <div class="total-box">
-    <div>
-      <div class="total-box-label">Your estimated total annual saving</div>
-      <div style="font-size: 13px; opacity: 0.7; margin-top: 4px;">Range: £${Math.round(r.minSaving).toLocaleString()} — £${Math.round(r.maxSaving).toLocaleString()}</div>
-    </div>
-    <div class="total-box-amount">£${avg.toLocaleString()}</div>
-  </div>
-
-  <div class="disclaimer">
-    <strong>Important:</strong> These figures are estimates based on the information you provided and standard HMRC rules as of 2026. Your actual savings may differ depending on your full financial circumstances. We recommend speaking with a qualified financial adviser before making changes to your arrangements.
-  </div>
-</div>
-
-<!-- PAGE 4: HOW IT'S CALCULATED -->
-<div class="page">
-  <div class="page-header">
-    <div class="page-logo">The 100k Parent</div>
-    <div class="page-number">Page 4</div>
-  </div>
-
-  <h2>How Your Saving Is Calculated</h2>
-  <p class="section-intro">A transparent explanation of the methodology behind each figure.</p>
-
-  <div class="calc-box">
-    <h3>Tax-Free Childcare (TFC)</h3>
-    <p>The government adds 20p for every 80p you pay into a Tax-Free Childcare account, up to £2,000 per child per year (£4,000 if your child is disabled). This is equivalent to the basic rate of tax. Both you and your partner (if applicable) must each earn at least £2,379 per year and neither can earn over £100,000. We calculate this as: <strong>annual childcare spend × 20% = TFC saving</strong>, capped at £2,000 per child.</p>
-  </div>
-
-  <div class="calc-box">
-    <h3>Salary Sacrifice</h3>
-    <p>By paying into your pension via salary sacrifice, you reduce your gross salary, saving Income Tax and National Insurance on the sacrificed amount. For higher-rate taxpayers (income over £50,270), the combined saving is approximately 42p per £1 sacrificed. We estimate a conservative sacrifice amount of 30% of annual childcare costs, capped at £5,000 per year, and apply the appropriate tax relief rate for your income band.</p>
-  </div>
-
-  <div class="calc-box">
-    <h3>Income Splitting</h3>
-    <p>Where one partner earns above the higher-rate threshold (£50,270) and the other earns below it, there may be opportunities to redistribute income to reduce the overall household tax bill. This includes dividend payments, pension contributions, or restructuring employment arrangements. We apply a conservative estimate of £3,000 per year where this applies to your household.</p>
-  </div>
-
-  <div class="calc-box">
-    <h3>30 Hours Free Childcare</h3>
-    <p>Eligible working parents of children aged 9 months to 4 years can claim up to 30 hours of free childcare per week for 38 weeks per year. To qualify, both partners must work at least 16 hours per week at the national minimum wage and neither can earn over £100,000. We calculate the value at the average UK nursery rate of £15/hour × 1,140 hours per eligible child per year.</p>
-  </div>
-</div>
-
-<!-- PAGE 5: NEXT STEPS -->
-<div class="page">
-  <div class="page-header">
-    <div class="page-logo">The 100k Parent</div>
-    <div class="page-number">Page 5</div>
-  </div>
-
-  <h2>Your Next Steps</h2>
-  <p class="section-intro">Here is what to do to start saving as soon as possible.</p>
-
-  <div class="step-item">
-    <div class="step-num">1</div>
-    <div class="step-text">
-      <h3>Apply for Tax-Free Childcare</h3>
-      <p>Visit Childcare Choices (childcarechoices.gov.uk) and apply through the Government Gateway. You will need your National Insurance number and details of your childcare provider. Applications take around 20 minutes and you can start using your account immediately once approved.</p>
-    </div>
-  </div>
-
-  <div class="step-item">
-    <div class="step-num">2</div>
-    <div class="step-text">
-      <h3>Set Up Salary Sacrifice via Your Employer</h3>
-      <p>Contact your HR or payroll department and ask about salary sacrifice pension arrangements. Explain that you would like to increase pension contributions via salary sacrifice. Most employers already offer this — it just needs to be activated. Check your payslip the following month to confirm the saving.</p>
-    </div>
-  </div>
-
-  <div class="step-item">
-    <div class="step-num">3</div>
-    <div class="step-text">
-      <h3>Apply for 30 Hours Free Childcare (if eligible)</h3>
-      <p>Apply via the Childcare Choices website or GOV.UK at least 3 months before your child's eligibility date. You will receive an 11-digit code to give to your childcare provider. Reconfirm your eligibility every 3 months via your Government Gateway account.</p>
-    </div>
-  </div>
-
-  <div class="step-item">
-    <div class="step-num">4</div>
-    <div class="step-text">
-      <h3>Review Your Income Structure</h3>
-      <p>If one partner earns above £100,000, consider making additional pension contributions to reduce your adjusted net income below the threshold. This alone could unlock Tax-Free Childcare and 30 hours worth up to £17,000+ per year for some families. Speak to a financial adviser to understand the best approach for your situation.</p>
-    </div>
-  </div>
-
-  ${tier === 'complete' ? `
-  <div class="step-item">
-    <div class="step-num">5</div>
-    <div class="step-text">
-      <h3>Book Your Advisor Call</h3>
-      <p>As a Complete Guide customer, you have a free 30-minute call with our recommended financial adviser included. They will review your specific situation, confirm your eligibility, and provide personalised recommendations. Check your email for your booking link.</p>
-    </div>
-  </div>
-  ` : ''}
-
-  <div class="disclaimer">
-    <strong>Disclaimer:</strong> This report is for informational purposes only and does not constitute financial advice. The 100k Parent is not FCA regulated. Always consult a qualified financial adviser before making changes to your financial arrangements. Figures are based on 2025/26 tax year rules and may change in future tax years.
-  </div>
-</div>
-
-<!-- FOOTER -->
-<div class="report-footer">
-  <div class="report-footer-logo">The 100k Parent</div>
-  <p>Helping UK families earning over £100k save on childcare</p>
-  <p style="margin-top: 8px;">© 2026 The 100k Parent | the100kparent.com</p>
-</div>
-
-</body>
-</html>`;
-    }
-}
-
 // ─── INIT ────────────────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', () => {
-    const calc = new V2Calculator();
-
-    // PDF download buttons (added after purchase confirmation)
-    document.addEventListener('click', (e) => {
-        if (e.target.matches('[data-pdf]')) {
-            const tier = e.target.dataset.pdf;
-            if (Object.keys(calc.lastResults).length === 0) {
-                alert('Please run the calculator first.');
-                return;
-            }
-            const gen = new PDFReportGenerator(calc.lastResults);
-            gen.generate(tier);
-        }
-    });
+    new V2Calculator();
 });

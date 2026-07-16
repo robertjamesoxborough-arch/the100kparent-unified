@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The 100k Parent | Save Thousands on Childcare</title>
-    <meta name="description" content="UK parents earning over £100k can save up to £17,000/year on childcare. Find out how in minutes.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Caveat:wght@600&display=swap" rel="stylesheet">
+    <meta name="description" content="UK parents earning over £100k could save up to £17,000/year on childcare, depending on their circumstances. See your personalised estimate in minutes — free.">
+    <link rel="stylesheet" href="fonts/fonts.css">
     <link rel="stylesheet" href="v2-styles.css">
     <style>
         html, body { overflow-x: hidden; width: 100%; }
@@ -784,7 +782,6 @@
         <div class="nav-links">
             <a href="#how-it-works">How it works</a>
             <a href="#calculator">Calculator</a>
-            <a href="#testimonials">Reviews</a>
             <a href="#" id="testFlowBtn" class="nav-test">Test Flow</a>
             <a href="#pricing" class="nav-cta">Get Started</a>
         </div>
@@ -818,14 +815,11 @@
         <a href="#how-it-works" onclick="closeMobileNav()">
             How it works <span>2 minutes →</span>
         </a>
-        <a href="#testimonials" onclick="closeMobileNav()">
-            Reviews <span>What parents say →</span>
-        </a>
         <a href="#" id="testFlowBtnMobile" onclick="closeMobileNav()" style="color: #92400E; background: #FFFBEB;">
             Test Flow <span style="color:#F59E0B;">Preview →</span>
         </a>
         <a href="#pricing" onclick="closeMobileNav()" style="color: #093F72;">
-            Get Started <span>From £19 →</span>
+            Get Started <span>From £49 →</span>
         </a>
     </div>
 </nav>
@@ -867,7 +861,7 @@
     <img src="founder-family.jpg" alt="Parents working together at home">
     <div class="row-content">
         <h2>We've done the hard work for you</h2>
-        <p>We are a team of Accountants, Wealth Managers, Financial Advisers and most importantly parents who got tired of wading through HMRC guidance at 11pm wondering how your life came to this.</p>
+        <p>We're a team with backgrounds in accountancy, tax and personal finance — and most importantly, parents who got tired of wading through HMRC guidance at 11pm wondering how life came to this.</p>
         <p>So we did it once, properly — and built the thing we wished had existed.</p>
         <p>Could you work it all out yourself? Absolutely. HMRC's guidance is only 47 pages long and written with remarkable clarity. (It isn't.) We've spent the last decade in finance and tax so you don't have to spend the next three weekends there.</p>
         <p>We're not a faceless platform. We're parents who know exactly how it feels when a nursery invoice lands and your bank account quietly weeps.</p>
@@ -893,7 +887,7 @@
             <div class="benefit-card">
                 <div class="benefit-icon">🎯</div>
                 <h3>Expert guidance, built for you</h3>
-                <p>Advice written for high earners — not average ones. And with our Complete plan, a financial advisor walks you through every step of implementation.</p>
+                <p>Information written for high earners — not average ones. And with our Complete plan, an independent FCA-regulated adviser can walk you through implementation.</p>
             </div>
         </div>
     </div>
@@ -923,7 +917,7 @@
                 <div class="step-number">3</div>
                 <div>
                     <h3>Start saving</h3>
-                    <p>You get a personalised report with clear, actionable steps — and an optional call with our financial advisor to help you put every strategy in place.</p>
+                    <p>You get a personalised report with clear, actionable steps — and an optional call with an independent FCA-regulated financial adviser to help you put every strategy in place.</p>
                 </div>
             </div>
         </div>
@@ -1029,7 +1023,7 @@
 
                 <div id="over100kWarning" class="warning-box" style="display: none;">
                     <h4>⚠️ Over the £100k threshold</h4>
-                    <p>You may be missing out. Our advisors can show you how to legally reduce your adjusted income and unlock thousands in childcare savings.</p>
+                    <p>You may be missing out. Your report shows how you could legally reduce your adjusted net income and, depending on your circumstances, unlock childcare savings that can run into thousands a year.</p>
                     <ul>
                         <li><strong>Step 1:</strong> Identify your eligible benefits</li>
                         <li><strong>Step 2:</strong> Review your financial setup</li>
@@ -1040,7 +1034,7 @@
 
                 <div id="eligibilityWarning" class="info-box" style="display: none;">
                     <h4>ℹ️ 30 Hours Eligibility</h4>
-                    <p>Available for children aged 9 months to 4 years. To qualify you need two working parents, each earning at least £2,379/year, neither over £100k.</p>
+                    <p>Available for children aged 9 months to 4 years. You — and your partner, if you have one — must each earn at least the equivalent of 16 hours a week at minimum wage (about £10,160/year) and under £100k.</p>
                 </div>
 
                 <div id="resultsActions" style="display: none;">
@@ -1059,7 +1053,11 @@
         <h2 class="section-title">Get your personalised report</h2>
         <p class="section-description">One-time payment. No subscriptions. No hidden fees.</p>
 
-        <div class="pricing-grid">
+        <!-- Single-column layout while only the Complete plan is live. When the
+             Essential plan is re-added, remove the inline style below and
+             uncomment the Essential card. -->
+        <div class="pricing-grid" style="grid-template-columns: 1fr; max-width: 480px;">
+            <!-- ESSENTIAL PLAN — TEMPORARILY HIDDEN (relaunching later). Do not delete.
             <div class="pricing-card">
                 <div class="price-header">
                     <h3>Essential</h3>
@@ -1076,17 +1074,20 @@
                 </ul>
                 <a href="#" class="price-cta secondary">Get Essential</a>
             </div>
+            -->
 
             <div class="pricing-card featured">
-                <div class="popular-badge">Most Popular</div>
                 <div class="price-header">
                     <h3>Complete</h3>
                     <div class="price">£49</div>
                     <p class="price-subtitle">one-time</p>
                 </div>
                 <ul class="price-features">
-                    <li>✓ Everything in Essential</li>
-                    <li>✓ 30-min call with our financial advisor</li>
+                    <li>✓ Personalised savings breakdown</li>
+                    <li>✓ Tax-Free Childcare guide (up to £2,000/child)</li>
+                    <li>✓ Salary sacrifice strategy (income tax + NI)</li>
+                    <li>✓ Downloadable action plan (PDF)</li>
+                    <li>✓ 30-min call with an independent FCA-regulated financial adviser</li>
                     <li>✓ Income splitting between partners</li>
                     <li>✓ Child Benefit & tax threshold strategy</li>
                     <li>✓ Personalised 12-week action roadmap</li>
@@ -1111,8 +1112,8 @@
         <p class="final-cta-subtitle">Free, instant, and built for parents earning over £100k</p>
         <a href="#calculator" class="final-cta-btn">Calculate Now — Free</a>
         <div class="final-testimonial">
-            <p>"Cut from <strong>£1,935/month</strong> to <strong>£916</strong>. Over £1,000 saved every single month."</p>
-            <p class="testimonial-author">Claire • Mother & Teacher • Surrey</p>
+            <p><em>Illustrative example:</em> a household spending <strong>£1,935/month</strong> on nursery fees could bring this down to around <strong>£916</strong> by combining the schemes above — subject to eligibility and individual circumstances.</p>
+            <p class="testimonial-author">Illustrative figures only — not a customer testimonial. Your result will depend on your own circumstances.</p>
         </div>
     </div>
 </section>
@@ -1128,12 +1129,12 @@
                 <div class="faq-answer">
                     <p>We combine four proven HMRC-compliant strategies, each personalised to your income and family:</p>
                     <ul style="margin: 0.75rem 0 0 1.25rem; line-height: 1.8;">
-                        <li><strong>Tax-Free Childcare</strong> — the government tops up your account by 20%, worth up to £2,000 per child per year.</li>
-                        <li><strong>Salary sacrifice</strong> — deducting childcare costs before tax and NI typically saves £2,000–£5,000 a year.</li>
-                        <li><strong>Income splitting</strong> — restructuring how income is allocated between partners can meaningfully reduce your combined tax burden.</li>
-                        <li><strong>30 hours free childcare</strong> — worth up to £6,000 per year per child aged 9 months to 4 years if you're eligible.</li>
+                        <li><strong>Tax-Free Childcare</strong> — the government tops up your account by 20%, worth up to £2,000 per child per year (£4,000 for a disabled child), if you're eligible.</li>
+                        <li><strong>Salary sacrifice</strong> — paying into your pension via salary sacrifice cuts Income Tax and National Insurance; depending on your income and how much you contribute, this can be worth roughly £2,000–£5,000 a year for higher earners.</li>
+                        <li><strong>Income splitting</strong> — where a couple's incomes straddle a tax threshold, restructuring how income is allocated may reduce your combined tax bill; the benefit depends on your circumstances.</li>
+                        <li><strong>30 hours free childcare</strong> — worth up to around £6,000 per year per eligible child aged 9 months to 4 years, depending on your provider's rates, if you're eligible.</li>
                     </ul>
-                    <p style="margin-top:0.75rem;">Your result is calculated instantly and shown as a personalised breakdown — not a rough estimate.</p>
+                    <p style="margin-top:0.75rem;">Your result is calculated instantly and shown as a personalised breakdown. <strong>All figures are estimates</strong> based on the details you enter and current (2025/26) government rules — the amounts above are maximums that apply only if you meet the eligibility conditions, and your actual saving will depend on your own circumstances. Check the latest rules at <a href="https://www.gov.uk/childcare-calculator" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">GOV.UK</a>.</p>
                 </div>
             </div>
             <div class="faq-item">
@@ -1145,7 +1146,7 @@
             <div class="faq-item">
                 <h3 class="faq-question">Can I speak to someone?</h3>
                 <div class="faq-answer">
-                    <p>Yes — the Complete plan (£49) includes a free 30-minute call with our financial advisor. They'll walk you through your personalised report, answer your questions, and help you implement every strategy. You won't just know what to do — you'll know exactly how to do it.</p>
+                    <p>Yes — the Complete plan (£49) includes a free 30-minute call with an independent FCA-regulated financial adviser. They'll walk you through your personalised report, answer your questions, and help you implement every strategy. You won't just know what to do — you'll know exactly how to do it.</p>
                 </div>
             </div>
             <div class="faq-item">
@@ -1179,9 +1180,14 @@
                 <a href="#pricing">Get Started</a>
                 <a href="#how-it-works">How It Works</a>
                 <a href="privacy.html">Privacy</a>
+                <a href="cookies.html">Cookies</a>
                 <a href="terms.html">Terms</a>
+                <a href="refund.html">Refunds</a>
             </div>
         </div>
+        <p class="footer-disclaimer" style="max-width:760px;margin:1.5rem auto 0;font-size:0.8125rem;line-height:1.6;color:#94A3B8;text-align:center;">
+            The 100k Parent provides general information and educational tools about UK childcare and tax schemes. It is <strong>not a financial adviser and is not authorised or regulated by the Financial Conduct Authority (FCA)</strong>. Nothing on this site is personal financial, tax or legal advice. Figures are estimates based on the information you enter and may not reflect your actual circumstances. Always check the latest rules at GOV.UK and consider taking advice from a suitably qualified professional before acting.
+        </p>
         <p class="footer-copyright">© 2026 The 100k Parent. All rights reserved.</p>
     </div>
 </footer>
@@ -1329,7 +1335,7 @@
         },
         {
             id: 'pricing',
-            text: 'From £19 — 30-day guarantee',
+            text: 'From £49 — 30-day guarantee',
             btnText: 'Get Started',
             btnHref: '#pricing'
         }
@@ -1366,7 +1372,7 @@
     updateNavContext();
 
     // ── Test Flow ──
-    let testPlan = 'essential';
+    let testPlan = 'complete';
 
     function openTestFlow(plan) {
         testPlan = plan;
@@ -1411,12 +1417,16 @@
         openTestFlow('complete');
     });
 
-    // Intercept pricing CTAs
-    document.querySelector('.price-cta.secondary').addEventListener('click', e => {
+    // Intercept pricing CTAs. The Essential (secondary) CTA is hidden while only the
+    // Complete plan is live, so guard against its absence — otherwise querySelector
+    // returns null and breaks every binding below it. Restored when Essential returns.
+    const secondaryCta = document.querySelector('.price-cta.secondary');
+    if (secondaryCta) secondaryCta.addEventListener('click', e => {
         e.preventDefault();
         openTestFlow('essential');
     });
-    document.querySelector('.price-cta.primary').addEventListener('click', e => {
+    const primaryCta = document.querySelector('.price-cta.primary');
+    if (primaryCta) primaryCta.addEventListener('click', e => {
         e.preventDefault();
         openTestFlow('complete');
     });
