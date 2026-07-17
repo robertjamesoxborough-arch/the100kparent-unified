@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "bash",
+            "command": "node -e 'const fs=require(\"fs\"),p=require(\"path\");const d=process.env.CLAUDE_PROJECT_DIR||\".\";const f=p.join(d,\".claude\",\"session-reminder.md\");let t=\"\";try{t=fs.readFileSync(f,\"utf8\")}catch(e){process.exit(0)}process.stdout.write(JSON.stringify({systemMessage:t,hookSpecificOutput:{hookEventName:\"SessionStart\",additionalContext:t}}))'"
+          }
+        ]
+      }
+    ]
+  }
+}
