@@ -44,7 +44,7 @@ export default function AdvisorBookingPage() {
         justifyContent: 'space-between',
         height: '64px',
       }}>
-        <Link href="/" style={{ color: '#FFFFFF', fontWeight: 800, fontSize: '18px', letterSpacing: '0.05em', textDecoration: 'none' }}>
+        <Link href="/home_new" style={{ color: '#FFFFFF', fontWeight: 800, fontSize: '18px', letterSpacing: '0.05em', textDecoration: 'none' }}>
           THE 100K PARENT
         </Link>
         <span style={{ color: '#64748B', fontSize: '14px' }}>Book a Session</span>
@@ -190,8 +190,22 @@ export default function AdvisorBookingPage() {
           <h2 style={{ fontSize: 'clamp(22px, 3vw, 36px)', fontWeight: 800, textAlign: 'center', marginBottom: '8px', color: SECONDARY }}>
             Qualified Personal Finance Advisors
           </h2>
-          <p style={{ color: '#64748B', textAlign: 'center', fontSize: '16px', marginBottom: '48px' }}>
+          <p style={{ color: '#64748B', textAlign: 'center', fontSize: '16px', marginBottom: '16px' }}>
             Every session is with a DipPFS-qualified PFA specialising in high-income family finance.
+          </p>
+          <p style={{
+            color: '#475569',
+            fontSize: '14px',
+            lineHeight: 1.65,
+            maxWidth: '640px',
+            margin: '0 auto 48px',
+            textAlign: 'center',
+            backgroundColor: '#F8FAFC',
+            border: '1px solid #E2E8F0',
+            borderRadius: '8px',
+            padding: '14px 18px',
+          }}>
+            The 100k Parent connects you with an independent, FCA-regulated financial adviser for your call. Any regulated financial advice given during that call is provided by the adviser under their own FCA authorisation and terms of business, not by The 100k Parent. We are an introducer only and do not provide regulated advice ourselves.
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '24px' }}>
             {advisors.map((advisor) => (

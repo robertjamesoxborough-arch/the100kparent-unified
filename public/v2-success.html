@@ -19,6 +19,20 @@
 
         h1 { text-align: center; font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; }
         .subtitle { text-align: center; color: #718096; font-size: 1.0625rem; margin-bottom: 2.5rem; }
+        /* Deliberately body-text size and full contrast. This has to be read
+           before the action steps, not discovered underneath them. */
+        .key-disclaimer {
+            background: #FFFBEB;
+            border: 1px solid #FDE68A;
+            border-left: 4px solid #F59E0B;
+            border-radius: 10px;
+            padding: 1rem 1.25rem;
+            margin: 0 auto 2rem;
+            max-width: 46rem;
+            font-size: 0.9375rem;
+            line-height: 1.65;
+            color: #1E293B;
+        }
 
         .card { background: white; border-radius: 20px; padding: 2rem; box-shadow: 0 4px 24px rgba(0,0,0,0.08); margin-bottom: 1.5rem; }
 
@@ -51,6 +65,7 @@
         .tier-badge.complete { background: #093F72; color: white; }
 
         .advisor-box { background: #F0EDFF; border-radius: 14px; padding: 1.5rem; margin-top: 1rem; }
+        .advisor-introducer { font-size: 0.875rem; line-height: 1.6; color: #3730A3; background: rgba(255,255,255,0.6); border-radius: 8px; padding: 0.75rem 1rem; margin-top: 0.75rem; }
         .advisor-box h3 { color: #7B68EE; margin-bottom: 0.5rem; font-size: 1rem; }
         .advisor-box p { color: #4A5568; font-size: 0.9375rem; line-height: 1.6; }
         .advisor-btn { display: inline-block; background: #7B68EE; color: white; padding: 0.75rem 1.5rem; border-radius: 10px; text-decoration: none; font-weight: 700; margin-top: 1rem; font-size: 0.9375rem; }
@@ -227,28 +242,69 @@
     // Read URL params
     const params = new URLSearchParams(window.location.search);
     const tier = params.get('tier') || 'complete';
-    const tierLabel = tier === 'complete' ? 'Complete Guide' : 'Essential Report';
-    const tierPrice = tier === 'complete' ? '£49' : '£19';
+    // Only the Complete Guide is live. The Essential tier is unreachable, so
+    // the page must not advertise its price back to the buyer.
+    const tierLabel = 'Complete Guide';
+    const tierPrice = '£49';
 
-    // Read calculator results from localStorage
-    const stored = localStorage.getItem('100kp_results');
-    const r = stored ? JSON.parse(stored) : null;
+    // The shape the calculator writes. A blob from an older version is refused
+    // rather than part-read: the previous fallbacks silently rendered figures
+    // from a superseded formula, which is how a stale result could show a
+    // number 2.75x higher than the current calculator would produce.
+    const RESULTS_SCHEMA_VERSION = 2;
+
+    // Every figure the report renders must be a real number. Guarding at the
+    // point of read means a missing or malformed field can never reach the page
+    // as "£NaN".
+    function isFiniteNumber(v) {
+        return typeof v === 'number' && Number.isFinite(v);
+    }
+
+    function readResults() {
+        const stored = localStorage.getItem('100kp_results');
+        if (!stored) return { status: 'empty' };
+
+        let parsed;
+        try {
+            parsed = JSON.parse(stored);
+        } catch (err) {
+            return { status: 'corrupt' };
+        }
+
+        if (!parsed || typeof parsed !== 'object') return { status: 'corrupt' };
+        if (parsed.schemaVersion !== RESULTS_SCHEMA_VERSION) return { status: 'stale' };
+
+        const required = ['displayTfc', 'displaySalary', 'displayThirtyHours', 'displayTotal',
+                          'income1', 'monthlyChildcare', 'numChildren'];
+        if (required.some(k => !isFiniteNumber(parsed[k]))) return { status: 'corrupt' };
+        if (!Array.isArray(parsed.ages)) return { status: 'corrupt' };
+
+        return { status: 'ok', data: parsed };
+    }
+
+    const loaded = readResults();
+    const r = loaded.status === 'ok' ? loaded.data : null;
 
     const main = document.getElementById('mainContent');
 
     if (!r) {
-        // No results — send them back to calculator
+        const message = loaded.status === 'empty'
+            ? 'Please complete the savings calculator first so we can personalise your report.'
+            : 'We could not read your saved results, so we have not shown you a report rather than risk showing you the wrong numbers. Please run the calculator again and your report will rebuild.';
+        const heading = loaded.status === 'empty'
+            ? 'No calculator results found'
+            : 'Something went wrong reading your results';
         main.innerHTML = `
             <div class="no-results">
                 <div class="success-icon" style="background: #F59E0B;">⚠️</div>
-                <h1>No calculator results found</h1>
-                <p>Please complete the savings calculator first so we can personalise your report.</p>
+                <h1>${heading}</h1>
+                <p>${message}</p>
                 <a href="v2.html#calculator">Go to Calculator</a>
             </div>`;
     } else {
-        const potentialTfc = r.displayTfc ?? Math.round(Math.min((r.monthlyChildcare * 12) * 0.20, 2000 * r.numChildren));
-        const potentialThirtyHours = r.displayThirtyHours ?? ((r.ages || []).some(a => a >= 0 && a <= 4) ? Math.round(0.55 * (r.monthlyChildcare || 0) * 12) : 0);
-        const potentialSalary = r.displaySalary ?? Math.round(r.salary || 0);
+        const potentialTfc = r.displayTfc;
+        const potentialThirtyHours = r.displayThirtyHours;
+        const potentialSalary = r.displaySalary;
         // Fully self-employed households can't salary sacrifice — the figure comes from
         // personal pension contributions instead, so the line is labelled accordingly.
         const summaryBothSelfEmployed = r.employment === 'self-employed'
@@ -257,7 +313,7 @@
         const salaryDesc = summaryBothSelfEmployed
             ? 'Income Tax relief + personal-allowance restoration'
             : 'Income Tax + National Insurance savings';
-        const avg = r.displayTotal ?? (potentialTfc + potentialThirtyHours + potentialSalary);
+        const avg = r.displayTotal;
         const rangeMin = Math.min(potentialTfc, potentialThirtyHours, potentialSalary);
         const rangeMax = avg;
 
@@ -272,13 +328,17 @@
             <h1>Your report is ready</h1>
             <p class="subtitle">Your personalised childcare savings report based on your family details</p>
 
+            <div class="key-disclaimer">
+                <strong>Important:</strong> this report contains general information and estimates only. It is not financial, tax or legal advice, and not a personal recommendation. Figures are based on UK rules as at 6 April 2026 and the information you provided. Rules change and your circumstances may differ. Verify anything you intend to act on with a qualified adviser and gov.uk. We accept no liability for decisions made on the basis of this report, save where liability cannot lawfully be excluded.
+            </div>
+
             <div class="card">
                 <div class="card-header">
                     <div class="card-icon">📄</div>
                     <div>
                         <div class="tier-badge ${tier}">${tierLabel} — ${tierPrice}</div>
                         <div class="card-title">Your Childcare Savings Report</div>
-                        <div class="card-sub">The 100k Parent &bull; 2025/26 &bull; Personalised for your family</div>
+                        <div class="card-sub">The 100k Parent &bull; ${r.taxYear || '2026/27'} &bull; Personalised for your family</div>
                     </div>
                 </div>
 
@@ -363,7 +423,10 @@
                 ${tier === 'complete' ? `
                 <div class="advisor-box">
                     <h3>📞 30-Minute Consultation with a Qualified Financial Adviser</h3>
-                    <p>Your Complete Guide includes a private 30-minute meeting with one of our qualified financial advisers. They will review your personal tax position, confirm your eligibility for each saving strategy, and provide tailored recommendations you can act on immediately. This is a professional advisory session — not a sales call.</p>
+                    <p>Your Complete Guide includes a private 30-minute meeting with an independent financial adviser. They will review your personal tax position, confirm your eligibility for each saving strategy, and provide tailored recommendations you can act on immediately. This is a professional advisory session, not a sales call.</p>
+                    <p class="advisor-introducer">The 100k Parent connects you with an independent, FCA-regulated financial adviser for your call. Any regulated financial advice given during that call is provided by the adviser under their own FCA authorisation and terms of business, not by The 100k Parent. We are an introducer only and do not provide regulated advice ourselves.</p>
+                    <!-- TODO: Calendly re-signup pending. This URL currently returns 404.
+                         Swap for the real booking link once the account is live. See GO-LIVE-CHECKLIST.md -->
                     <a href="https://calendly.com/the100kparent" target="_blank" class="advisor-btn">Schedule Your Consultation</a>
                 </div>` : ''}
             </div>
@@ -478,13 +541,15 @@
     }, 800);
 
     function generatePDFHTML(r, tier) {
-        const pdfTfc = r.displayTfc ?? Math.round(Math.min((r.monthlyChildcare * 12) * 0.20, 2000 * r.numChildren));
-        const pdfThirtyHours = r.displayThirtyHours ?? ((r.ages || []).some(a => a >= 0 && a <= 4) ? Math.round(0.55 * (r.monthlyChildcare || 0) * 12) : 0);
-        // NOTE: `avg` (the headline/grand total) is defined below, after the pension
-        // relief figure is calculated, so every page uses the same number.
+        // Every figure below comes from the calculator's stored result. The PDF
+        // must not recompute any of them: it used to, at a flat relief rate,
+        // which is how the same card could print £12,600 of relief while its
+        // own worked example said the personal allowance alone was worth £5,000.
+        const pdfTfc = r.displayTfc;
+        const pdfThirtyHours = r.displayThirtyHours;
         const date = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-        const tierLabel = tier === 'complete' ? 'Complete Guide' : 'Essential Report';
-        const taxYear = '2025/26';
+        const tierLabel = 'Complete Guide';
+        const taxYear = r.taxYear || '2026/27';
 
         // ── INPUTS ──────────────────────────────────────────────────────
         const income1 = r.income1 || 0;
@@ -517,55 +582,65 @@
         const nextEligibleAge = ages.filter(a => a < 0).length > 0 ? 'under 9 months' : null;
 
         // ── INCOME THRESHOLDS ───────────────────────────────────────────
-        const over100k = higherIncome > 100000;
-        const isJustOver100k = higherIncome > 100000 && higherIncome <= 115000;
-        const isWellOver100k = higherIncome > 115000 && higherIncome <= 149000;
-        const isHighEarner = higherIncome > 149000;
-        const isUnder100k = higherIncome < 100000;
-        const isNear90k = higherIncome >= 85000 && higherIncome < 100000;
-        const in60TrapZone = higherIncome > 100000 && higherIncome <= 125140;
-        const partnerOver100k = income2 > 100000;
+        // Every threshold below is tested on ADJUSTED NET INCOME, not gross pay.
+        // Existing pension contributions already reduce it, so a parent on £110k
+        // sacrificing £15k is under the cliff and must be treated as eligible.
+        const aniYou = r.ani1;
+        const aniPartner = r.ani2 || 0;
+        const higherAni = Math.max(aniYou, aniPartner);
+
+        const over100k = r.over100k;
+        const isJustOver100k = higherAni > 100000 && higherAni <= 115000;
+        const isWellOver100k = higherAni > 115000 && higherAni <= 149000;
+        const isHighEarner = higherAni > 149000;
+        const isUnder100k = higherAni < 100000;
+        const isNear90k = higherAni >= 85000 && higherAni < 100000;
+        const in60TrapZone = higherAni > 100000 && higherAni <= 125140;
+        const partnerOver100k = aniPartner > 100000;
 
         // ── KEY CALCULATIONS ────────────────────────────────────────────
-        // Salary sacrifice needed — per person
-        const sacrificeNeeded = higherIncome > 100000 ? higherIncome - 99999 : 0; // higher earner (used for tax calcs)
-        const sacrificeNeededPartner = income2 > 100000 ? income2 - 99999 : 0;
-        const sacrificeYou = income1 > 100000 ? income1 - 99999 : 0;       // total pension needed (you) to reach £99,999
-        const sacrificePartnerAmt = income2 > 100000 ? income2 - 99999 : 0; // total pension needed (partner) to reach £99,999
+        // All of these are READ from the calculator's stored result, never
+        // recomputed here. The PDF previously derived its own relief figure at a
+        // flat rate, which is why it could contradict its own worked example.
+        const pensionYouAnnual = r.pension1Annual;
+        const pensionPartnerAnnual = r.pension2Annual;
 
-        // Existing pension contributions already reduce adjusted net income, so the
-        // client only needs to contribute the EXTRA on top of what they already pay.
-        const pensionYouAnnual = Math.round((r.pension1 || 0) * 12);
-        const pensionPartnerAnnual = Math.round((r.pension2 || 0) * 12);
-        const extraSacrificeYou = Math.max(0, sacrificeYou - pensionYouAnnual);
-        const extraSacrificePartner = Math.max(0, sacrificePartnerAmt - pensionPartnerAnnual);
-        // Combined extra pension top-up the household needs to get under £100k.
+        const overCliffYou = aniYou > 100000;
+        const overCliffPartner = hasPartner && aniPartner > 100000;
+
+        // The extra contribution each parent needs to clear the £100k cliff.
+        // Zero for a parent already under it: their contribution is illustrative,
+        // not required, and must not trigger the priority action card.
+        const extraSacrificeYou = overCliffYou ? r.contribYou : 0;
+        const extraSacrificePartner = overCliffPartner ? r.contribPartner : 0;
+        const sacrificeYou = extraSacrificeYou;
+        const sacrificePartnerAmt = extraSacrificePartner;
         const extraSacrificeCombined = extraSacrificeYou + extraSacrificePartner;
 
-        // Tax rate for sacrifice
-        const sacrificeTaxRate = in60TrapZone ? 0.62 : higherIncome > 50270 ? 0.42 : 0.32;
-        const taxSavedBySacrifice = Math.round(extraSacrificeCombined * sacrificeTaxRate);
-        // The salary-sacrifice / pension figure shown on the summary page and headline:
-        //  • Over £100k: the real pension top-up relief that breaks the £100k threshold.
-        //  • Under £100k: a generic estimate of redirecting ~30% of childcare spend
-        //    (capped at £5,000/yr) into pension salary sacrifice at the marginal rate.
-        const genericSalarySacrifice = Math.round(Math.min(5000, annualChildcare * 0.3) * sacrificeTaxRate);
-        // Use the canonical figure the calculator stored, so the PDF's salary line
-        // matches the on-screen summary exactly — including £0 for households that
-        // can't salary sacrifice (e.g. everyone self-employed). Fall back to a live
-        // recompute only for older saved results without the display fields.
-        const salaryPensionSaving = r.displaySalary ?? (bothSelfEmployed ? 0 : (over100k ? taxSavedBySacrifice : genericSalarySacrifice));
-        // Single consistent PDF total: childcare benefits + the salary-sacrifice/pension saving.
-        // (The 62% effective rate already includes the personal-allowance restoration,
-        // so it is NOT added again separately — see totalBenefit below.)
-        // Headline total = the single canonical figure shared with the summary page.
-        const avg = r.displayTotal ?? (pdfTfc + pdfThirtyHours + salaryPensionSaving);
+        // Blended effective rate actually achieved across the bands the
+        // contribution spans, so the "X% effective relief" label matches the money.
+        const sacrificeTaxRate = r.effectiveReliefRate;
+        const taxSavedBySacrifice = r.displaySalary;
+        const genericSalarySacrifice = r.displaySalary;
+        const salaryPensionSaving = r.displaySalary;
+        const avg = r.displayTotal;
+
+        // What clearing the cliff would unlock. Kept strictly apart from `avg`:
+        // these are conditional on the contribution being made, so they may not
+        // be presented as savings the household already has.
+        const unlockTfc = r.unlockTfc || 0;
+        const unlockThirtyHours = r.unlockThirtyHours || 0;
+        const unlockTotal = r.unlockTotal || 0;
+
+        // The higher earner's gap to £99,999, used by the narrative sections that
+        // compare the pension route against the workplace nursery route.
+        const sacrificeNeeded = higherAni > 100000 ? Math.round(higherAni - 99999) : 0;
 
         // 60% trap
         const personalAllowanceLost = in60TrapZone ? Math.min(12570, Math.round((higherIncome - 100000) / 2)) : 0;
         const extraTaxFrom60Trap = Math.round(personalAllowanceLost * 0.40);
 
-        // Child Benefit (2025/26 rates)
+        // Child Benefit (2026/27 rates)
         const cbFirstChild = 1331;
         const cbAdditionalChild = 881;
         const totalCB = cbFirstChild + (Math.max(0, numChildren - 1) * cbAdditionalChild);
@@ -583,14 +658,18 @@
         const avgNurseryCostOver2 = 11737; // England average 2025 (£225.7/wk × 52)
         const londonPremium = 1.6; // London ~60% more expensive
 
-        // Funded childcare hours — 2025/26. From September 2025 the full
-        // 30 funded hours apply to all eligible children from 9 months.
-        // (The £/year saving itself is taken from pdfThirtyHours = 0.55 × annual cost.)
+        // Funded childcare hours — 2026/27. The full 30 funded hours apply to
+        // all eligible children from 9 months.
+        // (The £/year saving is taken from the calculator's displayThirtyHours, which
+        // values the entitlement at 30 hrs x 38 weeks x ~£6/hr, capped at actual spend.)
         const fundedHoursPerWeek = 30;
 
         // Pension annual allowance check
         const annualAllowance = higherIncome > 260000 ? Math.max(10000, 60000 - Math.round((higherIncome - 260000) / 2)) : 60000;
-        const sacrificeWithinAllowance = sacrificeNeeded <= annualAllowance;
+        // The calculator has already capped the recommended contribution at the
+        // allowance and flagged any shortfall, so trust its flag rather than
+        // re-deriving a second, possibly different, answer here.
+        const sacrificeWithinAllowance = !r.allowanceExceeded;
 
         // ── PERSONA ─────────────────────────────────────────────────────
         let personaTitle, personaDesc, urgencyColor, urgencyLabel;
@@ -651,10 +730,13 @@
         // ─ STRATEGY 1: PENSION SALARY SACRIFICE (if over threshold) ─────
         if (sacrificeYou > 0 || sacrificePartnerAmt > 0) {
             const bothNeedSacrifice = sacrificeYou > 0 && sacrificePartnerAmt > 0;
-            const childcareBenefitUnlocked = pdfTfc + pdfThirtyHours;
-            // The personal-allowance restoration is already inside the 62% effective
-            // rate used by taxSavedBySacrifice, so it is not added a second time here.
-            const totalBenefit = taxSavedBySacrifice + pdfTfc + pdfThirtyHours;
+            // This card describes the position AFTER the contribution is made, so
+            // it uses the unlock figures. pdfTfc/pdfThirtyHours are correctly £0
+            // here: over the cliff, the household has no childcare support today.
+            // The personal-allowance restoration is already inside the effective
+            // relief rate, so it is not added a second time.
+            const childcareBenefitUnlocked = unlockTfc + unlockThirtyHours;
+            const totalBenefit = taxSavedBySacrifice + unlockTfc + unlockThirtyHours;
 
             // For the action step email, use "your" individual EXTRA amount
             const monthlyYou = Math.round(extraSacrificeYou / 12);
@@ -688,7 +770,7 @@
                 <div class="s-header">
                     <span class="s-icon">🎯</span>
                     <div class="s-title-block">
-                        <div class="s-title">Priority Action — Potential annual savings</div>
+                        <div class="s-title">Priority Action — what this contribution would unlock</div>
                         <div class="s-badge">Most Impactful</div>
                     </div>
                     <div class="s-amount">£${totalBenefit.toLocaleString()}<span>/yr</span></div>
@@ -706,14 +788,15 @@
                         <div style="font-size:12.5px;color:#1E293B;line-height:1.6;">Nursery fees come out of income you've already paid up to 40–60% tax on — once spent, it's gone. Redirect that money into your pension and a <strong>cost</strong> becomes <strong>wealth you still own</strong>: it grows free of Income and Capital Gains Tax, and is only taxed (often at a lower rate) when you draw on it. You're not spending the money — you're moving it from the taxman to your own future.</div>
                     </div>
 
-                    <p>This single action triggers a cascade of benefits:</p>
+                    <p><strong>Today you receive £0 of childcare support</strong>, because your adjusted net income is over £100,000. That is a cliff edge, not a taper. Making the contribution above is what turns the figures below on:</p>
                     <div class="calc-table">
                         <div class="ct-row header"><span>Component</span><span>Amount</span><span>How</span></div>
-                        <div class="ct-row"><span>Tax-Free Childcare available</span><span class="green">£${pdfTfc.toLocaleString()}</span><span>20% govt top-up, capped at £${(2000 * numChildren).toLocaleString()}/yr</span></div>
-                        <div class="ct-row"><span>${fundedHoursPerWeek} hours free childcare saving</span><span class="green">£${pdfThirtyHours.toLocaleString()}</span><span>Government-funded nursery hours${under5Count > 0 ? ` — ${under5Count} eligible child${under5Count > 1 ? 'ren' : ''}` : ''}</span></div>
-                        <div class="ct-row"><span>Tax + NI saved on pension contribution</span><span class="green">£${taxSavedBySacrifice.toLocaleString()}</span><span>${Math.round(sacrificeTaxRate * 100)}% effective relief${in60TrapZone ? ' — incl. personal allowance restored' : ''}</span></div>
-                        <div class="ct-row total"><span>Total annual benefit</span><span class="green">£${totalBenefit.toLocaleString()}</span><span>3 components</span></div>
+                        <div class="ct-row"><span>Tax-Free Childcare unlocked</span><span class="green">£${unlockTfc.toLocaleString()}</span><span>20% govt top-up, capped at £${(2000 * numChildren).toLocaleString()}/yr</span></div>
+                        <div class="ct-row"><span>${fundedHoursPerWeek} hours free childcare unlocked</span><span class="green">£${unlockThirtyHours.toLocaleString()}</span><span>Government-funded nursery hours${under5Count > 0 ? ` — ${under5Count} eligible child${under5Count > 1 ? 'ren' : ''}` : ''}</span></div>
+                        <div class="ct-row"><span>Tax + NI saved on pension contribution</span><span class="green">£${taxSavedBySacrifice.toLocaleString()}</span><span>${Math.round(sacrificeTaxRate * 100)}% effective relief across the bands your contribution spans${in60TrapZone ? ', incl. personal allowance restored' : ''}</span></div>
+                        <div class="ct-row total"><span>Total once the contribution is made</span><span class="green">£${totalBenefit.toLocaleString()}</span><span>3 components</span></div>
                     </div>
+                    <p style="margin-top:10px;font-size:12.5px;color:#475569;">The headline figure at the top of this report (£${avg.toLocaleString()}) counts only the tax relief, which is what you save from the contribution itself. The childcare figures above are shown separately because they depend on you actually making the contribution.</p>
 
                     ${bothSelfEmployed ? `<div class="alert amber">
                         <strong>How to contribute (self-employed)</strong><br>
@@ -766,11 +849,12 @@
                     </div>
 
                     <div class="alert blue" style="margin-top:14px;">
-                        <strong>📋 How one parent earning £130k annual salary was able to claim 30 hours childcare</strong><br><br>
-                        Sarah earns <strong>£130,000</strong> and was paying <strong>£15,000 a year</strong> in nursery fees out of her taxed salary — and getting nothing back from the government, because £130k locks you out of every childcare scheme. Two moves changed that:<br><br>
-                        <strong>1. Her existing 5% pension was already working.</strong> The £6,500 she sacrifices into her pension each year pulls her taxable income down: £130,000 → <strong>£123,500</strong>.<br><br>
-                        <strong>2. One deliberate top-up broke the £100k barrier.</strong> An extra <strong>£23,600</strong> into her pension dropped her adjusted net income to £99,900. That single step unlocked <strong>30 hours of free childcare</strong> and handed back her full <strong>£12,570 personal allowance</strong> — worth over <strong>£5,000 in tax</strong> on its own.<br><br>
-                        The result: a far smaller tax bill, free government childcare she previously couldn't touch, and roughly <strong>£30,100</strong> more building up in her pension every year — money that would otherwise have been lost to the 60% tax trap. On top of that she can run <strong>Tax-Free Childcare</strong> — worth up to £2,000 per child a year — toward her nursery fees, plus after-school clubs and holiday camps.
+                        <strong>📋 Worked example: a £130k earner with one child under 5</strong><br><br>
+                        <em style="display:block;background:rgba(255,255,255,0.7);border-radius:6px;padding:8px 10px;margin-bottom:12px;font-size:12px;color:#1E293B;">Illustrative example only. Not a real customer. Figures are for illustration and do not represent a guaranteed or typical outcome.</em>
+                        Take a parent earning <strong>£130,000</strong>, paying <strong>£15,000 a year</strong> in nursery fees out of taxed salary, and getting nothing back from the government, because £130,000 of adjusted net income locks you out of every childcare scheme. Two moves change that:<br><br>
+                        <strong>1. An existing 5% pension is already working.</strong> The £6,500 sacrificed each year pulls adjusted net income down: £130,000 → <strong>£123,500</strong>.<br><br>
+                        <strong>2. One deliberate top-up breaks the £100k barrier.</strong> An extra <strong>£23,501</strong> into the pension drops adjusted net income to £99,999. That single step unlocks <strong>30 hours of funded childcare</strong> and hands back the full <strong>£12,570 personal allowance</strong>, worth <strong>£5,028 in tax</strong> on its own.<br><br>
+                        Because that £23,501 comes entirely out of the £100,000 to £125,140 band, it attracts relief at an effective <strong>62%</strong>: <strong>£14,570</strong> of Income Tax and National Insurance saved, with the personal allowance restoration already counted inside that rate rather than added on top. The result is a smaller tax bill, funded childcare that was previously out of reach, and <strong>£30,001</strong> a year building up in the pension instead of being lost to the 60% trap. <strong>Tax-Free Childcare</strong>, worth up to £2,000 per child a year, can then run alongside it against nursery fees, after-school clubs and holiday camps.
                     </div>
                 </div>
             </div>`;
@@ -1113,7 +1197,7 @@
             </div>
             <div class="s-body">
                 <div class="calc-table">
-                    <div class="ct-row header"><span>Item</span><span>Amount</span><span>Rate (2025/26)</span></div>
+                    <div class="ct-row header"><span>Item</span><span>Amount</span><span>Rate (2026/27)</span></div>
                     <div class="ct-row"><span>First child Child Benefit</span><span>£${cbFirstChild.toLocaleString()}</span><span>£25.60/week</span></div>
                     ${numChildren > 1 ? `<div class="ct-row"><span>Additional ${numChildren - 1} child${numChildren > 2 ? 'ren' : ''}</span><span>£${((numChildren - 1) * cbAdditionalChild).toLocaleString()}</span><span>£16.95/week each</span></div>` : ''}
                     <div class="ct-row"><span>Total Child Benefit entitlement</span><span>£${totalCB.toLocaleString()}</span><span>Per year</span></div>
@@ -1182,7 +1266,7 @@
                     </div>
 
                     ${isDirector ? `<div class="alert blue">
-                        <strong>Director Strategy:</strong> As a company director, you may be able to pay a salary to your partner (if they provide genuine services to the business) up to the personal allowance threshold (£12,570) with no income tax and minimal NI. Consult your accountant on the employment law and IR35 implications. Additionally, consider whether shares can be structured to enable dividend payments to your partner — each with their own dividend allowance (£500 in 2025/26) and basic rate dividend tax of 8.75%.
+                        <strong>Director Strategy:</strong> As a company director, you may be able to pay a salary to your partner (if they provide genuine services to the business) up to the personal allowance threshold (£12,570) with no income tax and minimal NI. Consult your accountant on the employment law and IR35 implications. Additionally, consider whether shares can be structured to enable dividend payments to your partner — each with their own dividend allowance (£500 in 2026/27) and basic rate dividend tax of 8.75%.
                     </div>` : ''}
 
                     <div class="action-steps">
@@ -1242,7 +1326,7 @@
         // when there is an over-£100k earner whose income can be brought down via
         // salary sacrifice (otherwise there is no change to illustrate).
         if (income1 > 100000 || income2 > 100000) {
-            // ── UK take-home pay (2025/26): salary sacrifice reduces taxable pay ──
+            // ── UK take-home pay (2026/27): salary sacrifice reduces taxable pay ──
             const paFor = (taxable) => taxable > 100000 ? Math.max(0, 12570 - Math.floor((taxable - 100000) / 2)) : 12570;
             const incomeTaxFor = (taxable) => {
                 const pa = paFor(taxable);

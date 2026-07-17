@@ -121,7 +121,7 @@ export default function HomePage() {
                 You earn £60,000 – £149,999
               </h3>
               <p style={{ color: '#64748B', lineHeight: 1.65, marginBottom: '24px', fontSize: '15px' }}>
-                Child Benefit clawbacks, the Personal Allowance taper, salary sacrifice gaps — our plain-English guides explain what&apos;s happening and what your options are. From £19.
+                Child Benefit clawbacks, the Personal Allowance taper, salary sacrifice gaps — our plain-English guides explain what&apos;s happening and what your options are.
               </p>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {[
@@ -302,7 +302,7 @@ export default function HomePage() {
           Ready to stop the leak?
         </h2>
         <p style={{ color: '#64748B', fontSize: '17px', marginBottom: '36px' }}>
-          PFA sessions from £60 · Tax guides from £19 · For parents earning £60k+
+          PFA sessions from £60 · For parents earning £60k+
         </p>
         <Link
           href="/start_new"

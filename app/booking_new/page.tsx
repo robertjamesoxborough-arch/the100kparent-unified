@@ -8,8 +8,15 @@ import LegalDisclaimer from '../components/LegalDisclaimer'
 const PRIMARY = '#10B981'
 const SECONDARY = '#0F172A'
 
-// Replace with your actual Calendly link
+// TODO: Calendly re-signup pending. This URL currently returns 404, so the
+// embed below renders an empty frame. Swap for the real booking link once the
+// account is live. See GO-LIVE-CHECKLIST.md
 const CALENDLY_URL = 'https://calendly.com/the100kparent/consultation'
+
+// Tax-Free Childcare, matching public/v2-calculator.js. Kept identical on
+// purpose: three different TFC formulas previously coexisted in this repo.
+const TFC_RATE = 0.2
+const TFC_CAP_PER_CHILD = 2000
 
 type QualifyingRoute = 'over-150k' | '100k-plus-pension' | null
 
@@ -54,10 +61,23 @@ function calculateSavings(data: QuestionnaireData): SavingsResult {
     breakdown.push({ label: 'Pension recycling strategy', savingLow: 2000, savingHigh: 6000 })
   }
 
-  // Tax-Free Childcare — £2k/yr top-up per child on up to £10k spend
+  // Tax-Free Childcare uses the same rule as the main calculator: a 20% top-up
+  // capped at £2,000 per child per year. This questionnaire does not ask how
+  // many children there are, so it assumes one, which is the conservative
+  // reading. The previous flat £4,000 cap silently assumed two.
+  //
+  // Both qualifying routes here are, by definition, households over the
+  // £100,000 adjusted net income cliff, so Tax-Free Childcare is worth £0 to
+  // them today. It only becomes available once a pension contribution brings
+  // adjusted net income under £100,000, so it is labelled as conditional
+  // rather than counted as a saving they already have.
   if (annualChildcare > 0) {
-    const tfc = Math.min(Math.round(annualChildcare * 0.2), 4000)
-    breakdown.push({ label: 'Tax-Free Childcare top-up', savingLow: Math.round(tfc * 0.6), savingHigh: tfc })
+    const tfc = Math.min(Math.round(annualChildcare * TFC_RATE), TFC_CAP_PER_CHILD)
+    breakdown.push({
+      label: 'Tax-Free Childcare top-up (only once your income is below £100,000)',
+      savingLow: Math.round(tfc * 0.6),
+      savingHigh: tfc,
+    })
   }
 
   // Salary sacrifice NI saving (employer + employee)
@@ -123,7 +143,7 @@ export default function BookingPage() {
         justifyContent: 'space-between',
         height: '64px',
       }}>
-        <Link href="/" style={{ color: '#FFFFFF', fontWeight: 800, fontSize: '18px', letterSpacing: '0.05em', textDecoration: 'none' }}>
+        <Link href="/home_new" style={{ color: '#FFFFFF', fontWeight: 800, fontSize: '18px', letterSpacing: '0.05em', textDecoration: 'none' }}>
           THE 100K PARENT
         </Link>
         <span style={{ color: PRIMARY, fontWeight: 600, fontSize: '14px' }}>Final step: pick your time</span>

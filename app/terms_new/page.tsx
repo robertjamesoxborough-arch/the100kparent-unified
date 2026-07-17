@@ -29,7 +29,7 @@ export default function TermsPage() {
   return (
     <div style={{ fontFamily: 'system-ui, sans-serif', color: SECONDARY, minHeight: '100vh' }}>
       <header style={{ backgroundColor: SECONDARY, padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '64px' }}>
-        <Link href="/" style={{ color: '#FFFFFF', fontWeight: 800, fontSize: '18px', letterSpacing: '0.05em', textDecoration: 'none' }}>
+        <Link href="/home_new" style={{ color: '#FFFFFF', fontWeight: 800, fontSize: '18px', letterSpacing: '0.05em', textDecoration: 'none' }}>
           THE 100K PARENT
         </Link>
         <Link href="/privacy-policy_new" style={{ color: '#64748B', fontSize: '13px', textDecoration: 'none' }}>Privacy Policy</Link>
@@ -51,13 +51,16 @@ export default function TermsPage() {
           marginBottom: '44px',
         }}>
           <p style={{ fontWeight: 700, color: SECONDARY, fontSize: '16px', margin: '0 0 10px' }}>
-            The most important thing to understand
+            Important information
           </p>
           <p style={{ color: '#475569', lineHeight: 1.75, margin: '0 0 10px', fontSize: '15px' }}>
-            The 100k Parent is an educational information website. The information, guides, and sessions provided through this site are for general educational purposes only. <strong>Nothing on this site is financial advice.</strong> We are not authorised or regulated by the Financial Conduct Authority (FCA).
+            The 100k Parent provides general information and estimates only. It is not financial, tax, legal or investment advice, and it is not a personal recommendation. We are not regulated by the Financial Conduct Authority to provide regulated advice.
+          </p>
+          <p style={{ color: '#475569', lineHeight: 1.75, margin: '0 0 10px', fontSize: '15px' }}>
+            All figures are estimates based on the information you enter and on our understanding of UK tax and childcare rules as at 6 April 2026. These rules change, and the figures shown may not reflect your individual circumstances. Adjusted net income, pension treatment, childcare eligibility and tax relief depend on facts we do not capture in full. We do not guarantee that any figure is accurate, complete or current.
           </p>
           <p style={{ color: '#475569', lineHeight: 1.75, margin: 0, fontSize: '15px' }}>
-            The information on our site shouldn&apos;t be taken as any advice, representation, or arrangement by us. You&apos;re responsible for making — or refraining from making — any financial or investment decisions, and we&apos;re not liable for anything that happens as a result of you relying on the information here. Because the effect of any information can vary based on your individual circumstances, you should always carry out your own research and seek independent regulated advice before making financial decisions.
+            You should not act, or refrain from acting, on the basis of anything shown here without first checking your own position with a qualified accountant, tax adviser or financial adviser, and with gov.uk. To the fullest extent permitted by law, we accept no liability for any loss arising from reliance on the information or figures provided. Nothing in these terms limits our liability for fraud or for anything that cannot lawfully be excluded.
           </p>
         </div>
 

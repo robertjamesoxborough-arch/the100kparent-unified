@@ -1012,6 +1012,10 @@
                     <p class="results-subtitle">per year</p>
                 </div>
 
+                <div class="results-disclaimer">
+                    These are estimates for general guidance only, not financial or tax advice. Figures are based on UK rules as at 6 April 2026 and the details you entered, and may not reflect your circumstances. Check with a qualified adviser and <a href="https://www.gov.uk/childcare-calculator" target="_blank" rel="noopener">gov.uk</a> before acting.
+                </div>
+
                 <div class="savings-range" id="savingsRange" style="display: none;">
                     <p class="range-label">Potential saving range:</p>
                     <div class="range-display">
@@ -1094,7 +1098,7 @@
                     <li>✓ Personalised 12-week action roadmap</li>
                     <li>✓ 30-day money-back guarantee</li>
                 </ul>
-                <a href="#" class="price-cta primary">Get Complete</a>
+                <a href="#calculator" class="price-cta primary">Get Complete</a>
             </div>
         </div>
 
@@ -1135,7 +1139,7 @@
                         <li><strong>Income splitting</strong> — where a couple's incomes straddle a tax threshold, restructuring how income is allocated may reduce your combined tax bill; the benefit depends on your circumstances.</li>
                         <li><strong>30 hours free childcare</strong> — worth up to around £6,000 per year per eligible child aged 9 months to 4 years, depending on your provider's rates, if you're eligible.</li>
                     </ul>
-                    <p style="margin-top:0.75rem;">Your result is calculated instantly and shown as a personalised breakdown. <strong>All figures are estimates</strong> based on the details you enter and current (2025/26) government rules — the amounts above are maximums that apply only if you meet the eligibility conditions, and your actual saving will depend on your own circumstances. Check the latest rules at <a href="https://www.gov.uk/childcare-calculator" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">GOV.UK</a>.</p>
+                    <p style="margin-top:0.75rem;">Your result is calculated instantly and shown as a personalised breakdown. <strong>All figures are estimates</strong> based on the details you enter and UK rules as at 6 April 2026 — the amounts above are maximums that apply only if you meet the eligibility conditions, and your actual saving will depend on your own circumstances. Check the latest rules at <a href="https://www.gov.uk/childcare-calculator" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">GOV.UK</a>.</p>
                 </div>
             </div>
             <div class="faq-item">
@@ -1204,8 +1208,8 @@
             <h2 id="testStep1Title">You selected Essential</h2>
             <p>In production, Stripe checkout would appear here. Click below to simulate a successful payment and preview the post-payment experience.</p>
             <div class="test-plan-box">
-                <strong id="testPlanName">Essential</strong>
-                <span id="testPlanPrice">£19</span>
+                <strong id="testPlanName">Complete</strong>
+                <span id="testPlanPrice">£49</span>
             </div>
             <div class="test-stripe-skip-note">Stripe payment screen skipped in test mode</div>
             <button class="test-btn-primary" id="testSimulatePayment">Simulate Payment →</button>
@@ -1329,12 +1333,6 @@
             btnHref: '#pricing'
         },
         {
-            id: 'testimonials',
-            text: 'Personalised to your family',
-            btnText: 'Get Report',
-            btnHref: '#pricing'
-        },
-        {
             id: 'pricing',
             text: 'From £49 — 30-day guarantee',
             btnText: 'Get Started',
@@ -1378,9 +1376,9 @@
     function openTestFlow(plan) {
         testPlan = plan;
         const isComplete = plan === 'complete';
-        document.getElementById('testStep1Title').textContent = 'You selected ' + (isComplete ? 'Complete' : 'Essential');
-        document.getElementById('testPlanName').textContent = isComplete ? 'Complete' : 'Essential';
-        document.getElementById('testPlanPrice').textContent = isComplete ? '£49' : '£19';
+        document.getElementById('testStep1Title').textContent = 'You selected Complete';
+        document.getElementById('testPlanName').textContent = 'Complete';
+        document.getElementById('testPlanPrice').textContent = '£49';
 
         // Pre-fill report numbers from calculator if available
         const savingEl = document.getElementById('totalSaving');

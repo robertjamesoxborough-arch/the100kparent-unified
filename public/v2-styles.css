@@ -540,6 +540,51 @@ body {
     text-align: center;
 }
 
+/* Sits directly under the headline number, at body-text size and full
+   contrast. The estimate qualifier has to be read alongside the figure it
+   qualifies, not discovered in a footer after the user has acted on it. */
+.results-disclaimer {
+    background: #FFFBEB;
+    border: 1px solid #FDE68A;
+    border-left: 4px solid var(--warning, #F59E0B);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    color: #1E293B;
+}
+
+.results-disclaimer a {
+    color: inherit;
+    text-decoration: underline;
+}
+
+/* Explains a £0 childcare figure for households over the £100k cliff. Without
+   it the zero reads as a broken calculator rather than the cliff edge. */
+.cliff-note {
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-left: 4px solid #093F72;
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2rem;
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    color: #1E293B;
+}
+
+.cliff-note p { margin: 0 0 0.75rem; }
+.cliff-note p:last-child { margin-bottom: 0; }
+
+.paywall-purchase-note {
+    font-size: 0.8125rem;
+    line-height: 1.55;
+    color: #475569;
+    margin-top: 0.75rem;
+    text-align: center;
+}
+
 .warning-box {
     background: var(--warning-light);
     border: 2px solid var(--warning);

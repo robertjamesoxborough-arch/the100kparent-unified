@@ -96,7 +96,7 @@ function GuidesContent() {
     <div style={{ fontFamily: 'system-ui, sans-serif', color: SECONDARY, minHeight: '100vh' }}>
       {/* Header */}
       <header style={{ backgroundColor: SECONDARY, padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '64px' }}>
-        <Link href="/" style={{ color: '#FFFFFF', fontWeight: 800, fontSize: '18px', letterSpacing: '0.05em', textDecoration: 'none' }}>
+        <Link href="/home_new" style={{ color: '#FFFFFF', fontWeight: 800, fontSize: '18px', letterSpacing: '0.05em', textDecoration: 'none' }}>
           THE 100K PARENT
         </Link>
         <Link href="/start_new" style={{ color: '#64748B', fontSize: '13px', textDecoration: 'none' }}>← Find your path</Link>

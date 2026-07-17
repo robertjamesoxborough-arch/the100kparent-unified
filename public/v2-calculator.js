@@ -1,7 +1,92 @@
 /**
  * V2 Calculator - With Paywall Gate + PDF Report Generator
- * Updated May 2026
+ * Updated July 2026. All figures based on UK rules as at 6 April 2026 (2026/27).
  */
+
+const TAX_YEAR_LABEL = '2026/27';
+
+/**
+ * Marginal relief on a pension contribution, taken from the top of income
+ * downwards. England/Wales/NI income tax plus employee National Insurance.
+ * The 0.60 in the £100,000-£125,140 band is the EFFECTIVE rate once the
+ * personal allowance taper is included (£1 of allowance lost per £2 of
+ * adjusted net income over £100,000, taxed at 40%, so 40% + 20% = 60%).
+ * Bands must stay ordered highest-first: pensionReliefOn walks them in order.
+ */
+const RELIEF_BANDS = [
+    { from: 125140, to: Infinity, tax: 0.45, ni: 0.02 },
+    { from: 100000, to: 125140,   tax: 0.60, ni: 0.02 },
+    { from: 50270,  to: 100000,   tax: 0.40, ni: 0.02 },
+    { from: 12570,  to: 50270,    tax: 0.20, ni: 0.08 },
+    { from: 0,      to: 12570,    tax: 0.00, ni: 0.00 }
+];
+
+// Tax-Free Childcare and the funded hours are lost ENTIRELY once either
+// parent's adjusted net income exceeds this. A cliff edge, not a taper,
+// and tested per parent rather than per household.
+const ANI_CLIFF = 100000;
+
+const TFC_RATE = 0.20;
+const TFC_CAP_PER_CHILD = 2000;
+
+// Funded hours are valued as an entitlement, not as a share of the user's bill:
+// 30 hours x 38 weeks x ~£6/hour. The £6 is a documented working assumption for
+// the average English funded-hours rate and is the figure to revisit each year.
+const FUNDED_HOURS_PER_WEEK = 30;
+const FUNDED_WEEKS_PER_YEAR = 38;
+const FUNDED_HOURLY_RATE = 6;
+const FUNDED_VALUE_PER_CHILD = FUNDED_HOURS_PER_WEEK * FUNDED_WEEKS_PER_YEAR * FUNDED_HOURLY_RATE;
+
+// 2026/27 minimum income test: each working parent must earn at least the
+// equivalent of 16 hrs/week at the national minimum wage.
+const MIN_INCOME_TEST = 10158;
+
+const AA_STANDARD = 60000;
+const AA_TAPER_START = 260000;
+const AA_MINIMUM = 10000;
+
+const HIGHER_RATE_THRESHOLD = 50270;
+
+// Bumped whenever the shape of the stored results changes. The success page
+// refuses to render a blob from an older version rather than guessing at
+// missing fields, which is what previously allowed stale figures to surface.
+const RESULTS_SCHEMA_VERSION = 2;
+
+/**
+ * Pension annual allowance, tapered above £260,000 of income.
+ */
+function annualAllowanceFor(income) {
+    if (income <= AA_TAPER_START) return AA_STANDARD;
+    return Math.max(AA_MINIMUM, AA_STANDARD - Math.floor((income - AA_TAPER_START) / 2));
+}
+
+/**
+ * Income Tax (and, for employees, NI) saved by contributing `contribution`
+ * into a pension out of `grossIncome`, calculated band by band rather than at
+ * a single flat rate. A contribution spanning several bands earns a different
+ * rate on each slice, so a flat rate is wrong in both directions.
+ * The self-employed cannot salary sacrifice, so they save Income Tax and the
+ * personal allowance restoration but not National Insurance.
+ */
+function pensionReliefOn(grossIncome, contribution, savesNI) {
+    let remaining = Math.max(0, contribution);
+    let top = Math.max(0, grossIncome);
+    let relief = 0;
+
+    for (const band of RELIEF_BANDS) {
+        if (remaining <= 0) break;
+        const sliceTop = Math.min(top, band.to);
+        const sliceBottom = Math.max(band.from, top - remaining);
+        const slice = sliceTop - sliceBottom;
+        if (slice > 0) {
+            relief += slice * (band.tax + (savesNI ? band.ni : 0));
+            remaining -= slice;
+            top -= slice;
+        }
+    }
+
+    return Math.round(relief);
+}
 
 class V2Calculator {
     constructor() {
@@ -135,157 +220,143 @@ class V2Calculator {
             return;
         }
 
-        const over100k = income1 > 100000 || income2 > 100000;
-        const has30Hours = this.check30HoursEligibility(income1, income2, ages);
-
         const annualChildcare = monthlyChildcare * 12;
-        const tfc = this.calculateTFC(annualChildcare, numChildren, over100k);
-        const salary = this.calculateSalarySacrifice(income1, income2, monthlyChildcare, employment, employment2);
-        const splitting = this.calculateIncomeSplitting(income1, income2);
-        const thirtyHours = has30Hours ? this.calculate30HoursValue(ages) : 0;
+        const pension1Annual = Math.round(pension1 * 12);
+        const pension2Annual = Math.round(pension2 * 12);
+        const hasPartner = income2 > 0;
 
-        const minSaving = tfc + salary;
-        const maxSaving = tfc + salary + splitting + thirtyHours;
+        // Adjusted net income drives every eligibility test, so existing pension
+        // contributions are taken off before anything is decided. A parent on
+        // £110k already sacrificing £15k is under the cliff and qualifies.
+        const ani1 = Math.max(0, income1 - pension1Annual);
+        const ani2 = hasPartner ? Math.max(0, income2 - pension2Annual) : 0;
 
-        // Pension tax + NI relief from contributing enough to bring adjusted net
-        // income below £100,000. This is the SAME figure the PDF reports as
-        // "Tax + NI saved on pension contribution" (taxSavedBySacrifice) — replicated
-        // here so the results panel, paywall, success page and PDF all show one number.
-        // (Zero for households already under £100k, where there is no £100k pension play.)
-        const higherIncome = Math.max(income1, income2);
-        const extraSacrificeYou = Math.max(0, (income1 > 100000 ? income1 - 99999 : 0) - Math.round(pension1 * 12));
-        const extraSacrificePartner = Math.max(0, (income2 > 100000 ? income2 - 99999 : 0) - Math.round(pension2 * 12));
-        const extraSacrificeCombined = extraSacrificeYou + extraSacrificePartner;
-        // Employees save Income Tax + NI via pension salary sacrifice.
-        const pensionReliefRate = (higherIncome > 100000 && higherIncome <= 125140) ? 0.62 : higherIncome > 50270 ? 0.42 : 0.32;
-        // The self-employed can't salary sacrifice, but a personal pension contribution
-        // still cuts Income Tax and restores the personal allowance in the £100k–£125,140
-        // band — it just doesn't save National Insurance, so a lower relief rate applies.
-        const selfEmployedReliefRate = (higherIncome > 100000 && higherIncome <= 125140) ? 0.60 : higherIncome > 50270 ? 0.40 : 0.20;
-        const pensionRelief = Math.round(extraSacrificeCombined * pensionReliefRate);
-        const selfEmployedPensionRelief = Math.round(extraSacrificeCombined * selfEmployedReliefRate);
+        const over100k = ani1 > ANI_CLIFF || (hasPartner && ani2 > ANI_CLIFF);
 
-        // Canonical headline saving — single source of truth shared by the results
-        // panel, the success page and the PDF. Tax-Free Childcare and the 30 funded hours
-        // are shown as ACHIEVABLE savings: households already under £100k get them now, and
-        // over-£100k families unlock them once the pension action below brings adjusted net
-        // income under the line. The eligibility badges/warnings (driven by has30Hours and
-        // over100k) make that "you qualify now" vs "available once under £100k" distinction.
-        const bothSelfEmployed = employment === 'self-employed' && employment2 === 'self-employed';
+        const eligibleAgeChildren = ages.filter(a => a >= 0 && a <= 4).length;
+        const meetsWorkTest = !hasPartner
+            ? income1 >= MIN_INCOME_TEST
+            : (income1 >= MIN_INCOME_TEST && income2 >= MIN_INCOME_TEST);
 
-        // Working-parent income test (single parent: the one parent; couple: both).
-        const minIncome = 10158; // 2025/26 min-income test — see check30HoursEligibility().
-        const eligibleAgeChild = ages.some(a => a >= 0 && a <= 4);
-        const meetsWorkTest = income2 === 0 ? income1 >= minIncome : (income1 >= minIncome && income2 >= minIncome);
+        const eligibleNow = meetsWorkTest && eligibleAgeChildren > 0 && !over100k;
 
-        // 30 funded hours: an eligible-age child plus the working-parent test. Applied to
-        // the bill BEFORE Tax-Free Childcare, since funded hours reduce what you actually pay.
-        const displayThirtyHours = (eligibleAgeChild && meetsWorkTest) ? Math.round(0.55 * annualChildcare) : 0;
+        // Funded hours can never be worth more than the bill they offset.
+        const fundedValueFor = (count) => Math.min(count * FUNDED_VALUE_PER_CHILD, annualChildcare);
+        // Tax-Free Childcare tops up what is still paid AFTER funded hours.
+        const tfcValueAfter = (fundedValue) =>
+            Math.min(Math.max(0, annualChildcare - fundedValue) * TFC_RATE, TFC_CAP_PER_CHILD * numChildren);
 
-        // Tax-Free Childcare: 20% top-up (capped £2,000/child) on the childcare you still
-        // pay AFTER funded hours, for any household that meets the working-parent test.
-        const childcareAfterFundedHours = Math.max(0, annualChildcare - displayThirtyHours);
-        const displayTfc = meetsWorkTest ? Math.round(Math.min(childcareAfterFundedHours * 0.20, 2000 * numChildren)) : 0;
+        // Funded hours need an eligible-age child; TFC does not (up to age 11).
+        // Both need the work test AND both parents under the £100k cliff.
+        const displayThirtyHours = (meetsWorkTest && !over100k && eligibleAgeChildren > 0)
+            ? Math.round(fundedValueFor(eligibleAgeChildren))
+            : 0;
+        const displayTfc = (meetsWorkTest && !over100k)
+            ? Math.round(tfcValueAfter(displayThirtyHours))
+            : 0;
 
-        // Pension route to break the £100k threshold: salary sacrifice for employees
-        // (Income Tax + NI), or personal pension contributions for the self-employed
-        // (Income Tax + personal-allowance restoration only, no NI). Under £100k, only
-        // employees get the generic salary-sacrifice estimate (≈30% of childcare, capped £5,000).
-        const genericSalarySacrifice = Math.round(Math.min(5000, annualChildcare * 0.3) * pensionReliefRate);
-        const displaySalary = over100k
-            ? (bothSelfEmployed ? selfEmployedPensionRelief : pensionRelief)
-            : (bothSelfEmployed ? 0 : genericSalarySacrifice);
+        // One pension model either side of £100k. Previously the two sides used
+        // entirely different formulas, which made a £1 pay rise collapse the
+        // figure from £1,210 to £1. The recommended contribution is whichever is
+        // larger: enough to clear the cliff, or the illustrative amount.
+        const genericAmount = Math.min(5000, annualChildcare * 0.3);
+        const primaryIsYou = income1 >= income2;
+
+        const neededYou = ani1 > ANI_CLIFF ? ani1 - (ANI_CLIFF - 1) : 0;
+        const neededPartner = (hasPartner && ani2 > ANI_CLIFF) ? ani2 - (ANI_CLIFF - 1) : 0;
+
+        const rawContribYou = Math.max(neededYou, primaryIsYou ? genericAmount : 0);
+        const rawContribPartner = hasPartner ? Math.max(neededPartner, primaryIsYou ? 0 : genericAmount) : 0;
+
+        // Existing contributions already use up part of the annual allowance.
+        const allowanceYou = Math.max(0, annualAllowanceFor(income1) - pension1Annual);
+        const allowancePartner = hasPartner ? Math.max(0, annualAllowanceFor(income2) - pension2Annual) : 0;
+
+        const contribYou = Math.round(Math.min(rawContribYou, allowanceYou));
+        const contribPartner = Math.round(Math.min(rawContribPartner, allowancePartner));
+
+        // True when the contribution needed to clear the cliff is not legally
+        // available. The figure is then capped and the shortfall flagged rather
+        // than silently recommending an unlawful contribution.
+        const allowanceExceeded = (rawContribYou - allowanceYou > 0.5) || (rawContribPartner - allowancePartner > 0.5);
+
+        const reliefYou = pensionReliefOn(ani1, contribYou, employment !== 'self-employed');
+        const reliefPartner = hasPartner ? pensionReliefOn(ani2, contribPartner, employment2 !== 'self-employed') : 0;
+        const displaySalary = reliefYou + reliefPartner;
+
+        const totalContribution = contribYou + contribPartner;
+        const effectiveReliefRate = totalContribution > 0 ? displaySalary / totalContribution : 0;
 
         const displayTotal = displayTfc + displaySalary + displayThirtyHours;
 
-        // Store results for PDF
+        // What the recommended contribution WOULD unlock for a household
+        // currently over the cliff. Kept strictly separate from displayTotal:
+        // these are conditional on the contribution actually being made.
+        const aniAfterYou = Math.max(0, ani1 - contribYou);
+        const aniAfterPartner = hasPartner ? Math.max(0, ani2 - contribPartner) : 0;
+        const wouldBeUnder = aniAfterYou <= ANI_CLIFF && (!hasPartner || aniAfterPartner <= ANI_CLIFF);
+
+        const unlockThirtyHours = (over100k && wouldBeUnder && meetsWorkTest && eligibleAgeChildren > 0)
+            ? Math.round(fundedValueFor(eligibleAgeChildren))
+            : 0;
+        const unlockTfc = (over100k && wouldBeUnder && meetsWorkTest)
+            ? Math.round(tfcValueAfter(unlockThirtyHours))
+            : 0;
+        const unlockTotal = unlockTfc + unlockThirtyHours;
+
         this.lastResults = {
+            schemaVersion: RESULTS_SCHEMA_VERSION,
+            taxYear: TAX_YEAR_LABEL,
             income1, income2, numChildren, monthlyChildcare, employment, employment2,
-            ages, over100k, has30Hours, tfc, salary, splitting,
-            thirtyHours, minSaving, maxSaving, pension1, pension2,
-            displayTfc, displaySalary, displayThirtyHours, displayTotal
+            ages, pension1, pension2, pension1Annual, pension2Annual,
+            ani1, ani2, hasPartner,
+            over100k, eligibleNow, meetsWorkTest, eligibleAgeChildren,
+            has30Hours: eligibleNow,
+            displayTfc, displaySalary, displayThirtyHours, displayTotal,
+            contribYou, contribPartner, totalContribution, effectiveReliefRate,
+            allowanceExceeded, allowanceYou, allowancePartner,
+            unlockTfc, unlockThirtyHours, unlockTotal, wouldBeUnder,
+            splitting: this.calculateIncomeSplitting(income1, income2)
         };
 
-        // Save to localStorage so success page can read them
         localStorage.setItem('100kp_results', JSON.stringify(this.lastResults));
 
-        this.displayResults(minSaving, maxSaving, over100k, has30Hours);
+        this.displayResults(over100k, eligibleNow);
     }
 
-    check30HoursEligibility(income1, income2, ages) {
-        // 2025/26 min-income test: each working parent must earn at least the equivalent
-        // of 16 hrs/wk at minimum wage — NMW £12.21 × 16 × 52 ≈ £10,158/year.
-        const minIncome = 10158;
-
-        // Funded hours only apply to children aged 9 months–4 years.
-        if (!ages.some(a => a >= 0 && a <= 4)) return false;
-
-        // Single-parent household (no second income): the one working parent must
-        // earn at least the minimum and no more than £100k. Single parents ARE
-        // eligible — the previous logic wrongly excluded them.
-        if (income2 === 0) {
-            return income1 >= minIncome && income1 <= 100000;
-        }
-
-        // Couple: both parents must earn at least the minimum, neither over £100k.
-        return income1 >= minIncome && income2 >= minIncome
-            && income1 <= 100000 && income2 <= 100000;
-    }
-
-    calculateTFC(annualChildcare, numChildren, over100k) {
-        if (over100k) return 0;
-        const maxPerChild = 2000;
-        const eligible = Math.min(annualChildcare, 10000 * numChildren);
-        return Math.min(eligible * 0.20, maxPerChild * numChildren);
-    }
-
-    calculateSalarySacrifice(income1, income2, monthlyChildcare, employment, employment2) {
-        // Both self-employed = no salary sacrifice at all
-        if (employment === 'self-employed' && employment2 === 'self-employed') return 0;
-
-        // Use the higher income earner who CAN use salary sacrifice
-        let eligibleIncome = 0;
-        if (employment !== 'self-employed') eligibleIncome = Math.max(eligibleIncome, income1);
-        if (employment2 !== 'self-employed') eligibleIncome = Math.max(eligibleIncome, income2);
-
-        const taxRelief = eligibleIncome > 50270 ? 0.42 : 0.32;
-        const sacrificeAmount = Math.min(5000, monthlyChildcare * 12 * 0.3);
-        return sacrificeAmount * taxRelief;
-    }
-
+    /**
+     * Illustrative only. The tax difference from moving income across the
+     * higher-rate threshold, derived from the incomes entered rather than the
+     * flat £3,000 this previously returned. Realising it needs a lawful
+     * mechanism (dividends, or genuine salary for work actually done) which
+     * this calculator does not assess, so it is labelled as an illustration
+     * wherever it is shown and is not part of the headline total.
+     */
     calculateIncomeSplitting(income1, income2) {
-        if (income2 === 0) return 0;
-        const threshold = 50270;
-        if ((income1 > threshold && income2 < threshold) || (income2 > threshold && income1 < threshold)) {
-            return 3000;
-        }
-        return 0;
+        if (income2 <= 0) return 0;
+        const higher = Math.max(income1, income2);
+        const lower = Math.min(income1, income2);
+        if (higher <= HIGHER_RATE_THRESHOLD || lower >= HIGHER_RATE_THRESHOLD) return 0;
+        const movable = Math.min(higher - HIGHER_RATE_THRESHOLD, HIGHER_RATE_THRESHOLD - lower);
+        return Math.round(movable * 0.20);
     }
 
-    calculate30HoursValue(ages) {
-        const eligible = ages.filter(a => a >= 0 && a <= 4).length;
-        return eligible * 15 * 1140;
-    }
-
-    displayResults(minSaving, maxSaving, over100k, has30Hours) {
+    displayResults(over100k, eligibleNow) {
         this.resultsPanel.style.opacity = '1';
 
         const estimatedSaving = this.lastResults.displayTotal;
         document.getElementById('totalSaving').textContent = `£${estimatedSaving.toLocaleString()}`;
 
-        // Hide saving range — using simplified formula
         const rangeEl = document.getElementById('savingsRange');
         rangeEl.style.display = 'none';
 
-        // £100k warning
         document.getElementById('over100kWarning').style.display = over100k ? 'block' : 'none';
 
-        // 30 hours eligibility info
-        document.getElementById('eligibilityWarning').style.display = (!has30Hours && !over100k) ? 'block' : 'none';
+        document.getElementById('eligibilityWarning').style.display = (!eligibleNow && !over100k) ? 'block' : 'none';
 
-        // Show paywall gate
-        const { tfc, salary, splitting, thirtyHours } = this.lastResults;
-        this.showPaywall(minSaving, maxSaving, tfc, salary, splitting, thirtyHours);
+        this.renderCliffNote();
+
+        this.showPaywall();
 
         // Scroll the results panel to the top of the viewport so the "Your Estimated
         // Saving" wording is immediately visible, allowing for the sticky nav height.
@@ -295,25 +366,47 @@ class V2Calculator {
         window.scrollTo({ top, behavior: 'smooth' });
     }
 
-    showPaywall(minSaving, maxSaving, tfc, salary, splitting, thirtyHours) {
+    /**
+     * Explains WHY a household over £100k is seeing £0 of childcare support,
+     * and what the pension contribution would unlock. Without this the £0 looks
+     * like a broken calculator rather than the cliff edge doing its job.
+     */
+    renderCliffNote() {
+        const existing = document.getElementById('cliffNote');
+        if (existing) existing.remove();
+
+        const r = this.lastResults;
+        if (!r.over100k) return;
+
+        const note = document.createElement('div');
+        note.id = 'cliffNote';
+        note.className = 'cliff-note';
+
+        const unlockLine = (r.unlockTotal > 0)
+            ? `Contributing <strong>£${r.totalContribution.toLocaleString()}</strong> a year into your pension would bring your adjusted net income under £100,000 and unlock a further <strong>£${r.unlockTotal.toLocaleString()}</strong> a year of childcare support. That is not included in the figure above, because it depends on you making the contribution.`
+            : (r.allowanceExceeded
+                ? `Bringing your adjusted net income under £100,000 would need more than your pension annual allowance of £${r.allowanceYou.toLocaleString()} allows this year. Speak to an adviser about carry forward from previous years.`
+                : `Your income is too far above £100,000 for a pension contribution alone to bring you under the threshold this year.`);
+
+        note.innerHTML = `
+            <p><strong>Why your childcare support shows as £0:</strong> Tax-Free Childcare and the ${FUNDED_HOURS_PER_WEEK} funded hours are lost entirely once either parent's adjusted net income goes over £100,000. It is a cliff edge, not a gradual taper, and it is tested for each parent separately rather than on your household total.</p>
+            <p>${unlockLine}</p>
+        `;
+        this.resultsPanel.appendChild(note);
+    }
+
+    showPaywall() {
         const existing = document.getElementById('paywallGate');
         if (existing) existing.remove();
 
-        // Only the Complete report is live for now, so every visitor is routed to
-        // it regardless of income. When the Essential report is relaunched, restore
-        // the income-based routing below:
-        //   const highestIncome = Math.max(income1, income2);
-        //   const isComplete = highestIncome >= 90000;
-        const income1 = parseFloat(this.inputs.income1.value) || 0;
-        const income2 = this.secondIncomeYes.checked ? (parseFloat(this.inputs.income2.value) || 0) : 0;
-        const isComplete = true;
-
-        const tier = isComplete ? 'complete' : 'essential';
-        const price = isComplete ? '£49' : '£19';
-        const planName = isComplete ? 'Complete Guide' : 'Essential Report';
-        const reasonText = isComplete
-            ? 'Based on your income level, we recommend the Complete Guide which includes a 30-minute call with a financial advisor to maximise your saving.'
-            : 'Based on your income level, we recommend the Essential Report with your full personalised savings breakdown and PDF.';
+        // Only the Complete report is live, so every visitor is routed to it.
+        // The copy below must NOT claim this is a recommendation based on the
+        // user's income: no income-based routing runs, and saying otherwise
+        // would be a personalisation claim the code cannot support.
+        const tier = 'complete';
+        const price = '£49';
+        const planName = 'Complete Guide';
+        const reasonText = 'Our Complete Guide covers your situation, with your full personalised savings breakdown, the steps to claim it, and a 30-minute call with an independent financial adviser.';
 
         const gate = document.createElement('div');
         gate.id = 'paywallGate';
@@ -322,10 +415,10 @@ class V2Calculator {
                 <div class="paywall-content">
                     <div class="paywall-lock">🔒</div>
                     <h3 class="paywall-title">Your full breakdown is ready</h3>
-                    <p class="paywall-subtitle">You could save up to <strong>£${this.lastResults.displayTotal.toLocaleString()}</strong> a year.</p>
+                    <p class="paywall-subtitle">Your estimated saving is <strong>£${this.lastResults.displayTotal.toLocaleString()}</strong> a year.</p>
 
                     <div class="paywall-recommended">
-                        <div class="paywall-recommended-badge">Recommended for you</div>
+                        <div class="paywall-recommended-badge">Your report</div>
                         <div class="paywall-recommended-plan">
                             <div class="paywall-recommended-top">
                                 <div>
@@ -338,12 +431,12 @@ class V2Calculator {
                                 <p>✓ Full personalised savings breakdown</p>
                                 <p>✓ Step-by-step action plan</p>
                                 <p>✓ Instant PDF download</p>
-                                ${isComplete ? '<p>✓ 30-minute financial advisor call</p>' : ''}
-                                ${isComplete ? '<p>✓ Advanced income strategies</p>' : ''}
+                                <p>✓ 30-minute financial adviser call</p>
+                                <p>✓ Advanced income strategies</p>
                             </div>
                             <a href="v2-success.html?tier=${tier}" class="paywall-plan-btn primary">Get My Report — ${price}</a>
+                            <p class="paywall-purchase-note">You are buying a general guidance report, not regulated financial advice or a personal recommendation.</p>
                         </div>
-                        ${isComplete ? '' : `<p class="paywall-upgrade">Need more? <a href="v2-success.html?tier=complete">Complete Guide with advisor call — £49</a></p>`}
                     </div>
 
                     <p class="paywall-guarantee">🛡️ 30-day money-back guarantee &nbsp;·&nbsp; No subscription</p>
@@ -357,6 +450,8 @@ class V2Calculator {
         // Move the £100k warning (red box) to sit below the breakdown gate.
         const over100kWarning = document.getElementById('over100kWarning');
         if (over100kWarning) this.resultsPanel.appendChild(over100kWarning);
+        const cliffNote = document.getElementById('cliffNote');
+        if (cliffNote) this.resultsPanel.appendChild(cliffNote);
     }
 }
 

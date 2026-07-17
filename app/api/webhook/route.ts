@@ -70,8 +70,8 @@ export async function POST(req: NextRequest) {
             eventName: 'purchase_complete',
             eventProperties: {
               firstName,
-              dashboardUrl: 'https://the100kparent-unified.vercel.app/v2-success.html',
-              pdfUrl: 'https://the100kparent-unified.vercel.app/v2-success.html',
+              dashboardUrl: 'https://the100kparent.com/v2-success.html',
+              pdfUrl: 'https://the100kparent.com/v2-success.html',
               purchaseDate: new Date().toLocaleDateString('en-GB'),
             },
           }),
