@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "test": "node --test --test-reporter=spec tests/",
+    "prebuild": "npm test",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"

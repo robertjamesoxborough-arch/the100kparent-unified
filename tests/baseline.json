@@ -1,0 +1,215 @@
+{
+  "_README": [
+    "THE SINGLE SOURCE OF TRUTH for the calculator's known-good numbers.",
+    "Every number here was verified by hand on 17 July 2026 against the real",
+    "shipped public/v2-calculator.js.",
+    "",
+    "Both the automated tests AND the numbers quoted in WAKING-UP-CHECKLIST.md",
+    "are checked against this one file, so the two can never drift apart.",
+    "",
+    "DO NOT edit a number here to make a failing test pass. A failing test means",
+    "the calculator changed. Change a number here ONLY when you have deliberately",
+    "changed the maths and confirmed the new answer is correct. If you do change",
+    "one, run 'npm test' — it will tell you if WAKING-UP-CHECKLIST.md still",
+    "disagrees, and you must update that too."
+  ],
+
+  "assumptions": {
+    "_note": "Constants the calculator is built on. Re-check these each tax year.",
+    "taxYear": "2026/27",
+    "fundedHourlyRate": 6.42,
+    "fundedHoursPerWeek": 30,
+    "fundedWeeksPerYear": 38,
+    "fundedValuePerEligibleChild": 7319,
+    "aniCliff": 100000,
+    "tfcCapPerChild": 2000
+  },
+
+  "wakingUpCases": [
+    {
+      "id": "a",
+      "label": "Single parent, £60,000, one 2-year-old, £800/month childcare",
+      "why": "The ordinary case. A family comfortably under the £100k cliff who qualifies for everything.",
+      "inputs": { "income1": "60000", "numChildren": "1", "childcare": "800", "ages": [2] },
+      "expect": {
+        "displayTotal": 8985,
+        "displayTfc": 456,
+        "displaySalary": 1210,
+        "displayThirtyHours": 7319,
+        "over100k": false,
+        "eligibleNow": true
+      }
+    },
+    {
+      "id": "b",
+      "label": "Single parent, £130,000, one 3-year-old, £1,250/month childcare",
+      "why": "Over the £100k cliff. The whole saving is pension tax relief; childcare support is correctly zero.",
+      "inputs": { "income1": "130000", "numChildren": "1", "childcare": "1250", "ages": [3] },
+      "expect": {
+        "displayTotal": 17871,
+        "displayTfc": 0,
+        "displaySalary": 17871,
+        "displayThirtyHours": 0,
+        "over100k": true,
+        "eligibleNow": false,
+        "totalContribution": 30001,
+        "unlockTotal": 8855
+      }
+    },
+    {
+      "id": "c1",
+      "label": "Single parent, exactly £100,000, one 2-year-old, £800/month childcare",
+      "why": "The last penny on the good side of the cliff. Still qualifies for everything.",
+      "inputs": { "income1": "100000", "numChildren": "1", "childcare": "800", "ages": [2] },
+      "expect": {
+        "displayTotal": 8985,
+        "displaySalary": 1210,
+        "over100k": false,
+        "eligibleNow": true
+      }
+    },
+    {
+      "id": "c2",
+      "label": "Single parent, exactly £100,001, one 2-year-old, £800/month childcare",
+      "why": "One pound over. Loses all childcare support. The pension relief must NOT collapse.",
+      "inputs": { "income1": "100001", "numChildren": "1", "childcare": "800", "ages": [2] },
+      "expect": {
+        "displayTotal": 1210,
+        "displayTfc": 0,
+        "displaySalary": 1210,
+        "displayThirtyHours": 0,
+        "over100k": true,
+        "eligibleNow": false
+      }
+    }
+  ],
+
+  "extraCases": [
+    {
+      "id": "huge-childcare",
+      "label": "£60,000 income but £100,000/month childcare",
+      "why": "Nonsense input. Funded hours must stay capped at the entitlement and never balloon.",
+      "inputs": { "income1": "60000", "numChildren": "1", "childcare": "100000", "ages": [2] },
+      "expect": {
+        "displayTotal": 11419,
+        "displayTfc": 2000,
+        "displaySalary": 2100,
+        "displayThirtyHours": 7319
+      }
+    },
+    {
+      "id": "huge-income",
+      "label": "£10,000,000 income, one 2-year-old, £800/month childcare",
+      "why": "Nonsense input. The recommended pension contribution must be capped at the annual allowance.",
+      "inputs": { "income1": "10000000", "numChildren": "1", "childcare": "800", "ages": [2] },
+      "expect": {
+        "displaySalary": 4700,
+        "totalContribution": 10000,
+        "allowanceExceeded": true,
+        "over100k": true
+      }
+    },
+    {
+      "id": "existing-pension-drops-under-cliff",
+      "label": "£110,000 income with £1,000/month existing pension, one 2-year-old",
+      "why": "Eligibility runs on income AFTER pension. £110k minus £12k is £98k, so this family DOES qualify.",
+      "inputs": { "income1": "110000", "numChildren": "1", "childcare": "1000", "ages": [2], "pension1": "1000" },
+      "expect": {
+        "ani1": 98000,
+        "over100k": false,
+        "eligibleNow": true,
+        "displayThirtyHours": 7319
+      }
+    },
+    {
+      "id": "couple-both-over-cliff",
+      "label": "Couple, £120,000 and £110,000, one 1-year-old, £1,200/month",
+      "why": "The cliff is tested per parent, not on household total. Both are over, so both lose support.",
+      "inputs": {
+        "income1": "120000", "income2": "110000", "hasPartner": true,
+        "numChildren": "1", "childcare": "1200", "ages": [1]
+      },
+      "expect": {
+        "displayTfc": 0,
+        "displayThirtyHours": 0,
+        "over100k": true
+      }
+    },
+    {
+      "id": "school-age-only",
+      "label": "£40,000, one 7-year-old, £400/month childcare",
+      "why": "Too old for funded hours, but Tax-Free Childcare still applies up to age 11.",
+      "inputs": { "income1": "40000", "numChildren": "1", "childcare": "400", "ages": [7] },
+      "expect": {
+        "displayThirtyHours": 0,
+        "displayTfc": 960,
+        "eligibleNow": false
+      }
+    },
+    {
+      "id": "age-boundary-four",
+      "label": "£60,000, child aged exactly 4",
+      "why": "Age 4 is the last year that qualifies for funded hours.",
+      "inputs": { "income1": "60000", "numChildren": "1", "childcare": "800", "ages": [4] },
+      "expect": { "displayThirtyHours": 7319, "eligibleNow": true }
+    },
+    {
+      "id": "age-boundary-five",
+      "label": "£60,000, child aged exactly 5",
+      "why": "Age 5 is one year too old. Funded hours stop; Tax-Free Childcare continues.",
+      "inputs": { "income1": "60000", "numChildren": "1", "childcare": "800", "ages": [5] },
+      "expect": { "displayThirtyHours": 0, "displayTfc": 1920, "eligibleNow": false }
+    }
+  ],
+
+  "rejectedInputs": [
+    {
+      "id": "zero-income",
+      "label": "Income of zero",
+      "inputs": { "income1": "0", "numChildren": "1", "childcare": "800", "ages": [2] }
+    },
+    {
+      "id": "empty-income",
+      "label": "Income left blank",
+      "inputs": { "income1": "", "numChildren": "1", "childcare": "800", "ages": [2] }
+    },
+    {
+      "id": "negative-income",
+      "label": "Negative income",
+      "inputs": { "income1": "-50000", "numChildren": "1", "childcare": "800", "ages": [2] }
+    },
+    {
+      "id": "no-children",
+      "label": "No children",
+      "inputs": { "income1": "60000", "numChildren": "0", "childcare": "800", "ages": [] }
+    },
+    {
+      "id": "zero-childcare",
+      "label": "No childcare cost",
+      "inputs": { "income1": "60000", "numChildren": "1", "childcare": "0", "ages": [2] }
+    },
+    {
+      "id": "age-not-chosen",
+      "label": "Child's age left unselected",
+      "inputs": { "income1": "60000", "numChildren": "1", "childcare": "800", "ages": [null] }
+    },
+    {
+      "id": "partner-ticked-but-blank",
+      "label": "Partner ticked but their income left blank",
+      "inputs": {
+        "income1": "60000", "income2": "", "hasPartner": true,
+        "numChildren": "1", "childcare": "800", "ages": [2]
+      }
+    },
+    {
+      "id": "negative-pension",
+      "label": "Negative pension contribution",
+      "inputs": { "income1": "60000", "numChildren": "1", "childcare": "800", "ages": [2], "pension1": "-500" }
+    },
+    {
+      "id": "pension-exceeds-income",
+      "label": "Pension contribution larger than income",
+      "inputs": { "income1": "30000", "numChildren": "1", "childcare": "800", "ages": [2], "pension1": "5000" }
+    }
+  ]
+}

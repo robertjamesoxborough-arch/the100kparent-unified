@@ -45,7 +45,15 @@ Paste this in:
 
 ## Step 5 — Are the calculator's numbers still what they were?
 
-Paste this in:
+**This is now automated.** Just run:
+
+```
+npm test
+```
+
+You want `pass 100` and `fail 0` at the bottom. That checks all the numbers below, and a lot more besides, in about a second. See `tests/README.md` for what it covers and what to do if it goes red (short version: a red test means a recent change broke a number — do not delete the test).
+
+If you would rather see the figures for yourself, paste this in:
 
 > **Run the real `public/v2-calculator.js` against these three cases and show me the headline number for each: (a) single parent, £60,000, one 2-year-old, £800/month childcare; (b) single parent, £130,000, one 3-year-old, £1,250/month; (c) exactly £100,000 and exactly £100,001, same other inputs. Do not re-implement the calculator — execute the real shipped file.**
 
@@ -113,14 +121,14 @@ Never end a session with work sitting only on this laptop.
 | 2 | What changed while away | You recognise every commit |
 | 3 | **Does it build?** | **`next build` passes** |
 | 4 | Pages load | No 500s; `/` serves v2 |
-| 5 | Calculator numbers | Match, or changed on purpose |
+| 5 | **Calculator numbers** | **`npm test` shows pass 100, fail 0** |
 | 6 | External links | Calendly resolved (was 404) |
 | 7 | **Can it take money?** | **Real Stripe checkout (was none)** |
 | 8 | Nothing hollow | No dead buttons |
 | 9 | Audit re-verified | You know what is now stale |
 | 10 | Committed and pushed | Local matches origin/main |
 
-**If you only do two:** does it still build (Step 3), and can it take money yet (Step 7).
+**If you only do two:** does it still build (Step 3), and can it take money yet (Step 7). Step 3 now runs the calculator tests for you automatically, so a broken number stops the build before it can reach anyone.
 
 ---
 
