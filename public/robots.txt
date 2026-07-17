@@ -1,17 +1,14 @@
-# The _new advisor funnel is deployed but unfinished and is not linked from the
-# live site. It is disallowed here until the team decides whether to finish it
-# or retire it. Each _new page also sends noindex via its layout.tsx, which is
-# what actually removes it from an index; this file only asks crawlers not to
-# fetch it in the first place.
+# The _new advisor funnel was archived on 17 July 2026 and its pages no longer
+# exist, so those URLs now return 404.
+#
+# The Disallow rules that used to sit here for /home_new, /start_new,
+# /questionnaire_new, /booking_new, /advisor-booking_new, /guides_new,
+# /terms_new and /privacy-policy_new have been REMOVED ON PURPOSE. Disallow
+# stops a crawler fetching a URL at all, which would stop it ever seeing the
+# 404, so anything already indexed could linger. Letting crawlers fetch and
+# receive the 404 is what actually gets them dropped from the index.
+
 User-agent: *
-Disallow: /home_new
-Disallow: /start_new
-Disallow: /questionnaire_new
-Disallow: /booking_new
-Disallow: /advisor-booking_new
-Disallow: /guides_new
-Disallow: /terms_new
-Disallow: /privacy-policy_new
 
 # The purchased report renders from the buyer's own browser storage and has no
 # meaning to a crawler.

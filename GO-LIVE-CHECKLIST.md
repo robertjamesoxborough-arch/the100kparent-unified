@@ -27,25 +27,25 @@ Last reviewed: 17 July 2026 (Phase 4). See `phase-4-report.md` for what was fixe
 
 - [ ] **Swap in the real Calendly link once re-signup is complete** (replace the current 404s). Two places, both marked `TODO: Calendly re-signup pending`:
   - [ ] `public/v2-success.html` — the "Schedule Your Consultation" button in the paid report
-  - [ ] `app/booking_new/page.tsx` — `CALENDLY_URL`, rendered in an iframe
+  - [ ] `archive/new-funnel/booking_new/page.tsx` — `CALENDLY_URL`, rendered in an iframe (archived 17 July 2026; only relevant if the funnel is revived)
 - [ ] **Confirm the introducer arrangement with the FCA-regulated adviser (Lasitha Wijeratna) is properly documented**, and that referral-fee terms comply with FCA rules
 - [ ] **Confirm the adviser can actually meet demand** before the £49 product is sold on the strength of the call
 
 ## Legal
 
 - [ ] **Solicitor with FCA awareness reviews the T&Cs, disclaimers and adviser-call framing.** Phase 4 added the master disclaimer, the introducer framing, and prominent disclaimers on the result screen and at the top of the report. None of it has had legal review.
-- [ ] **Confirm the £6/hour funded-hours assumption** in `public/v2-calculator.js` (`FUNDED_HOURLY_RATE`) against the published rate for the year, and re-check every tax constant at the start of each tax year: `RELIEF_BANDS`, `ANI_CLIFF`, `TFC_CAP_PER_CHILD`, `MIN_INCOME_TEST`, `AA_STANDARD`.
+- [ ] **Confirm the £6.42/hour funded-hours rate** in `public/v2-calculator.js` (`FUNDED_HOURLY_RATE`, the 2026/27 national average for 3-4 year olds) against the published rate for the year, and re-check every tax constant at the start of each tax year: `RELIEF_BANDS`, `ANI_CLIFF`, `TFC_CAP_PER_CHILD`, `MIN_INCOME_TEST`, `AA_STANDARD`.
 - [ ] **Confirm the "Illustrative example" worked case** in the report is acceptable as written now that it is no longer attributed to a named person.
 
 ## Products and pricing
 
-- [ ] **Decide finish-or-kill on the `_new` funnel.** It is now `noindex` and disallowed in `robots.txt`, but it is still deployed and still reachable by direct URL. It has four dead "Get Guide" buttons, a 404 booking embed, and a questionnaire whose data is never transmitted despite the page promising a PFA has reviewed it.
-- [ ] **Verify no page references a price that cannot be bought.** Phase 4 cleared the £19 references from the live site and `home_new`. Still outstanding, and tied to the finish-or-kill decision above:
-  - [ ] `app/start_new/page.tsx` — "From £19" for the guides route
-  - [ ] `app/guides_new/page.tsx` — £19 / £24 / £29 / £49 guides with no purchase path and no guide files in the repo
+- [ ] **Decide finish-or-kill on the `_new` funnel.** **Archived 17 July 2026** — moved to `archive/new-funnel/`, so its URLs now 404 and it is no longer reachable. Nothing was deleted. The decision is still open, and the four things that would have to be fixed to revive it are listed in `archive/new-funnel/ARCHIVE-README.md`: the 404 booking embed, the questionnaire that transmits nothing, the four dead "Get Guide" buttons, and the hardcoded savings ranges.
+- [ ] **Verify no page references a price that cannot be bought.** Phase 4 cleared the £19 references from the live site and `home_new`. The remaining ones are now archived rather than live, so they cannot mislead a customer today, but they must be fixed before the funnel is ever revived:
+  - [ ] `archive/new-funnel/start_new/page.tsx` — "From £19" for the guides route
+  - [ ] `archive/new-funnel/guides_new/page.tsx` — £19 / £24 / £29 / £49 guides with no purchase path and no guide files in the repo
   - [ ] `public/v2.html` — the commented-out Essential card still contains £19 (harmless while commented, must be correct if uncommented)
 - [ ] **Decide whether the Essential (£19) tier returns.** If it does, restore the income-based routing in `public/v2-calculator.js` (see the comment above `isComplete`) and only then may the paywall claim a recommendation based on income.
-- [ ] **Send the questionnaire somewhere** if `_new` is kept. It currently writes to `localStorage` and nothing else.
+- [ ] **Send the questionnaire somewhere** if `_new` is revived. It writes to `localStorage` and nothing else.
 
 ## Before flipping the switch
 

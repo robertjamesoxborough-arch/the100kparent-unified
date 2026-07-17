@@ -21,6 +21,16 @@
         .subtitle { text-align: center; color: #718096; font-size: 1.0625rem; margin-bottom: 2.5rem; }
         /* Deliberately body-text size and full contrast. This has to be read
            before the action steps, not discovered underneath them. */
+        /* The funded-hours figure is a national average, so the caveat travels
+           with the number everywhere it is shown. */
+        .funded-hours-note {
+            font-size: 0.8125rem;
+            line-height: 1.55;
+            color: #475569;
+            margin-top: 6px;
+            max-width: 34rem;
+        }
+
         .key-disclaimer {
             background: #FFFBEB;
             border: 1px solid #FDE68A;
@@ -305,6 +315,9 @@
         const potentialTfc = r.displayTfc;
         const potentialThirtyHours = r.displayThirtyHours;
         const potentialSalary = r.displaySalary;
+        // Comes from the calculator so the rate quoted here can never drift from
+        // the rate the figure was actually calculated with.
+        const fundedHoursNote = r.fundedHoursNote || '';
         // Fully self-employed households can't salary sacrifice — the figure comes from
         // personal pension contributions instead, so the line is labelled accordingly.
         const summaryBothSelfEmployed = r.employment === 'self-employed'
@@ -362,6 +375,7 @@
                     <div>
                         <div class="saving-label">30 Hours Free Childcare</div>
                         <div class="saving-desc">Government-funded nursery hours</div>
+                        ${potentialThirtyHours > 0 ? `<div class="funded-hours-note">${fundedHoursNote}</div>` : ''}
                     </div>
                     <div class="saving-amount">£${potentialThirtyHours.toLocaleString()}</div>
                 </div>
@@ -547,6 +561,9 @@
         // own worked example said the personal allowance alone was worth £5,000.
         const pdfTfc = r.displayTfc;
         const pdfThirtyHours = r.displayThirtyHours;
+        // Read from the stored result, not restated here, so the rate quoted
+        // always matches the rate the figure was calculated with.
+        const fundedHoursNote = r.fundedHoursNote || '';
         const date = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
         const tierLabel = 'Complete Guide';
         const taxYear = r.taxYear || '2026/27';
@@ -793,6 +810,7 @@
                         <div class="ct-row header"><span>Component</span><span>Amount</span><span>How</span></div>
                         <div class="ct-row"><span>Tax-Free Childcare unlocked</span><span class="green">£${unlockTfc.toLocaleString()}</span><span>20% govt top-up, capped at £${(2000 * numChildren).toLocaleString()}/yr</span></div>
                         <div class="ct-row"><span>${fundedHoursPerWeek} hours free childcare unlocked</span><span class="green">£${unlockThirtyHours.toLocaleString()}</span><span>Government-funded nursery hours${under5Count > 0 ? ` — ${under5Count} eligible child${under5Count > 1 ? 'ren' : ''}` : ''}</span></div>
+                        ${unlockThirtyHours > 0 ? `<div class="ct-note">${fundedHoursNote}</div>` : ''}
                         <div class="ct-row"><span>Tax + NI saved on pension contribution</span><span class="green">£${taxSavedBySacrifice.toLocaleString()}</span><span>${Math.round(sacrificeTaxRate * 100)}% effective relief across the bands your contribution spans${in60TrapZone ? ', incl. personal allowance restored' : ''}</span></div>
                         <div class="ct-row total"><span>Total once the contribution is made</span><span class="green">£${totalBenefit.toLocaleString()}</span><span>3 components</span></div>
                     </div>
@@ -960,7 +978,7 @@
                         <div class="ct-row total"><span>Monthly saving</span><span class="green">£${Math.round(pdfThirtyHours / 12).toLocaleString()}</span><span>≈ £${pdfThirtyHours.toLocaleString()}/year</span></div>
                     </div>
                     <p style="margin-top:10px;font-size:13px;color:#475569;"><strong>Note:</strong> Many providers charge a top-up for meals and consumables (typically £3–8/day), so your net saving may be slightly lower. Some offer a 'stretched offer' spreading hours across 52 weeks instead of 38 — better for full-time working families.</p>
-                    <p style="margin-top:8px;font-size:12px;color:#64748B;">*Indicative saving based on average of a range of nursery providers</p>
+                    <p class="funded-hours-note" style="margin-top:8px;">*${fundedHoursNote}</p>
                     ${eligible30hrs ? `
                     <div class="alert green" style="margin-top:10px;">
                         <strong>✅ Myth-bust: quarterly income checks will not strip your place mid-year</strong><br>
@@ -1729,6 +1747,8 @@ em { color:#637082; font-style:italic; }
 
 /* ── MISC ────────────────────────────────────────────────────────── */
 .ifs-box { background:#FFFBEB; border:1px solid #FDE68A; border-radius:8px; padding:13px 16px; margin:12px 0; font-size:12.5px; color:#78350F; }
+.funded-hours-note { font-size:11.5px; line-height:1.55; color:#475569; margin-top:6px; }
+.ct-note { font-size:11.5px; line-height:1.55; color:#475569; padding:8px 10px 2px; }
 .disclaimer { background:#F8FAFC; border-left:3px solid #CBD5E0; padding:12px 16px; border-radius:0 8px 8px 0; margin-top:22px; font-size:11px; color:#94A3B8; line-height:1.65; }
 .rfooter { text-align:center; padding:22px 50px; background:#0F2D52; }
 .rfooter-logo { font-size:15px; font-weight:800; color:#fff; margin-bottom:5px; }

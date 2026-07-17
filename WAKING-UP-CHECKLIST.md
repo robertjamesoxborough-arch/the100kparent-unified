@@ -49,9 +49,11 @@ Paste this in:
 
 > **Run the real `public/v2-calculator.js` against these three cases and show me the headline number for each: (a) single parent, £60,000, one 2-year-old, £800/month childcare; (b) single parent, £130,000, one 3-year-old, £1,250/month; (c) exactly £100,000 and exactly £100,001, same other inputs. Do not re-implement the calculator — execute the real shipped file.**
 
-**As of 17 July 2026 these gave:** (a) **£7,354** — (b) **£22,200** — (c) **£7,354** at £100,000 and **£6,145** at £100,001.
+**As of 17 July 2026, after the Phase 4 maths fixes, these gave:** (a) **£8,985** · (b) **£17,871** · (c) **£8,985** at £100,000 and **£1,210** at £100,001.
 
-If any number has moved and nobody meant to change it, something has broken. **Note: (b) and (c) were both flagged as wrong in the audit** — if they have changed because someone fixed them, that is good news. Ask which it is.
+If any number has moved and nobody meant to change it, something has broken.
+
+Two things worth knowing when you read those numbers. In (b), the £130k parent correctly gets **£0** of Tax-Free Childcare and **£0** of funded hours, because over £100,000 of adjusted net income you lose both entirely. The whole £17,871 is pension tax relief. And in (c), the drop from £8,985 to £1,210 for **£1** of extra income is **real**, not a bug: that is the actual £100,000 cliff edge in UK rules. The calculator explains it on screen rather than hiding it.
 
 ---
 
@@ -59,9 +61,9 @@ If any number has moved and nobody meant to change it, something has broken. **N
 
 Paste this in:
 
-> **Check every external link in the site — especially the Calendly booking links in `v2-success.html` and `booking_new/page.tsx` — and tell me which return 404 or have moved.**
+> **Check every external link in the site — especially the Calendly booking link in `v2-success.html` — and tell me which return 404 or have moved.**
 
-**As of 17 July 2026 both Calendly links were 404.** External links rot without warning and nothing in the code will tell you. This is the check most worth repeating.
+**As of 17 July 2026 the Calendly link was still 404**, pending the account re-signup. External links rot without warning and nothing in the code will tell you. This is the check most worth repeating.
 
 ---
 

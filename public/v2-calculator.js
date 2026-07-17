@@ -30,12 +30,16 @@ const TFC_RATE = 0.20;
 const TFC_CAP_PER_CHILD = 2000;
 
 // Funded hours are valued as an entitlement, not as a share of the user's bill:
-// 30 hours x 38 weeks x ~£6/hour. The £6 is a documented working assumption for
-// the average English funded-hours rate and is the figure to revisit each year.
+// 30 hours x 38 weeks x £6.42/hour. £6.42 is the 2026/27 national average funding
+// rate for 3-4 year olds and is the figure to revisit each tax year. It is a
+// national average, so it will not match any individual provider: rates vary by
+// local authority, and many providers levy top-up fees above the funded rate.
+// FUNDED_HOURS_NOTE states that wherever the resulting figure is shown.
 const FUNDED_HOURS_PER_WEEK = 30;
 const FUNDED_WEEKS_PER_YEAR = 38;
-const FUNDED_HOURLY_RATE = 6;
+const FUNDED_HOURLY_RATE = 6.42;
 const FUNDED_VALUE_PER_CHILD = FUNDED_HOURS_PER_WEEK * FUNDED_WEEKS_PER_YEAR * FUNDED_HOURLY_RATE;
+const FUNDED_HOURS_NOTE = 'Based on the national average funded rate of £6.42/hour for 2026/27. Your actual saving depends on your provider and local authority, and many providers charge top-up fees above this rate.';
 
 // 2026/27 minimum income test: each working parent must earn at least the
 // equivalent of 16 hrs/week at the national minimum wage.
@@ -316,6 +320,8 @@ class V2Calculator {
             contribYou, contribPartner, totalContribution, effectiveReliefRate,
             allowanceExceeded, allowanceYou, allowancePartner,
             unlockTfc, unlockThirtyHours, unlockTotal, wouldBeUnder,
+            fundedHourlyRate: FUNDED_HOURLY_RATE,
+            fundedHoursNote: FUNDED_HOURS_NOTE,
             splitting: this.calculateIncomeSplitting(income1, income2)
         };
 
@@ -391,6 +397,7 @@ class V2Calculator {
         note.innerHTML = `
             <p><strong>Why your childcare support shows as £0:</strong> Tax-Free Childcare and the ${FUNDED_HOURS_PER_WEEK} funded hours are lost entirely once either parent's adjusted net income goes over £100,000. It is a cliff edge, not a gradual taper, and it is tested for each parent separately rather than on your household total.</p>
             <p>${unlockLine}</p>
+            ${r.unlockThirtyHours > 0 ? `<p class="funded-hours-note">${FUNDED_HOURS_NOTE}</p>` : ''}
         `;
         this.resultsPanel.appendChild(note);
     }
