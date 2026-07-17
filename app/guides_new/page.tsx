@@ -104,7 +104,7 @@ function GuidesContent() {
 
       {/* Disclaimer banner */}
       <div style={{ backgroundColor: '#FFFBEB', borderBottom: '1px solid #FDE68A', padding: '10px 24px', textAlign: 'center', fontSize: '12px', color: '#92400E', lineHeight: 1.55 }}>
-        <strong>Important:</strong> These guides contain general educational information only — not regulated financial advice. Figures and examples are illustrative. Always seek independent advice from an FCA-authorised adviser before making financial decisions.{' '}
+        <strong>Important:</strong> These guides contain general educational information only — not regulated financial advice. Figures and examples are illustrative. Always seek regulated advice from an FCA-authorised adviser before making financial decisions.{' '}
         <Link href="/terms_new" style={{ color: '#92400E', fontWeight: 600 }}>Terms</Link>
         {' · '}
         <Link href="/privacy-policy_new" style={{ color: '#92400E', fontWeight: 600 }}>Privacy Policy</Link>

@@ -21,7 +21,7 @@ export default function SiteFooter() {
           color: '#64748B',
           fontSize: '12px',
         }}>
-          <strong style={{ color: '#94A3B8' }}>Important:</strong> The 100k Parent provides educational information and general guidance only. Nothing on this website constitutes regulated financial advice, and we are not authorised or regulated by the Financial Conduct Authority (FCA). Any figures shown are illustrative estimates based on general tax rules and the information you provide — they are not guarantees, projections, or personalised recommendations. Tax rules can change and their effect depends on individual circumstances. Before making any financial decisions, you should seek independent regulated advice from an FCA-authorised adviser. Your statutory rights are not affected.
+          <strong style={{ color: '#94A3B8' }}>Important:</strong> The 100k Parent provides educational information and general guidance only. Nothing on this website constitutes regulated financial advice, and we are not authorised or regulated by the Financial Conduct Authority (FCA). Any figures shown are illustrative estimates based on general tax rules and the information you provide — they are not guarantees, projections, or personalised recommendations. Tax rules can change and their effect depends on individual circumstances. Before making any financial decisions, you should seek regulated advice from an FCA-authorised adviser. Your statutory rights are not affected.
         </div>
 
         <div style={{

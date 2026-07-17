@@ -34,7 +34,7 @@ export default function LegalDisclaimer({ variant = 'inline' }: LegalDisclaimerP
       lineHeight: 1.65,
     }}>
       <strong style={{ color: '#475569' }}>Illustrative estimates only.</strong>{' '}
-      Figures are based on the information you provided and general HMRC rules at the time of calculation. They are not a guarantee, projection, or regulated financial advice. Actual outcomes depend on your full circumstances and tax rules in force at the relevant time. Always seek independent regulated advice from an FCA-authorised adviser before making financial decisions.{' '}
+      Figures are based on the information you provided and general HMRC rules at the time of calculation. They are not a guarantee, projection, or regulated financial advice. Actual outcomes depend on your full circumstances and tax rules in force at the relevant time. Always seek regulated advice from an FCA-authorised adviser before making financial decisions.{' '}
       <a href="/terms_new" style={{ color: '#10B981', textDecoration: 'none', fontWeight: 600 }}>Terms</a>
       {' · '}
       <a href="/privacy-policy_new" style={{ color: '#10B981', textDecoration: 'none', fontWeight: 600 }}>Privacy Policy</a>

@@ -406,7 +406,7 @@ class V2Calculator {
         const tier = 'complete';
         const price = '£49';
         const planName = 'Complete Guide';
-        const reasonText = 'Our Complete Guide covers your situation, with your full personalised savings breakdown, the steps to claim it, and a 30-minute call with an independent financial adviser.';
+        const reasonText = 'Our Complete Guide covers your situation, with your full personalised savings breakdown, the steps to claim it, and a 30-minute call with an FCA-regulated financial adviser.';
 
         const gate = document.createElement('div');
         gate.id = 'paywallGate';

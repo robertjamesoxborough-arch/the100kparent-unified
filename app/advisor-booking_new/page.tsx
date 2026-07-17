@@ -205,7 +205,7 @@ export default function AdvisorBookingPage() {
             borderRadius: '8px',
             padding: '14px 18px',
           }}>
-            The 100k Parent connects you with an independent, FCA-regulated financial adviser for your call. Any regulated financial advice given during that call is provided by the adviser under their own FCA authorisation and terms of business, not by The 100k Parent. We are an introducer only and do not provide regulated advice ourselves.
+            The 100k Parent connects you with an FCA-regulated financial adviser for your call. Any regulated financial advice given during that call is provided by the adviser under their own FCA authorisation and terms of business, not by The 100k Parent. We are an introducer only and do not provide regulated advice ourselves.
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '24px' }}>
             {advisors.map((advisor) => (
