@@ -852,6 +852,7 @@
             <div class="problem-card"><span class="problem-icon">⏰</span><p><strong>You</strong> know there are schemes and benefits out there, but between work and the kids, who has time to wade through HMRC guidance?</p></div>
             <div class="problem-card"><span class="problem-icon">😕</span><p>Everything you read online is written for average earners. Earning over £100k puts you in different territory — and the rules are different.</p></div>
             <div class="problem-card"><span class="problem-icon">🤯</span><p><strong>You're</strong> earning good money, but after childcare, tax and the cost of living, it doesn't feel that way. Something doesn't add up.</p></div>
+            <a href="#calculator" class="problem-card problem-card-cta"><p><strong>See what you can save</strong> →</p></a>
         </div>
     </div>
 </section>
@@ -1531,7 +1532,7 @@
 
     // Hand-drawn red circle animation cycling through problem cards
     (function () {
-        const cards = document.querySelectorAll('.problem-card');
+        const cards = document.querySelectorAll('.problem-card:not(.problem-card-cta)');
         const ns = 'http://www.w3.org/2000/svg';
 
         cards.forEach(card => {
