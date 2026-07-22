@@ -19,10 +19,15 @@
     "taxYear": "2026/27",
     "fundedHourlyRate": 6.42,
     "fundedHoursPerWeek": 30,
+    "fundedUniversalHours": 15,
     "fundedWeeksPerYear": 38,
     "fundedValuePerEligibleChild": 7319,
+    "_universalNote": "The universal 15 hours for 3- and 4-year-olds has NO income test and NO work test. Only the top-up to 30 hours is lost at the cliff.",
+    "universalValuePerChild": 3659,
     "aniCliff": 100000,
-    "tfcCapPerChild": 2000
+    "tfcCapPerChild": 2000,
+    "_minIncomeNote": "16 hrs/week at the National Living Wage of £12.71 from April 2026. Recheck every April.",
+    "minIncomeTest": 10575
   },
 
   "wakingUpCases": [
@@ -43,17 +48,18 @@
     {
       "id": "b",
       "label": "Single parent, £130,000, one 3-year-old, £1,250/month childcare",
-      "why": "Over the £100k cliff. The whole saving is pension tax relief; childcare support is correctly zero.",
+      "why": "Over the £100k cliff. Tax-Free Childcare and the working-parent top-up are gone, but a 3-year-old keeps the UNIVERSAL 15 hours, which has no income test. Showing £0 here told higher earners to skip £3,659 they were entitled to.",
       "inputs": { "income1": "130000", "numChildren": "1", "childcare": "1250", "ages": [3] },
       "expect": {
-        "displayTotal": 17871,
+        "displayTotal": 21530,
         "displayTfc": 0,
         "displaySalary": 17871,
-        "displayThirtyHours": 0,
+        "displayThirtyHours": 3659,
+        "fundedHoursPerWeek": 15,
         "over100k": true,
         "eligibleNow": false,
         "totalContribution": 30001,
-        "unlockTotal": 8855
+        "unlockTotal": 5196
       }
     },
     {
@@ -159,6 +165,77 @@
       "why": "Age 5 is one year too old. Funded hours stop; Tax-Free Childcare continues.",
       "inputs": { "income1": "60000", "numChildren": "1", "childcare": "800", "ages": [5] },
       "expect": { "displayThirtyHours": 0, "displayTfc": 1920, "eligibleNow": false }
+    },
+    {
+      "id": "universal-hours-survive-the-cliff",
+      "label": "£130,000, one 4-year-old — universal 15 hours survive the £100k cliff",
+      "why": "The universal 15 hours for 3- and 4-year-olds has no income test whatsoever. A household far over the cliff still gets it, and must be told so.",
+      "inputs": { "income1": "130000", "numChildren": "1", "childcare": "1250", "ages": [4] },
+      "expect": {
+        "displayTfc": 0,
+        "displayThirtyHours": 3659,
+        "fundedHoursPerWeek": 15,
+        "over100k": true,
+        "universalAgeChildren": 1
+      }
+    },
+    {
+      "id": "no-universal-hours-under-three",
+      "label": "£130,000, one 2-year-old — nothing survives the cliff",
+      "why": "The universal entitlement starts at 3. A 2-year-old's funded hours are entirely working-parent hours, so over the cliff they really are £0.",
+      "inputs": { "income1": "130000", "numChildren": "1", "childcare": "1250", "ages": [2] },
+      "expect": {
+        "displayTfc": 0,
+        "displayThirtyHours": 0,
+        "fundedHoursPerWeek": 0,
+        "over100k": true,
+        "unlockThirtyHours": 7319
+      }
+    },
+    {
+      "id": "universal-hours-survive-failing-the-work-test",
+      "label": "£10,300 income, one 3-year-old — under the minimum income test",
+      "why": "The universal 15 hours needs no work test either. A parent earning too little for the working-parent hours still gets it, though Tax-Free Childcare is correctly £0.",
+      "inputs": { "income1": "10300", "numChildren": "1", "childcare": "400", "ages": [3] },
+      "expect": {
+        "meetsWorkTest": false,
+        "displayTfc": 0,
+        "displayThirtyHours": 3659,
+        "fundedHoursPerWeek": 15
+      }
+    },
+    {
+      "id": "minimum-income-test-boundary",
+      "label": "£10,600 income, one 3-year-old — just over the minimum income test",
+      "why": "16 hrs/week at the 2026/27 National Living Wage of £12.71 is £10,575. Using last year's £12.21 rate wrongly passed people between £10,158 and £10,575.",
+      "inputs": { "income1": "10600", "numChildren": "1", "childcare": "400", "ages": [3] },
+      "expect": {
+        "meetsWorkTest": true,
+        "fundedHoursPerWeek": 30
+      }
+    },
+    {
+      "id": "under-nine-months",
+      "label": "£60,000, baby under 9 months",
+      "why": "Funded hours start at 9 months. A 3-month-old qualifies for none of them yet. Tax-Free Childcare still applies from birth.",
+      "inputs": { "income1": "60000", "numChildren": "1", "childcare": "800", "ages": [-1] },
+      "expect": {
+        "displayThirtyHours": 0,
+        "fundedHoursPerWeek": 0,
+        "displayTfc": 1920,
+        "eligibleNow": false
+      }
+    },
+    {
+      "id": "nine-to-eleven-months",
+      "label": "£60,000, baby aged 9-11 months",
+      "why": "The other side of the 9-month boundary. The full working-parent 30 hours begins here.",
+      "inputs": { "income1": "60000", "numChildren": "1", "childcare": "800", "ages": [0] },
+      "expect": {
+        "displayThirtyHours": 7319,
+        "fundedHoursPerWeek": 30,
+        "eligibleNow": true
+      }
     }
   ],
 

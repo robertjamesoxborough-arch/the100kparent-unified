@@ -57,11 +57,11 @@ If you would rather see the figures for yourself, paste this in:
 
 > **Run the real `public/v2-calculator.js` against these three cases and show me the headline number for each: (a) single parent, £60,000, one 2-year-old, £800/month childcare; (b) single parent, £130,000, one 3-year-old, £1,250/month; (c) exactly £100,000 and exactly £100,001, same other inputs. Do not re-implement the calculator — execute the real shipped file.**
 
-**As of 17 July 2026, after the Phase 4 maths fixes, these gave:** (a) **£8,985** · (b) **£17,871** · (c) **£8,985** at £100,000 and **£1,210** at £100,001.
+**As of 21 July 2026, these gave:** (a) **£8,985** · (b) **£21,530** · (c) **£8,985** at £100,000 and **£1,210** at £100,001.
 
 If any number has moved and nobody meant to change it, something has broken.
 
-Two things worth knowing when you read those numbers. In (b), the £130k parent correctly gets **£0** of Tax-Free Childcare and **£0** of funded hours, because over £100,000 of adjusted net income you lose both entirely. The whole £17,871 is pension tax relief. And in (c), the drop from £8,985 to £1,210 for **£1** of extra income is **real**, not a bug: that is the actual £100,000 cliff edge in UK rules. The calculator explains it on screen rather than hiding it.
+Two things worth knowing when you read those numbers. In (b), the £130k parent correctly gets **£0** of Tax-Free Childcare, because that is lost entirely once adjusted net income passes £100,000. But they still get **£3,659** of funded hours, because their 3-year-old keeps the **universal 15 hours**, which has no income test at all — only the working-parent top-up to 30 hours is means-tested. The remaining £17,871 is pension tax relief. And in (c), the drop from £8,985 to £1,210 for **£1** of extra income is **real**, not a bug: that is the actual £100,000 cliff edge in UK rules. (Case (c) uses a 2-year-old, who has no universal entitlement, so there the loss really is total.) The calculator explains all of this on screen rather than hiding it.
 
 ---
 

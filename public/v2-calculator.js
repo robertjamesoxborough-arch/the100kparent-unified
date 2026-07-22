@@ -30,20 +30,43 @@ const TFC_RATE = 0.20;
 const TFC_CAP_PER_CHILD = 2000;
 
 // Funded hours are valued as an entitlement, not as a share of the user's bill:
-// 30 hours x 38 weeks x £6.42/hour. £6.42 is the 2026/27 national average funding
+// hours x 38 weeks x £6.42/hour. £6.42 is the 2026/27 national average funding
 // rate for 3-4 year olds and is the figure to revisit each tax year. It is a
 // national average, so it will not match any individual provider: rates vary by
 // local authority, and many providers levy top-up fees above the funded rate.
 // FUNDED_HOURS_NOTE states that wherever the resulting figure is shown.
-const FUNDED_HOURS_PER_WEEK = 30;
+//
+// There are TWO entitlements, and conflating them was a real bug: it told every
+// household over £100,000 that their funded hours were worth £0.
+//   - The UNIVERSAL 15 hours goes to every 3- and 4-year-old in England. There is
+//     no income test and no work test. A £130k single earner still gets it.
+//   - The WORKING-PARENT entitlement takes that to 30 hours, and covers children
+//     from 9 months. THIS is the one lost at the £100,000 cliff, and the one that
+//     requires the minimum income test to be met.
+const FUNDED_UNIVERSAL_HOURS = 15;
+const FUNDED_WORKING_HOURS = 30;
+const FUNDED_HOURS_PER_WEEK = FUNDED_WORKING_HOURS;
 const FUNDED_WEEKS_PER_YEAR = 38;
 const FUNDED_HOURLY_RATE = 6.42;
-const FUNDED_VALUE_PER_CHILD = FUNDED_HOURS_PER_WEEK * FUNDED_WEEKS_PER_YEAR * FUNDED_HOURLY_RATE;
+const FUNDED_VALUE_PER_HOUR = FUNDED_WEEKS_PER_YEAR * FUNDED_HOURLY_RATE;
+const FUNDED_VALUE_UNIVERSAL = FUNDED_UNIVERSAL_HOURS * FUNDED_VALUE_PER_HOUR;  // £3,659.40
+const FUNDED_VALUE_WORKING = FUNDED_WORKING_HOURS * FUNDED_VALUE_PER_HOUR;      // £7,318.80
 const FUNDED_HOURS_NOTE = 'Based on the national average funded rate of £6.42/hour for 2026/27. Your actual saving depends on your provider and local authority, and many providers charge top-up fees above this rate.';
 
+// Age selected for a child too young for any funded entitlement. The working-parent
+// hours start at 9 months, so a 3-month-old qualifies for nothing yet — showing
+// them a full entitlement overstated the saving by the whole £7,319.
+const AGE_UNDER_NINE_MONTHS = -1;
+// Oldest age that still attracts funded hours (they stop when the child starts school).
+const FUNDED_MAX_AGE = 4;
+// Ages that attract the universal 15 hours regardless of income.
+const UNIVERSAL_MIN_AGE = 3;
+
 // 2026/27 minimum income test: each working parent must earn at least the
-// equivalent of 16 hrs/week at the national minimum wage.
-const MIN_INCOME_TEST = 10158;
+// equivalent of 16 hrs/week at the National Living Wage, which is £12.71 from
+// April 2026. 16 x 12.71 x 52 = £10,574.72. Revisit every April: using the
+// previous year's rate quietly passes people who would actually fail the test.
+const MIN_INCOME_TEST = 10575;
 
 const AA_STANDARD = 60000;
 const AA_TAPER_START = 260000;
@@ -54,7 +77,7 @@ const HIGHER_RATE_THRESHOLD = 50270;
 // Bumped whenever the shape of the stored results changes. The success page
 // refuses to render a blob from an older version rather than guessing at
 // missing fields, which is what previously allowed stale figures to surface.
-const RESULTS_SCHEMA_VERSION = 2;
+const RESULTS_SCHEMA_VERSION = 3;
 
 /**
  * Pension annual allowance, tapered above £260,000 of income.
@@ -163,7 +186,8 @@ class V2Calculator {
             select.id = `childAge${i}`;
             select.innerHTML = `
                 <option value="">Select age...</option>
-                <option value="0">Under 1 year</option>
+                <option value="-1">Under 9 months</option>
+                <option value="0">9-11 months</option>
                 <option value="1">1 year old</option>
                 <option value="2">2 years old</option>
                 <option value="3">3 years old</option>
@@ -237,27 +261,47 @@ class V2Calculator {
 
         const over100k = ani1 > ANI_CLIFF || (hasPartner && ani2 > ANI_CLIFF);
 
-        const eligibleAgeChildren = ages.filter(a => a >= 0 && a <= 4).length;
+        // Children old enough for the working-parent hours (9 months to school age)
+        // and, separately, those entitled to the universal 15 hours whatever the income.
+        const eligibleAgeChildren = ages.filter(a => a >= 0 && a <= FUNDED_MAX_AGE).length;
+        const universalAgeChildren = ages.filter(a => a >= UNIVERSAL_MIN_AGE && a <= FUNDED_MAX_AGE).length;
+
         const meetsWorkTest = !hasPartner
             ? income1 >= MIN_INCOME_TEST
             : (income1 >= MIN_INCOME_TEST && income2 >= MIN_INCOME_TEST);
 
         const eligibleNow = meetsWorkTest && eligibleAgeChildren > 0 && !over100k;
 
+        // The universal entitlement is unconditional. The working-parent entitlement
+        // tops a 3-4 year old up from 15 hours to 30, and gives a child aged 9 months
+        // to 2 all 30, but only while the work test is met and both parents are under
+        // the cliff.
+        const universalValue = universalAgeChildren * FUNDED_VALUE_UNIVERSAL;
+        const workingExtraValue =
+            universalAgeChildren * (FUNDED_VALUE_WORKING - FUNDED_VALUE_UNIVERSAL)
+            + (eligibleAgeChildren - universalAgeChildren) * FUNDED_VALUE_WORKING;
+
         // Funded hours can never be worth more than the bill they offset.
-        const fundedValueFor = (count) => Math.min(count * FUNDED_VALUE_PER_CHILD, annualChildcare);
+        const fundedValueFor = (includeWorkingExtra) =>
+            Math.min(universalValue + (includeWorkingExtra ? workingExtraValue : 0), annualChildcare);
         // Tax-Free Childcare tops up what is still paid AFTER funded hours.
         const tfcValueAfter = (fundedValue) =>
             Math.min(Math.max(0, annualChildcare - fundedValue) * TFC_RATE, TFC_CAP_PER_CHILD * numChildren);
 
-        // Funded hours need an eligible-age child; TFC does not (up to age 11).
-        // Both need the work test AND both parents under the £100k cliff.
-        const displayThirtyHours = (meetsWorkTest && !over100k && eligibleAgeChildren > 0)
-            ? Math.round(fundedValueFor(eligibleAgeChildren))
-            : 0;
+        const qualifiesForWorkingHours = meetsWorkTest && !over100k;
+
+        const displayThirtyHours = Math.round(fundedValueFor(qualifiesForWorkingHours));
+        // TFC needs the work test AND both parents under the cliff, but no minimum
+        // age — it runs to age 11. It has no universal equivalent.
         const displayTfc = (meetsWorkTest && !over100k)
             ? Math.round(tfcValueAfter(displayThirtyHours))
             : 0;
+
+        // How many hours a week the figure above actually represents. The report
+        // must not print "30 hours" over a number that only covers the universal 15.
+        const fundedHoursPerWeek = displayThirtyHours === 0
+            ? 0
+            : (qualifiesForWorkingHours && eligibleAgeChildren > 0 ? FUNDED_WORKING_HOURS : FUNDED_UNIVERSAL_HOURS);
 
         // One pension model either side of £100k. Previously the two sides used
         // entirely different formulas, which made a £1 pay rise collapse the
@@ -300,11 +344,14 @@ class V2Calculator {
         const aniAfterPartner = hasPartner ? Math.max(0, ani2 - contribPartner) : 0;
         const wouldBeUnder = aniAfterYou <= ANI_CLIFF && (!hasPartner || aniAfterPartner <= ANI_CLIFF);
 
-        const unlockThirtyHours = (over100k && wouldBeUnder && meetsWorkTest && eligibleAgeChildren > 0)
-            ? Math.round(fundedValueFor(eligibleAgeChildren))
+        // The EXTRA funded hours the contribution would buy, not the whole
+        // entitlement: the universal 15 hours are already in displayThirtyHours,
+        // and counting them again here would promise the family money they have.
+        const unlockThirtyHours = (over100k && wouldBeUnder && meetsWorkTest)
+            ? Math.round(fundedValueFor(true)) - displayThirtyHours
             : 0;
         const unlockTfc = (over100k && wouldBeUnder && meetsWorkTest)
-            ? Math.round(tfcValueAfter(unlockThirtyHours))
+            ? Math.round(tfcValueAfter(displayThirtyHours + unlockThirtyHours))
             : 0;
         const unlockTotal = unlockTfc + unlockThirtyHours;
 
@@ -314,13 +361,16 @@ class V2Calculator {
             income1, income2, numChildren, monthlyChildcare, employment, employment2,
             ages, pension1, pension2, pension1Annual, pension2Annual,
             ani1, ani2, hasPartner,
-            over100k, eligibleNow, meetsWorkTest, eligibleAgeChildren,
+            over100k, eligibleNow, meetsWorkTest, eligibleAgeChildren, universalAgeChildren,
+            fundedHoursPerWeek,
             has30Hours: eligibleNow,
             displayTfc, displaySalary, displayThirtyHours, displayTotal,
             contribYou, contribPartner, totalContribution, effectiveReliefRate,
             allowanceExceeded, allowanceYou, allowancePartner,
             unlockTfc, unlockThirtyHours, unlockTotal, wouldBeUnder,
             fundedHourlyRate: FUNDED_HOURLY_RATE,
+            fundedUniversalHours: FUNDED_UNIVERSAL_HOURS,
+            fundedWorkingHours: FUNDED_WORKING_HOURS,
             fundedHoursNote: FUNDED_HOURS_NOTE,
             splitting: this.calculateIncomeSplitting(income1, income2)
         };
@@ -394,10 +444,20 @@ class V2Calculator {
                 ? `Bringing your adjusted net income under £100,000 would need more than your pension annual allowance of £${r.allowanceYou.toLocaleString()} allows this year. Speak to an adviser about carry forward from previous years.`
                 : `Your income is too far above £100,000 for a pension contribution alone to bring you under the threshold this year.`);
 
+        // A household over the cliff still keeps the universal 15 hours for any 3- or
+        // 4-year-old. Saying their support is £0 when it is not would be wrong in the
+        // one direction that costs the customer money: they would not claim it.
+        const keepsUniversal = r.displayThirtyHours > 0;
+
+        const headline = keepsUniversal
+            ? `<p><strong>Why most of your childcare support has gone:</strong> Tax-Free Childcare and the working-parent top-up to ${FUNDED_WORKING_HOURS} funded hours are lost entirely once either parent's adjusted net income goes over £100,000. It is a cliff edge, not a gradual taper, and it is tested for each parent separately rather than on your household total.</p>
+               <p><strong>You do still qualify for the universal ${FUNDED_UNIVERSAL_HOURS} hours</strong> for each 3- and 4-year-old, worth <strong>£${r.displayThirtyHours.toLocaleString()}</strong> a year. That entitlement has no income test at all, so it is yours whatever you earn — claim it at childcarechoices.gov.uk. It is included in the figure above.</p>`
+            : `<p><strong>Why your childcare support shows as £0:</strong> Tax-Free Childcare and the ${FUNDED_WORKING_HOURS} funded hours for working parents are lost entirely once either parent's adjusted net income goes over £100,000. It is a cliff edge, not a gradual taper, and it is tested for each parent separately rather than on your household total.</p>`;
+
         note.innerHTML = `
-            <p><strong>Why your childcare support shows as £0:</strong> Tax-Free Childcare and the ${FUNDED_HOURS_PER_WEEK} funded hours are lost entirely once either parent's adjusted net income goes over £100,000. It is a cliff edge, not a gradual taper, and it is tested for each parent separately rather than on your household total.</p>
+            ${headline}
             <p>${unlockLine}</p>
-            ${r.unlockThirtyHours > 0 ? `<p class="funded-hours-note">${FUNDED_HOURS_NOTE}</p>` : ''}
+            ${(r.unlockThirtyHours > 0 || keepsUniversal) ? `<p class="funded-hours-note">${FUNDED_HOURS_NOTE}</p>` : ''}
         `;
         this.resultsPanel.appendChild(note);
     }

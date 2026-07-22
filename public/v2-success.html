@@ -261,7 +261,7 @@
     // rather than part-read: the previous fallbacks silently rendered figures
     // from a superseded formula, which is how a stale result could show a
     // number 2.75x higher than the current calculator would produce.
-    const RESULTS_SCHEMA_VERSION = 2;
+    const RESULTS_SCHEMA_VERSION = 3;
 
     // Every figure the report renders must be a real number. Guarding at the
     // point of read means a missing or malformed field can never reach the page
@@ -373,8 +373,8 @@
 
                 <div class="saving-row">
                     <div>
-                        <div class="saving-label">30 Hours Free Childcare</div>
-                        <div class="saving-desc">Government-funded nursery hours</div>
+                        <div class="saving-label">${r.fundedHoursPerWeek || 30} Hours Free Childcare</div>
+                        <div class="saving-desc">${r.over100k && potentialThirtyHours > 0 ? 'Universal entitlement — no income test, claim this whatever you earn' : 'Government-funded nursery hours'}</div>
                         ${potentialThirtyHours > 0 ? `<div class="funded-hours-note">${fundedHoursNote}</div>` : ''}
                     </div>
                     <div class="saving-amount">£${potentialThirtyHours.toLocaleString()}</div>
@@ -591,8 +591,11 @@
         const sacrificeMechanism = bothSelfEmployed ? 'personal pension contributions' : 'salary sacrifice';
 
         // ── CHILD ANALYSIS ──────────────────────────────────────────────
-        const hasUnder1 = ages.some(a => a === 0);
-        const hasUnder2 = ages.some(a => a === 0 || a === 1);
+        // Age -1 is "under 9 months": too young for ANY funded hours. It is counted
+        // out of under5Count deliberately — that count drives the funded-hours
+        // narrative, and a 3-month-old has no entitlement to narrate yet.
+        const hasUnder1 = ages.some(a => a <= 0);
+        const hasUnder2 = ages.some(a => a <= 1);
         const under5Count = ages.filter(a => a >= 0 && a <= 4).length;
         const hasUnder5 = under5Count > 0;
         const schoolAgeCount = ages.filter(a => a >= 5 && a <= 11).length;
@@ -675,11 +678,22 @@
         const avgNurseryCostOver2 = 11737; // England average 2025 (£225.7/wk × 52)
         const londonPremium = 1.6; // London ~60% more expensive
 
-        // Funded childcare hours — 2026/27. The full 30 funded hours apply to
-        // all eligible children from 9 months.
-        // (The £/year saving is taken from the calculator's displayThirtyHours, which
-        // values the entitlement at 30 hrs x 38 weeks x ~£6/hr, capped at actual spend.)
+        // Funded childcare hours — 2026/27. TWO different numbers, and they must not
+        // be mixed up:
+        //   fundedHoursPerWeek  = 30, the full working-parent entitlement. Used by the
+        //                         narrative about what clearing the £100k cliff UNLOCKS.
+        //   currentFundedHours  = what this household actually gets today: 30 if they
+        //                         pass the work test and are under the cliff, 15 if they
+        //                         only keep the universal entitlement for a 3-4 year old,
+        //                         0 if nothing applies. Used wherever a £ figure is
+        //                         labelled, so the label always matches the money.
+        // The £/year saving is taken from the calculator's displayThirtyHours and never
+        // recomputed here.
         const fundedHoursPerWeek = 30;
+        const currentFundedHours = r.fundedHoursPerWeek ?? 30;
+        const fundedHoursLabel = `${currentFundedHours || fundedHoursPerWeek} Hours Free Childcare`;
+        // True when the family is over the cliff but keeps the universal 15 hours.
+        const keepsUniversalOnly = over100k && pdfThirtyHours > 0;
 
         // Pension annual allowance check
         const annualAllowance = higherIncome > 260000 ? Math.max(10000, 60000 - Math.round((higherIncome - 260000) / 2)) : 60000;
@@ -965,8 +979,8 @@
                 <div style="border-top:1px solid #E2E8F0;padding-top:16px;margin-top:16px;">
                     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;gap:12px;">
                         <div>
-                            <div style="font-weight:700;font-size:14px;color:#1E293B;">🕐 Scheme 2: ${fundedHoursPerWeek} Hours Government-Funded Childcare</div>
-                            <div style="font-size:12px;color:#64748B;margin-top:3px;">30 hours/week of free nursery time — ${under5Count} eligible child${under5Count > 1 ? 'ren' : ''}</div>
+                            <div style="font-weight:700;font-size:14px;color:#1E293B;">🕐 Scheme 2: ${fundedHoursLabel.replace(' Free Childcare', '')} Government-Funded Childcare</div>
+                            <div style="font-size:12px;color:#64748B;margin-top:3px;">${currentFundedHours || fundedHoursPerWeek} hours/week of free nursery time — ${under5Count} eligible child${under5Count > 1 ? 'ren' : ''}</div>
                         </div>
                         <div style="font-size:20px;font-weight:700;white-space:nowrap;color:${eligible30hrs ? '#15803D' : '#1E293B'};">£${pdfThirtyHours.toLocaleString()}/yr</div>
                     </div>
@@ -974,7 +988,7 @@
                     <div class="calc-table">
                         <div class="ct-row header"><span>Monthly Childcare Cost</span><span>Amount</span><span></span></div>
                         <div class="ct-row"><span>Current monthly spend</span><span>£${monthlyChildcare.toLocaleString()}</span><span>Before government-funded hours</span></div>
-                        <div class="ct-row"><span>Monthly spend with ${fundedHoursPerWeek} free hours*</span><span>£${Math.max(0, monthlyChildcare - Math.round(pdfThirtyHours / 12)).toLocaleString()}</span><span>After applying funded hours entitlement</span></div>
+                        <div class="ct-row"><span>Monthly spend with ${currentFundedHours || fundedHoursPerWeek} free hours*</span><span>£${Math.max(0, monthlyChildcare - Math.round(pdfThirtyHours / 12)).toLocaleString()}</span><span>After applying funded hours entitlement</span></div>
                         <div class="ct-row total"><span>Monthly saving</span><span class="green">£${Math.round(pdfThirtyHours / 12).toLocaleString()}</span><span>≈ £${pdfThirtyHours.toLocaleString()}/year</span></div>
                     </div>
                     <p style="margin-top:10px;font-size:13px;color:#475569;"><strong>Note:</strong> Many providers charge a top-up for meals and consumables (typically £3–8/day), so your net saving may be slightly lower. Some offer a 'stretched offer' spreading hours across 52 weeks instead of 38 — better for full-time working families.</p>
@@ -1430,7 +1444,7 @@
                 <div class="s-body">
                     <div class="calc-table">
                         <div class="ct-row header"><span>Milestone</span><span>What happens</span><span>Action needed</span></div>
-                        ${hasUnder1 ? `<div class="ct-row"><span>Child turns 9 months</span><span>30 hours funded childcare begins</span><span>Apply 3 months before</span></div>` : ''}
+                        ${nextEligibleAge ? `<div class="ct-row"><span>Child turns 9 months</span><span>${fundedHoursPerWeek} hours funded childcare begins</span><span>Apply 3 months before</span></div>` : ''}
                         ${hasUnder5 ? `<div class="ct-row"><span>Child starts school (age 4-5)</span><span>Free school hours replace nursery</span><span>Review childcare costs — may reduce TFC need</span></div>` : ''}
                         ${schoolAgeCount > 0 ? `<div class="ct-row"><span>School-age children (5-11)</span><span>Holiday club, after-school eligible for TFC</span><span>Continue TFC account for wraparound care</span></div>` : ''}
                         <div class="ct-row"><span>Each tax year end</span><span>Pension deadline</span><span>Confirm adjusted net income and top up pension if needed</span></div>
@@ -1789,7 +1803,7 @@ em { color:#637082; font-style:italic; }
         <!-- Row 2: Pensions under incomes | Ages & Employment -->
         <div class="pitem"><div class="plabel">Your Monthly Pension</div><div class="pval">${r.pension1 ? '£' + r.pension1.toLocaleString() : 'Not provided'}</div></div>
         <div class="pitem"><div class="plabel">Partner's Monthly Pension</div><div class="pval">${hasPartner ? (r.pension2 ? '£' + r.pension2.toLocaleString() : 'Not provided') : 'Not applicable'}</div></div>
-        <div class="pitem"><div class="plabel">Children's Ages</div><div class="pval">${ages.map(a => a === 0 ? 'Under 1' : a + ' yrs').join(', ')}</div></div>
+        <div class="pitem"><div class="plabel">Children's Ages</div><div class="pval">${ages.map(a => a < 0 ? 'Under 9 mths' : a === 0 ? '9-11 mths' : a + ' yrs').join(', ')}</div></div>
         <div class="pitem"><div class="plabel">Employment</div><div class="pval" style="text-transform:capitalize">${employment.replace('-',' ')}${hasPartner ? ' / ' + employment2.replace('-',' ') : ''}</div></div>
     </div>
     ${over100k ? `
@@ -1797,7 +1811,7 @@ em { color:#637082; font-style:italic; }
         <div style="font-size:10.5px;font-weight:700;color:#1E40AF;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid #BFDBFE;">You could be eligible for:</div>
         <div class="elig-grid">
             <div class="elig" style="background:#EFF6FF;border:1px solid #BFDBFE;"><div><div class="elig-text">Tax-Free Childcare</div><div class="elig-sub">Pension contribution can unlock this</div></div></div>
-            <div class="elig" style="background:#EFF6FF;border:1px solid #BFDBFE;"><div><div class="elig-text">${fundedHoursPerWeek} Hours Free Childcare</div><div class="elig-sub">Pension contribution can unlock this</div></div></div>
+            <div class="elig" style="background:#EFF6FF;border:1px solid #BFDBFE;"><div><div class="elig-text">${fundedHoursPerWeek} Hours Free Childcare</div><div class="elig-sub">${keepsUniversalOnly ? `You already have the universal ${r.fundedUniversalHours || 15} — a pension contribution unlocks the rest` : 'Pension contribution can unlock this'}</div></div></div>
         </div>
     </div>` : ''}
 </div>
@@ -1821,18 +1835,20 @@ em { color:#637082; font-style:italic; }
     <div class="ph"><div class="ph-left"><div class="ph-mark"></div><div class="ph-logo">The 100k Parent</div></div><div class="ph-page">Your Savings Summary &bull; ${taxYear}</div></div>
     <div class="section-heading"><div class="section-heading-bar"></div><h2>Estimated Annual Savings</h2></div>
     <div class="sum-row ok"><div><div class="sum-label">Tax-Free Childcare</div><div class="sum-desc">20% govt top-up, max £${(2000*numChildren).toLocaleString()}/yr (${numChildren} child${numChildren>1?'ren':''})</div></div><div class="sum-amt green">£${pdfTfc.toLocaleString()}</div></div>
-    <div class="sum-row ok"><div><div class="sum-label">${fundedHoursPerWeek} Hours Free Childcare</div><div class="sum-desc">Govt-funded nursery hours</div></div><div class="sum-amt green">£${pdfThirtyHours.toLocaleString()}</div></div>
+    <div class="sum-row ok"><div><div class="sum-label">${fundedHoursLabel}</div><div class="sum-desc">${keepsUniversalOnly ? 'Universal entitlement — no income test' : 'Govt-funded nursery hours'}</div></div><div class="sum-amt green">£${pdfThirtyHours.toLocaleString()}</div></div>
     <div class="sum-row ok"><div><div class="sum-label">${bothSelfEmployed ? 'Pension Contributions' : 'Salary Sacrifice / Pension'}</div><div class="sum-desc">${bothSelfEmployed ? `Income Tax relief + personal-allowance restoration` : `Tax + NI savings at ${Math.round(sacrificeTaxRate*100)}% effective rate`}</div></div><div class="sum-amt ${salaryPensionSaving > 0 ? 'green' : 'grey'}">£${salaryPensionSaving.toLocaleString()}</div></div>
     <div class="tot-box"><div><div class="tot-label">Estimated Savings</div></div><div class="tot-amount">£${avg.toLocaleString()}</div></div>
 
     ${over100k ? `
     <div class="alert amber" style="margin-top:14px;">
-        <strong>How these become claimable:</strong> With income over £100,000 you don't qualify for Tax-Free Childcare or the funded hours <em>yet</em>. The figures above are what you unlock once a pension contribution brings your adjusted net income under £100,000 — see the Priority Action that follows. The relief on that contribution is the third line above.
+        <strong>How these become claimable:</strong> ${keepsUniversalOnly
+            ? `The <strong>£${pdfThirtyHours.toLocaleString()}</strong> of funded hours above is yours <em>now</em> — every 3- and 4-year-old gets the universal ${r.fundedUniversalHours || 15} hours and there is no income test on it, so claim it whatever you earn. Tax-Free Childcare and the top-up to ${fundedHoursPerWeek} hours are the parts you don't qualify for <em>yet</em>: those need a pension contribution to bring your adjusted net income under £100,000 — see the Priority Action that follows.`
+            : `With income over £100,000 you don't qualify for Tax-Free Childcare or the funded hours <em>yet</em>. The figures above are what you unlock once a pension contribution brings your adjusted net income under £100,000 — see the Priority Action that follows.`} The relief on that contribution is the third line above.
     </div>
     ` : `
     <div class="elig-grid">
         <div class="elig yes"><span style="font-size:16px">✅</span><div><div class="elig-text">Tax-Free Childcare</div><div class="elig-sub">Eligible — apply now</div></div></div>
-        <div class="elig ${r.has30Hours ? 'yes' : 'no'}"><span style="font-size:16px">${r.has30Hours ? '✅' : '❌'}</span><div><div class="elig-text">${fundedHoursPerWeek} Hours Childcare</div><div class="elig-sub">${r.has30Hours ? 'Eligible — claim code now' : 'Check eligibility'}</div></div></div>
+        <div class="elig ${r.has30Hours ? 'yes' : currentFundedHours > 0 ? 'maybe' : 'no'}"><span style="font-size:16px">${r.has30Hours ? '✅' : currentFundedHours > 0 ? '⚠️' : '❌'}</span><div><div class="elig-text">${currentFundedHours || fundedHoursPerWeek} Hours Childcare</div><div class="elig-sub">${r.has30Hours ? 'Eligible — claim code now' : currentFundedHours > 0 ? `Universal ${currentFundedHours} hours only — claim code now` : 'Check eligibility'}</div></div></div>
         <div class="elig ${!bothSelfEmployed ? 'yes' : 'maybe'}"><span style="font-size:16px">${!bothSelfEmployed ? '✅' : '⚠️'}</span><div><div class="elig-text">Salary Sacrifice</div><div class="elig-sub">${!bothSelfEmployed ? 'Available — ask HR' : 'Not available — self-employed'}</div></div></div>
         <div class="elig ${hasPartner ? 'yes' : 'no'}"><span style="font-size:16px">${hasPartner ? '✅' : '➖'}</span><div><div class="elig-text">Income Splitting</div><div class="elig-sub">${hasPartner ? 'Dual income — opportunities exist' : 'Single income household'}</div></div></div>
         <div class="elig ${!hicbcApplies ? 'yes' : cbNetBenefit > 0 ? 'maybe' : 'no'}"><span style="font-size:16px">${!hicbcApplies ? '✅' : '⚠️'}</span><div><div class="elig-text">Child Benefit</div><div class="elig-sub">${!hicbcApplies ? 'Full £' + totalCB.toLocaleString() + '/yr' : 'Net £' + Math.max(0,cbNetBenefit).toLocaleString() + '/yr — still register'}</div></div></div>

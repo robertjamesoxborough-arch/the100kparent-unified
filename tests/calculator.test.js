@@ -167,10 +167,24 @@ test('rules that must hold for every set of inputs', async (t) => {
       );
     });
 
-    await t.test(`${kase.label}: over £100k means no childcare support at all`, () => {
+    await t.test(`${kase.label}: over £100k loses the means-tested support but NOT the universal hours`, () => {
       if (!r.over100k) return;
       assert.equal(r.displayTfc, 0, 'Over the £100k cliff, Tax-Free Childcare must be £0.');
-      assert.equal(r.displayThirtyHours, 0, 'Over the £100k cliff, funded hours must be £0.');
+
+      // The universal 15 hours for 3- and 4-year-olds is not income tested. Over the
+      // cliff a family keeps exactly that and nothing more, so the funded figure must
+      // be the universal value for their 3-4 year olds — never the full 30 hours, and
+      // never £0 when they have a child of that age.
+      const universal = Math.min(
+        r.universalAgeChildren * baseline.assumptions.universalValuePerChild,
+        r.monthlyChildcare * 12,
+      );
+      assert.ok(
+        Math.abs(r.displayThirtyHours - Math.round(universal)) <= 1,
+        `Over the cliff with ${r.universalAgeChildren} child(ren) aged 3-4, funded hours should be `
+        + `${money(Math.round(universal))} (the universal 15 hours, which has no income test) but were `
+        + `${money(r.displayThirtyHours)}. Showing £0 here tells a higher earner to skip money they are owed.`,
+      );
     });
 
     await t.test(`${kase.label}: Tax-Free Childcare respects the £2,000 per child cap`, () => {
@@ -221,6 +235,29 @@ test('the calculator still uses the assumptions we signed off', async (t) => {
     const match = source.match(/const ANI_CLIFF = (\d+);/);
     assert.ok(match, 'Could not find ANI_CLIFF in v2-calculator.js.');
     assert.equal(Number(match[1]), baseline.assumptions.aniCliff);
+  });
+
+  await t.test('the universal 15 hours is still modelled separately from the 30', () => {
+    const match = source.match(/const FUNDED_UNIVERSAL_HOURS = (\d+);/);
+    assert.ok(
+      match,
+      'FUNDED_UNIVERSAL_HOURS is gone from v2-calculator.js. Without it the calculator goes back to '
+      + 'zeroing funded hours for everyone over £100,000, which understated a £130k parent with a '
+      + '3-year-old by £3,659 a year of entitlement they can actually claim.',
+    );
+    assert.equal(Number(match[1]), baseline.assumptions.fundedUniversalHours);
+  });
+
+  await t.test('the minimum income test matches the current National Living Wage', () => {
+    const match = source.match(/const MIN_INCOME_TEST = (\d+);/);
+    assert.ok(match, 'Could not find MIN_INCOME_TEST in v2-calculator.js.');
+    assert.equal(
+      Number(match[1]),
+      baseline.assumptions.minIncomeTest,
+      'The minimum income test no longer matches baseline.json. It is 16 hrs/week at the National '
+      + 'Living Wage and must be re-checked every April — a stale rate silently passes people who '
+      + 'would actually fail.',
+    );
   });
 
   await t.test('the 45% additional rate band still exists', () => {
